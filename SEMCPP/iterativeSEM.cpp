@@ -8,6 +8,7 @@
 
 #include "iterativeSEM.hpp"
 #include <iostream>
+#include <ctime>
 #include <sstream>
 #include <cassert>
 using namespace std;
@@ -19,8 +20,46 @@ using namespace std;
 
 
 int main(int argc, char **argv){
-    
-    
-    
-    return 0;
+
+	string pwm = "", dnase = "", chip = "", tf = "", output = "", cache = "";
+
+	time_t timer;
+	time(&timer);
+
+	cout << "Running Iterative SEM building..\n";
+
+	string parse;
+
+	for(int i = 0; i < argc; i++){
+		cout << argv[i] << ' ';
+
+		parse = argv[i];
+
+		if(parse == "-PWM"){
+			pwm = argv[i+1];
+		}
+		else if(parse == "-merge_file"){
+			dnase = argv[i+1];
+		}
+		else if(parse == "-big_wig"){
+			chip = argv[i+1];
+		}
+		else if(parse == "-TF_name"){
+			tf = argv[i+1];
+		}
+		else if(parse == "-output"){
+			output = argv[i+1];
+		}
+		else if(parse == "-readcache"){
+			cache = argv[i+1];
+		}
+
+	}
+	cout << endl;
+
+	if(cache.empty())  cache = output + "/CACHE.DB";
+	
+
+
+	return 0;
 }
