@@ -1,6 +1,6 @@
 CC=g++
 
-CFLAGS=-Wall -Werror -pedantic -O1
+CFLAGS=-Wall -Werror -pedantic -O1 --std=c++11
 
 SOURCES=iterativeSEM.cpp
 
