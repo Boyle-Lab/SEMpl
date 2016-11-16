@@ -12,9 +12,16 @@ Continue C++ implementation of algorithm.
 	ALWAYS INITIALIZE VARIABLES
 		can be quite difficult to debug uninitialized variables
 	Use compiler flags as provided in Makefile
+	Will use struct as opposed to class for simplicity
+	Will use public data members for simplicity of struct
 	
 #Notes
-	
+
+11-16-2016
+In process of finding a C++/C interface for BigWig files/software, as opposed to attempting to rewrite perl module,
+Below notes are now irrelevant
+
+Old below,	
 functions used within Bio:DB::BigWig
 	example perl lines within accum*.pl
 		my $wig = new(-bigwig=>$hfile);
@@ -28,4 +35,10 @@ Only "translate" the single argument version of new.
 http://search.cpan.org/~lds/Bio-BigFile/lib/Bio/DB/BigWig.pm
 
 https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2922891/
+
+For tfmpvalue binary source code, use below
+tfmpvalue.cpp Bonsai
+
+Possible BigWig file/software interface below
+https://github.com/deltadev/bbi
 

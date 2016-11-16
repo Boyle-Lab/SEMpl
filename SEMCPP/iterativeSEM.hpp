@@ -12,6 +12,7 @@
 #include <string>
 #include <array>
 #include <fstream>
+#include <vector>
 
 /* 
  example execution from command line 
@@ -19,18 +20,19 @@
 */
 
 // overview
-// a class to contain an instance of PWM data and DNase data
+// a struct to contain an instance of PWM data and DNase data
+// data members made public for ease of access, otherwise wouldn't with more time
 
-class Dataset {
-private:
+struct Dataset {
+
 
 	// overview
-	// a class to contain and manage the PWM data as given in the example file
-	class PWM{
-	public:
+	// a struct to contain and manage the PWM data as given in the example file
+	struct PWM{
+	
 	    static const int MATRIX_SIZE = 13, ROW_SIZE = 5;
 	    
-	private:
+	
 	    // holds first three inputs as given in example
 	    std::string first_input, second_input, third_input;
 	    // holds the characters at the end of each matrix row, holds the two characters at the end
@@ -38,7 +40,7 @@ private:
 	    // holds the integer values of the matrix
 	    std::array<std::array<int, ROW_SIZE>, MATRIX_SIZE> matrix_arr;
 	    
-	public:
+	
 	    
 
 	    // Modifies: all member variables
@@ -66,11 +68,11 @@ private:
 	    // Effects: does nothing, as member variables are objects with destructors
 	    ~PWM();
 	};
-	class DNase{
-	public:
+	struct DNase{
+	
 	    static const int LINES_IN_FILE = 116018;
 	    
-	private:
+	
 	    // "chr" and the chromosome number
 	    std::array<std::string, LINES_IN_FILE> chromosome;
 	    // first two numbers given
@@ -84,7 +86,7 @@ private:
 	    // sixth and seventh number given
 	    std::array<int, LINES_IN_FILE> sixth_num, seventh_num;
 	    
-	public:	
+		
 	    
 	    // Modifies: all member variables
 	    // Effects: initializes all member variables to 0 or nullptr
@@ -111,12 +113,14 @@ private:
 	    // Effects: does nothing, as member variables are objects without dynamic memory
 	    ~DNase();
 	};
-	
-
+	struct TFMdata{
+		static const int LETTER_NUM = 4;
+		std::array<std::vector<char>, LETTER_NUM> letter_array;
+	};
 
 	DNase DNase_data;
 	PWM PWM_data;	
-public:
+
 	
 	// Requires: input is a valid ifstream object
 	// Modifies: DNase_data, PWM_data

@@ -35,7 +35,7 @@ int main(int argc, char **argv){
 
 	cout << "Running Iterative SEM building..\n";
 
-	string parse;
+	string parse = "";
 
 	for(int i = 0; i < argc; i++){
 		cout << argv[i] << ' ';
@@ -78,8 +78,8 @@ int main(int argc, char **argv){
     ostringstream threshstream;
     threshstream << "./get_threshold " << pwm << " " << pVal;
     string threshCmd = threshstream.str();
-    double threshold = system(threshCmd.c_str());
-    if (threshold < 0){
+    double threshold = system(threshCmd.c_str());     // I believe we are supposed make function calls here? 
+    if (threshold < 0){				      // as opposed to system(string) calls?
         threshold = 0;
     }
 
@@ -93,6 +93,10 @@ int main(int argc, char **argv){
     pwmCmdstream << "./src/generatePWMfromSEM.cpp -PWM " << pwm << " -TF_name " << tf << " -output " << output;
     string pwmCmd = pwmCmdstream.str();
     system(pwmCmd.c_str());
+
+/*
+*	will change the Cmd's to functions, once the functions are implemented
+*/
 
     pvals.erase(pvals.begin());
     pVal = pvals.front();
@@ -113,9 +117,8 @@ int main(int argc, char **argv){
     int same = 0;
     int total_1 = 0;
     int total_diff = 0;
-    int total_diff_norm = 0;
-    string final_run;
-    string line;
+    string final_run = "";
+    string line = "";
 
     for (int i = 1; i < total_iterations; i++){
         iterID = rand() % 16777216 ;
