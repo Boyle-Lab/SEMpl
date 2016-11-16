@@ -119,8 +119,8 @@ struct Dataset {
 	};
 
 	DNase DNase_data;
-	PWM PWM_data;	
-
+	PWM PWM_data;
+	TFMdata TFM_data;
 	
 	// Requires: input is a valid ifstream object
 	// Modifies: DNase_data, PWM_data
