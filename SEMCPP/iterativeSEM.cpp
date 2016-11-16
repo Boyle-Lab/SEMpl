@@ -66,14 +66,14 @@ int main(int argc, char **argv){
 
 	if(cache.empty())  cache = output + "/CACHE.DB";
 
-    vector<float> pvals;
+    vector<double> pvals;
     pvals.push_back( pow(4, -5));
-    float minPval= pow(4,-5.5);
+    double minPval= pow(4,-5.5);
     for(int i = pvals.size(); i <= total_iterations; i++){
         pvals.push_back(minPval);
     }
 
-    float pVal = pvals.front();
+    double pVal = pvals.front();
     pvals.erase(pvals.begin());
     ostringstream threshstream;
     threshstream << "./get_threshold " << pwm << " " << pVal;
@@ -116,21 +116,72 @@ int main(int argc, char **argv){
     int total_diff_norm = 0;
     string final_run;
     string line;
-    string temp;
 
     for (int i = 1; i < total_iterations; i++){
         iterID = rand() % 16777216 ;
+        ofstream outFile(output+"/kmer_similarity.out");
         if(i > 1 && converge < 10){
             int j = i -1;
             total_1 = same = diff = total_diff = 0;
             ostringstream Ekmerstream;
             Ekmerstream << output << "/it" << j << "/Enumerated_kmer.txt";
             string EkmerFile = Ekmerstream.str();
-            ofstream outFile(output+"/kmer_similarity.out");
             ifstream Ekmer(EkmerFile);
 
+        if(converge < 10){
+            outFile << i << "\t" << converge << "\t" << same << "\t" << diff << "\n";
+            cout << "---Iteration " << i << "---"<< endl;
+            ostringstream newOutput;
+            newOutput << output << "/" << "it" << i << "/";
+            if (converge == 9){
+                wkCmdstream.str("");
+                wkCmdstream << "./generateSNPEffectMatrix.cpp -PWM " << newPwm << " -merge_file " << dnase << " -big_wig " << chip <<" -TF_name " << tf << " -output " << newOutput.str() << " -threshold " << threshold << " -iteration " << iterID << " -writecache -readcache "<< cache << " -fastrun -verbose";
+                final_run = newOutput.str();
+            }
+            else{
+                wkCmdstream.str("");
+                wkCmdstream << "./generateSNPEffectMatrix.cpp -PWM " << newPwm << " -merge_file " << dnase << " -big_wig " << chip <<" -TF_name " << tf << " -output " << newOutput.str() << " -threshold " << threshold << " -iteration " << iterID << " -writecache -readcache "<< cache << " -verbose";
+            }
+            wkCmd = wkCmdstream.str();
+            system(wkCmd.c_str());
+
+            pwmCmdstream.str("");
+            pwmCmdstream << "./src/generatePWMfromSEM.cpp -PWM " << newPwm << " -TF_name " << tf << " -output " << newOutput.str();
+            pwmCmd = pwmCmdstream.str();
+            system(pwmCmd.c_str());
+
+            pVal = pvals.front();
+            pvals.erase(pvals.begin());
+            newPwm = output + "/" + tf + ".pwm";
+            threshstream.str("");
+            threshstream << "src/get_threshold.cpp" << newPwm << pVal;
+            threshCmd = threshstream.str();
+            threshold = system(threshCmd.c_str());
+            if(threshold < 0){
+                threshold = 0;
+            }
+            cout << "\n";
+        }
+        else{
+            //stop iterations post-convergence
+
+            //link last iteration
+            ostringstream newOutput;
+            newOutput << output << "/final/";
+            string cmd = "ln -s " + final_run + " " +output + " " + newOutput.str();
+            system(cmd.c_str());
+            double diff_t;
+            time_t endTime;
+            time(&endTime);
+            diff_t = difftime(endTime, timer);
+            cout << "**************************" << endl;
+            printf( "Job took %f seconds", diff_t );
+            cout << "**************************\n" << endl;
+            break;
         }
     }
+
+
 
 	return 0;
 }
