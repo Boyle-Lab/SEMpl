@@ -73,8 +73,8 @@ int main(int argc, char **argv){
         pvals.push_back(minPval);
     }
 
-    double pVal = pvals.front();
     pvals.erase(pvals.begin());
+    double pVal = pvals.front();
     ostringstream threshstream;
     threshstream << "./get_threshold " << pwm << " " << pVal;
     string threshCmd = threshstream.str();
@@ -94,8 +94,8 @@ int main(int argc, char **argv){
     string pwmCmd = pwmCmdstream.str();
     system(pwmCmd.c_str());
 
-    pVal = pvals.front();
     pvals.erase(pvals.begin());
+    pVal = pvals.front();
     string newPwm = output + "/" + tf + ".pwm";
     threshstream.str("");
     threshstream << "src/get_threshold.cpp " << newPwm << " " << pVal;
@@ -127,6 +127,31 @@ int main(int argc, char **argv){
             Ekmerstream << output << "/it" << j << "/Enumerated_kmer.txt";
             string EkmerFile = Ekmerstream.str();
             ifstream Ekmer(EkmerFile);
+            if (!Ekmer){
+                cerr << "Problem opening " << EkmerFile << endl;
+                exit(1);
+            }
+            while (Ekmer){
+                for (string temp; getline(Ekmer, temp, ' '); line_2.push_back(temp));
+                kmers_2[line_2[1]] = 1;
+                total_1++;
+                if (kmers_2.find(line_2[1]) != kmers_2.end()){
+                    same++;
+                }
+                else{
+                    diff++;
+                }
+            }
+            if (diff == 0){
+                converge++;
+            }
+            else{
+                converge = 0;
+            }
+            kmers.clear();
+            kmers.insert(kmers_2.begin(),kmers_2.end());
+            kmers_2.clear();
+        }
 
         if(converge < 10){
             outFile << i << "\t" << converge << "\t" << same << "\t" << diff << "\n";
@@ -150,8 +175,8 @@ int main(int argc, char **argv){
             pwmCmd = pwmCmdstream.str();
             system(pwmCmd.c_str());
 
-            pVal = pvals.front();
             pvals.erase(pvals.begin());
+            pVal = pvals.front();
             newPwm = output + "/" + tf + ".pwm";
             threshstream.str("");
             threshstream << "src/get_threshold.cpp" << newPwm << pVal;
