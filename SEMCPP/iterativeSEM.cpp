@@ -11,6 +11,11 @@
 #include <ctime>
 #include <sstream>
 #include <cassert>
+#include <vector>
+#include <cmath>
+#include <cstdlib>
+#include <map>
+#include <fstream>
 using namespace std;
 
 /*
@@ -22,6 +27,8 @@ using namespace std;
 int main(int argc, char **argv){
 
 	string pwm = "", dnase = "", chip = "", tf = "", output = "", cache = "";
+
+    int total_iterations = 500;
 
 	time_t timer;
 	time(&timer);
@@ -58,8 +65,72 @@ int main(int argc, char **argv){
 	cout << endl;
 
 	if(cache.empty())  cache = output + "/CACHE.DB";
-	
 
+    vector<float> pvals;
+    pvals.push_back( pow(4, -5));
+    float minPval= pow(4,-5.5);
+    for(int i = pvals.size(); i <= total_iterations; i++){
+        pvals.push_back(minPval);
+    }
+
+    float pVal = pvals.front();
+    pvals.erase(pvals.begin());
+    ostringstream threshstream;
+    threshstream << "./get_threshold " << pwm << " " << pVal;
+    string threshCmd = threshstream.str();
+    double threshold = system(threshCmd.c_str());
+    if (threshold < 0){
+        threshold = 0;
+    }
+
+    int iterID = rand() % 16777216 ;
+    cout << "--- Iteration 0 ---" << endl;
+    ostringstream wkCmdstream;
+    wkCmdstream << "./generateSNPEffectMatrix.cpp -PWM " << pwm << " -TF_name " << tf << " -output " << output;
+    string wkCmd = wkCmdstream.str();
+    system(wkCmd.c_str());
+    ostringstream pwmCmdstream;
+    pwmCmdstream << "./src/generatePWMfromSEM.cpp -PWM " << pwm << " -TF_name " << tf << " -output " << output;
+    string pwmCmd = pwmCmdstream.str();
+    system(pwmCmd.c_str());
+
+    pVal = pvals.front();
+    pvals.erase(pvals.begin());
+    string newPwm = output + "/" + tf + ".pwm";
+    threshstream.str("");
+    threshstream << "src/get_threshold.cpp " << newPwm << " " << pVal;
+    threshCmd = threshstream.str();
+    threshold = system(threshCmd.c_str());
+    if (threshold < 0){
+        threshold = 0;
+    }
+
+    int converge = 0;
+    vector<string> line_2;
+    map <string, int> kmers;
+    map <string, int> kmers_2;
+    int diff = 0;
+    int same = 0;
+    int total_1 = 0;
+    int total_diff = 0;
+    int total_diff_norm = 0;
+    string final_run;
+    string line;
+    string temp;
+
+    for (int i = 1; i < total_iterations; i++){
+        iterID = rand() % 16777216 ;
+        if(i > 1 && converge < 10){
+            int j = i -1;
+            total_1 = same = diff = total_diff = 0;
+            ostringstream Ekmerstream;
+            Ekmerstream << output << "/it" << j << "/Enumerated_kmer.txt";
+            string EkmerFile = Ekmerstream.str();
+            ofstream outFile(output+"/kmer_similarity.out");
+            ifstream Ekmer(EkmerFile);
+
+        }
+    }
 
 	return 0;
 }
