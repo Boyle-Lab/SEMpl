@@ -114,7 +114,9 @@ struct Dataset {
 	    ~DNase();
 	};
 	struct TFMdata{
+		// a c g t
 		static const int LETTER_NUM = 4;
+		// first letter is a, then c, then g, then t
 		std::array<std::vector<char>, LETTER_NUM> letter_array;
 	};
 

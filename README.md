@@ -41,4 +41,18 @@ tfmpvalue.cpp Bonsai
 
 Possible BigWig file/software interface below
 https://github.com/deltadev/bbi
+github.com/jayhesselberth/libBigWig
 
+#Notes regarding Bio::DB::BigWig replacement
+functions used from Bio::DB::BigWig in original implementation of algorithm
+	new(-bigwig=>file); equilvalent to new("-bigwig", $hfile);
+		creates new object of Bio::DB::BigWig type, $hfile points to the indexed .bw file
+
+	features("-seq_id", $seqid, "-type", 'bin:'.$total_size, "-start", $upstart, "-end", $upend);
+
+		$seqid is chromosome or contig name defining the range of interest
+		'bin:' + $total_size is the type of feature to retrieve
+		$upstart is the start of the range of interest
+		$upend is the end of the range of interest
+	pseudo-result below
+		fetch $total_size intervals across region $upstart to $upend on chromosone $seqid

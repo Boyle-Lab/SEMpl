@@ -64,6 +64,16 @@ int main(int argc, char **argv){
 	}
 	cout << endl;
 
+	if(pwm.empty()){
+		cout << "No PWM file given" << endl;
+		exit(EXIT_FAILURE);
+	}
+	
+	if(output.empty()){
+		cout << "No output file given" << endl;
+		exit(EXIT_FAILURE);
+	}
+
 	if(cache.empty())  cache = output + "/CACHE.DB";
 
     vector<double> pvals;
