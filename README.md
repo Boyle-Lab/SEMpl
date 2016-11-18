@@ -55,4 +55,4 @@ functions used from Bio::DB::BigWig in original implementation of algorithm
 		$upstart is the start of the range of interest
 		$upend is the end of the range of interest
 	pseudo-result below
-		fetch $total_size intervals across region $upstart to $upend on chromosone $seqid
+		fetch $total_size intervals across region $upstart to $upend on chromosome $seqid
