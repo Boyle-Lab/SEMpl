@@ -1,13 +1,17 @@
 CC=g++
 
-CFLAGS=-Wall -Werror -pedantic -O1 --std=c++11
+C++FLAGS=-Wall -Werror -pedantic -O1 --std=c++11
 
-SOURCES=iterativeSEM.cpp src/pwm_to_tfm.cpp src/get_threshold.cpp src/accumSummary_scale.cpp
+C++SOURCES=iterativeSEM.cpp src/pwm_to_tfm.cpp src/get_threshold.cpp src/accumSummary_scale.cpp 
+BIGWIGLIBRARYLOC=-Llib/libBigWig-master
+BIGWIGLIBRARY=-lBigWig
+CSOURCES=lib/libBigWig-master/bw{Read,Stats,Values,Write}.c
 
 EXECUTABLE=iterativeSEM.exe
 
 all:
-	$(CC) $(CFLAGS) $(SOURCES) -o $(EXECUTABLE)
+	$(CC) $(C++FLAGS) $(C++SOURCES) $(BIGWIGLIBRARYLOC) $(BIGWIGLIBRARY) -o $(EXECUTABLE)
 
 clean:
 	rm $(EXECUTABLE)
+	rm lib/libBigWig/*.o

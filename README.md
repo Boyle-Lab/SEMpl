@@ -1,6 +1,10 @@
 # SEM_CPP
 C++ implementation of the SEM algorithm
 
+#Compilation
+Copy entire repository to computer, then cd into lib/libBigWig-master/ and run "make"
+cd back into directory where makefile is present, or from the previous location "cd .." twice
+
 #Tasks
 
 Determine how to interface Bio::DB::BigWig module in original code with the current code.
