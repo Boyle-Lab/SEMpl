@@ -11,7 +11,7 @@ using namespace std;
 void split(string str, string splitBy, vector<string>& tokens);
 
 			// contains all data, contains bigwig filename, region file, scale
-void accumySummary_scale(Dataset &data, string hfile, string cfile, int scale){
+void accumSummary_scale(Dataset &data, string hfile, string cfile, int scale){
 
 	// open file using library, below code is necessary
 	// because of C++ type system regarding const
@@ -22,7 +22,12 @@ void accumySummary_scale(Dataset &data, string hfile, string cfile, int scale){
 
 	int dist = 500;
 	int total_size = dist * 2 + scale;
+	double max = 0.0;
+	int hitcount = 0;
 
+	// create a vector with correct size, reduce memory use as opposed to repeatedly creating a new vector in the loop below
+
+	vector<string> output(total_size);
 
 	//////////////////////////////////
 	// Read each peak location and add signal values
@@ -77,7 +82,9 @@ void accumySummary_scale(Dataset &data, string hfile, string cfile, int scale){
 		// stats function used from library
 		//double *bwStats(bigWigFile_t *fp, char *chrom, uint32_t start, uint32_t end, uint32_t nBins, enum bwStatsType type);
 		values = bwStats(bwFile, chrom, static_cast<uint32_t>(0), static_cast<uint32_t>(total_size), static_cast<uint32_t>(total_size), type);
-		
+
+		counter = 0;
+
 		for(counter = 0; counter < total_size; counter++){
 			values[counter] = roundf(values[counter] * 1000) / 1000;
 			signal_array[counter] = values[counter];
@@ -85,13 +92,33 @@ void accumySummary_scale(Dataset &data, string hfile, string cfile, int scale){
 		
 		delete [] chrom;
 		
+		//output results
+		if(direction.find('+') != string::npos)
+			for(int k = 0; k < total_size; k++)
+				// need to determine how to check for definition of signal_array[k]
+				output[k] = signal_array[k];
+		else
+			for(int k = total_size - 1; k >= 0; k--)
+				output[k] = signal_array[k];	
 	}
 
+	max = 0;
+	hitcount = 0;
+	for(int l = 0; l < static_cast<int>(output.size()); l++){
+		if(stod(output[l]) > max)
+			max = stod(output[l]);
+		if(output[l] != "N")
+			hitcount++;
+	}
+		
+	if(hitcount / static_cast<double>(output.size()) < 0.9)
+		max = 0;
+	// how to indicate NOT APPLICABLE
 
 
-
-	//void bwClose(bigWigFile_t *fp);
-
+	data.accumSummary_data.accum_lines.push_back(line);
+	data.accumSummary_data.accum_max.push_back(max);	
+	
 	bwClose(bwFile);
 	delete [] fname;
 }
