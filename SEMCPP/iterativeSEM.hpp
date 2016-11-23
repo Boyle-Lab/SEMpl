@@ -24,8 +24,6 @@
 // data members made public for ease of access, otherwise wouldn't with more time
 
 struct Dataset {
-
-
 	// overview
 	// a struct to contain and manage the PWM data as given in the example file
 	struct PWM{
@@ -40,33 +38,6 @@ struct Dataset {
 	    // holds the integer values of the matrix
 	    std::array<std::array<int, ROW_SIZE>, MATRIX_SIZE> matrix_arr;
 	    
-	
-	    
-
-	    // Modifies: all member variables
-	    // Effects: initializes all member variables to 0 or nullptr
-	    PWM();
-	    
-	    // Requires: input is a valid input stream with correctly formatted data
-	    // Modifies: all member variables, input
-	    // Effects: initializes member variables as given in the example .pwm file
-	    //          in the input ifstream object
-	    PWM(std::ifstream &input);
-	    
-	    // Requires: other is completely defined
-	    // Modifies: all member variables
-	    // Effects: copy constructor to copy over all data from other
-	    //          uses deep copy
-	    PWM(const PWM &other);
-	    
-	    // Requires: other is completely defined
-	    // Modifies: all member variables
-	    // Effects: assignment to copy over all data from other
-	    //          uses deep copy
-	    PWM operator=(const PWM &other);
-	    
-	    // Effects: does nothing, as member variables are objects with destructors
-	    ~PWM();
 	};
 	struct DNase{
 	
@@ -87,31 +58,6 @@ struct Dataset {
 	    std::array<int, LINES_IN_FILE> sixth_num, seventh_num;
 	    
 		
-	    
-	    // Modifies: all member variables
-	    // Effects: initializes all member variables to 0 or nullptr
-	    DNase();
-	    
-	    // Requires: input is a valid input stream with correctly formatted data in file
-	    // Modifies: all member variables, input
-	    // Effects: initializes member variables as given in the example .narrowpeak.gz file
-	    //          in the input ifstream object
-	    DNase(std::ifstream &input);
-	    
-	    // Requires: other is completely defined
-	    // Modifies: all member variables
-	    // Effects: copy constructor to copy over all data from other
-	    //          uses deep copy
-	    DNase(const DNase &other);
-	    
-	    // Requires: other is completely defined
-	    // Modifies: all member variables
-	    // Effects: assignment to copy over all data from other
-	    //          uses deep copy
-	    DNase operator=(const DNase &other);
-	    
-	    // Effects: does nothing, as member variables are objects without dynamic memory
-	    ~DNase();
 	};
 	struct TFMdata{
 		// a c g t
@@ -119,17 +65,17 @@ struct Dataset {
 		// first letter is a, then c, then g, then t
 		std::array<std::vector<char>, LETTER_NUM> letter_array;
 	};
+	struct accumSummaryData{
+		// lines of output from accumSummary_scale.pl
+		std::vector<std::string> accum_lines;
+		// max of output from accumSummary_scale.pl
+		std::vector<double> accum_max;
+	};
 
 	DNase DNase_data;
 	PWM PWM_data;
 	TFMdata TFM_data;
-	
-	// Requires: input is a valid ifstream object
-	// Modifies: DNase_data, PWM_data
-	// Effects: initializes PWM and DNase with their corresponding constructor taking an ifstream object
-	Dataset(std::ifstream& input);
-
-	
+	accumSummaryData accumSummary_data;
 
 };
 
