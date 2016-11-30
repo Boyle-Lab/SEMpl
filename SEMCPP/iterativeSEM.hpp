@@ -21,7 +21,7 @@
 
 // overview
 // a struct to contain an instance of PWM data and DNase data
-// data members made public for ease of access, otherwise wouldn't with more time
+// data members made public for ease of access, otherwise wouldn't given more time
 
 struct Dataset {
 	// overview

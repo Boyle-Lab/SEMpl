@@ -7,6 +7,8 @@
  *
  */
 
+#define PROGRAM 0
+
 #include <iostream>
 #include <vector>
 #include <fstream>
@@ -497,16 +499,27 @@ void arguments (int argc, char * const argv[]) {
    char option;
    map<char,bool> opt;
    char options[REQUIRED[PROGRAM].length()+OPTIONAL[PROGRAM].length()+1];
+
    for (int i = 0; i < REQUIRED[PROGRAM].length(); i++) { options[i] = REQUIRED[PROGRAM][i]; }
    for (int i = 0; i < OPTIONAL[PROGRAM].length(); i++) { options[i+REQUIRED[PROGRAM].length()] = OPTIONAL[PROGRAM][i]; }  
+
    options[REQUIRED[PROGRAM].length()+OPTIONAL[PROGRAM].length()+1] = '\0';
-  while (((option = getopt(argc,argv,options)) != EOF)) {
-    if (option == '?') {
-      throw new ArgumentException("Bad argument");
-    } 
-    OPTIONS[option] = optind-1;        
+
+//  while (((option = getopt(argc,argv,options)) != EOF)) {
+//    if (option == '?') {
+//      throw new ArgumentException("Bad argument");
+//    } 
+	string s = "";
+	int pos = 0;
+	char* const *args = argv;
+	for(int i = 0; i < argc; i++){
+		args++;	
+	
+//	./TFMpvalue-pv2sc -a 0.25 -t 0.25 -c 0.25 -g 0.25 -m MA0045.pfm -p 1e-5
+    OPTIONS[option] = option-1;        
     opt[option] = true;
-  }
+	}
+  //}
   for (int i = 0; i < REQUIRED[PROGRAM].length(); i++) {
     if (REQUIRED[PROGRAM][i] != ':' && !opt[REQUIRED[PROGRAM][i]]) throw new ArgumentException("Bad number of args");    
   }

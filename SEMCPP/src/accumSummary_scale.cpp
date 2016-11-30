@@ -5,6 +5,7 @@
 #include <iostream>
 #include <vector>
 #include <cmath>
+#include <limits>
 using namespace std;
 
 // taken from internet
@@ -100,25 +101,24 @@ void accumSummary_scale(Dataset &data, string hfile, string cfile, int scale){
 		else
 			for(int k = total_size - 1; k >= 0; k--)
 				output[k] = signal_array[k];	
-	}
-
-	max = 0;
-	hitcount = 0;
-	for(int l = 0; l < static_cast<int>(output.size()); l++){
-		if(stod(output[l]) > max)
-			max = stod(output[l]);
-		if(output[l] != "N")
-			hitcount++;
-	}
 		
-	if(hitcount / static_cast<double>(output.size()) < 0.9)
+
 		max = 0;
-	// how to indicate NOT APPLICABLE
+		hitcount = 0;
+		for(int l = 0; l < static_cast<int>(output.size()); l++){
+			if(stod(output[l]) > max)
+				max = stod(output[l]);
+			if(output[l] != "N")
+				hitcount++;
+		}
+			
+		if(hitcount / static_cast<double>(output.size()) < 0.9)
+			max = numeric_limits<double>::max();
+		// if max is maximum possible double value, then it is not applicable
 
-
-	data.accumSummary_data.accum_lines.push_back(line);
-	data.accumSummary_data.accum_max.push_back(max);	
-	
+		data.accumSummary_data.accum_lines.push_back(line);
+		data.accumSummary_data.accum_max.push_back(max);	
+		}
 	bwClose(bwFile);
 	delete [] fname;
 }

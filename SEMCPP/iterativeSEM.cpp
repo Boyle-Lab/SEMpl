@@ -23,6 +23,9 @@ using namespace std;
  "./iterativeSEM.pl -PWM examples/MA0114.1.pwm -merge_file examples/wgEncodeOpenChromDnaseHepg2Pk.narrowPeak -big_wig examples/wgEncodeHaibTfbsHepg2Hnf4asc8987V0416101RawRep1.bigWig -TF_name HNF4A -output examples/HNF4A/"
  */
 
+void generateSNPEffectMatrix(Dataset &data, string output);
+void generatePWMfromSEM(Dataset &data, string output);
+double get_threshold(Dataset &data);
 
 int main(int argc, char **argv){
 
@@ -85,6 +88,8 @@ int main(int argc, char **argv){
 
     pvals.erase(pvals.begin());
     double pVal = pvals.front();
+
+
     ostringstream threshstream;
     threshstream << "./get_threshold " << pwm << " " << pVal;
     string threshCmd = threshstream.str();
@@ -95,6 +100,10 @@ int main(int argc, char **argv){
 
     int iterID = rand() % 16777216 ;
     cout << "--- Iteration 0 ---" << endl;
+ 
+//    generateSNPEffectMatrix(data, output);
+//    generatePWMfromSEM(data, output);
+    
     ostringstream wkCmdstream;
     wkCmdstream << "./generateSNPEffectMatrix.cpp -PWM " << pwm << " -TF_name " << tf << " -output " << output;
     string wkCmd = wkCmdstream.str();
@@ -114,7 +123,8 @@ int main(int argc, char **argv){
     threshstream.str("");
     threshstream << "src/get_threshold.cpp " << newPwm << " " << pVal;
     threshCmd = threshstream.str();
-    threshold = system(threshCmd.c_str());
+    //threshold = threshCmd.c_str();
+    //threshold = get_threshold( something here ) ;
     if (threshold < 0){
         threshold = 0;
     }
@@ -194,10 +204,10 @@ int main(int argc, char **argv){
             threshstream.str("");
             threshstream << "src/get_threshold.cpp" << newPwm << pVal;
             threshCmd = threshstream.str();
-            threshold = system(threshCmd.c_str());
-            if(threshold < 0){
-                threshold = 0;
-            }
+            //threshold = system(threshCmd.c_str());
+            //if(threshold < 0){
+            //    threshold = 0;
+            //}
             cout << "\n";
         }
         else{
