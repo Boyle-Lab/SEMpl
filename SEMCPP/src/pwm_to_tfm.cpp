@@ -7,7 +7,6 @@ using namespace std;
 //MODIFIES: tfm_format within data
 //EFFECTS: puts a, c, g, t into tfm_format
 void pwm_to_tfm(Dataset & data){
-	
 	vector<char> a, c, g, t;
 
 	for(int i = 0; i < Dataset::PWM::MATRIX_SIZE; i++){

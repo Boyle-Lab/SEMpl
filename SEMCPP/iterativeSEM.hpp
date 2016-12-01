@@ -13,6 +13,7 @@
 #include <array>
 #include <fstream>
 #include <vector>
+#include <cassert>
 
 /* 
  example execution from command line 
@@ -77,6 +78,14 @@ struct Dataset {
 	TFMdata TFM_data;
 	accumSummaryData accumSummary_data;
 
+	std::string TF_name;
+	
+	std::string PWM_file;
+	std::string bigwig_file;
+	std::string DNase_file;
+	std::string output_file;
+	
+	bool fastrun;
 };
 
 #endif /* iterativeSEM_hpp */
