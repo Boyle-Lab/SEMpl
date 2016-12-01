@@ -7,8 +7,9 @@ class Matrix;
 
 const string TEMPFILE = "output/temp.txt";
 
-//REQUIRES: data is a valid Dataset, with PWM data filled in
-//EFFECTS: return a class object with the data as designed in get_threshold.pl
+//REQUIRES: data is a valid Dataset, in that data is not "missing," with PWM_data filled in
+//MODIFIES: data
+//EFFECTS: returns score threshold
 //NOTE: I believe pval == 0.0009765625, also the original version takes a file address I believe
 double get_threshold(Dataset & data, double pval){
 	

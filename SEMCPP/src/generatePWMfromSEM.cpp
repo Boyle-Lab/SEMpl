@@ -13,8 +13,9 @@
 
 using namespace std;
 
-
-
+//REQUIRES: (please fill in what the function requires, before we can call the function, such as certain data being filled in
+//MODIFIES: modifies data
+//EFFECTS: (brief statement of what the function does)
 map <char, int> parse_pwm(Dataset & data){
     map <char, int> motif;
     int rowsum = 0;
@@ -32,6 +33,9 @@ map <char, int> parse_pwm(Dataset & data){
     return motif;
 }
 
+//REQUIRES: (please fill in what the function requires, before we can call the function, such as certain data being filled in
+//MODIFIES: modifies data
+//EFFECTS: (brief statement of what the function does)
 void generatePWMfromSEM(Dataset & data, string output){
     int minimumScore = 1000;
     int avgScore = 0;

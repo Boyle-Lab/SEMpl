@@ -12,6 +12,9 @@ using namespace std;
 void split(string str, string splitBy, vector<string>& tokens);
 
 			// contains all data, contains bigwig filename, region file, scale
+//REQUIRES: (?) 
+//MODIFIES: data
+//EFFECTS: gathers raw bigwig data (?)
 void accumSummary_scale(Dataset &data, string hfile, string cfile, int scale){
 
 	// open file using library, below code is necessary
