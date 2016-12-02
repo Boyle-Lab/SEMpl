@@ -36,10 +36,10 @@ map <char, int> parse_pwm(Dataset & data){
 //REQUIRES: (please fill in what the function requires, before we can call the function, such as certain data being filled in
 //MODIFIES: modifies data
 //EFFECTS: (brief statement of what the function does)
-void generatePWMfromSEM(Dataset & data, string output){
+void generatePWMfromSEM(Dataset & data){
     int minimumScore = 1000;
     int avgScore = 0;
-    string rawBaseline = output + "/BASELINE/baseline.maximums";
+    string rawBaseline = data.output_dir + "/BASELINE/baseline.maximums";
     map <char, int> pwm = parse_pwm(data);
     ifstream inf(rawBaseline);
     string temp;

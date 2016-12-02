@@ -23,8 +23,8 @@ using namespace std;
  "./iterativeSEM.pl -PWM examples/MA0114.1.pwm -merge_file examples/wgEncodeOpenChromDnaseHepg2Pk.narrowPeak -big_wig examples/wgEncodeHaibTfbsHepg2Hnf4asc8987V0416101RawRep1.bigWig -TF_name HNF4A -output examples/HNF4A/"
  */
 
-void generateSNPEffectMatrix(Dataset &data, string output_dir);
-void generatePWMfromSEM(Dataset &data, string output_dir);
+void generateSNPEffectMatrix(Dataset &data);
+void generatePWMfromSEM(Dataset &data);
 double get_threshold(Dataset &data);
 
 int main(int argc, char **argv){
@@ -45,6 +45,9 @@ int main(int argc, char **argv){
 	for(int i = 0; i < argc; i++){
 		cout << argv[i] << ' ';
 
+		data.command += argv[i];
+		data.command += " ";
+
 		parse = argv[i];
 
 		if(parse == "-PWM"){
@@ -60,11 +63,13 @@ int main(int argc, char **argv){
 			data.TF_name = tf = argv[i+1];
 		}
 		else if(parse == "-output"){
-			data.output_file = output_dir = argv[i+1];
+			data.output_dir = output_dir = argv[i+1];
 		}
 		else if(parse == "-readcache"){
 			cache = argv[i+1];
 		}
+
+		
 
 	}
 	cout << endl;
@@ -102,25 +107,16 @@ int main(int argc, char **argv){
     int iterID = rand() % 16777216 ;
     cout << "--- Iteration 0 ---" << endl;
  
-    generateSNPEffectMatrix(data, output_dir);
-    generatePWMfromSEM(data, output_dir);
+    generateSNPEffectMatrix(data);
+    generatePWMfromSEM(data);
     
-//  ostringstream wkCmdstream;
-//  wkCmdstream << "./generateSNPEffectMatrix.cpp -PWM " << pwm << " -TF_name " << tf << " -output " << output_dir;
-//  string wkCmd = wkCmdstream.str();
-//  system(wkCmd.c_str());
-//  ostringstream pwmCmdstream;
-//  pwmCmdstream << "./src/generatePWMfromSEM.cpp -PWM " << pwm << " -TF_name " << tf << " -output " << output_dir;
-//  string pwmCmd = pwmCmdstream.str();
-//  system(pwmCmd.c_str());
-
 /*
 *	will change the Cmd's to functions, once the functions are implemented
 */
 
     pvals.erase(pvals.begin());
     pVal = pvals.front();
-//    string newPwm = output_dir + "/" + tf + ".pwm";
+    string newPwm = output_dir + "/" + tf + ".pwm";
 //    threshstream.str("");
 //    threshstream << "src/get_threshold.cpp " << newPwm << " " << pVal;
 //    threshCmd = threshstream.str();
@@ -132,12 +128,10 @@ int main(int argc, char **argv){
         threshold = 0;
     }
 
-	// CODY MADE FIXES THE THE FILE UP TO THIS POINT REGARDING FUNCTION CALLS
 
     int converge = 0;
     vector<string> line_2;
-    map <string, int> kmers;
-    map <string, int> kmers_2;
+    map <string, int> kmers, kmers_2;
     int diff = 0;
     int same = 0;
     int total_1 = 0;
@@ -146,7 +140,7 @@ int main(int argc, char **argv){
     string line = "";
 
     for (int i = 1; i < total_iterations; i++){
-	data.fastrun = false;
+	data.settings.fastrun = false;
         iterID = rand() % 16777216;
         ofstream outFile(output_dir+"/kmer_similarity.out");
         if(i > 1 && converge < 10){
@@ -158,10 +152,10 @@ int main(int argc, char **argv){
             ifstream Ekmer(EkmerFile);
             if (!Ekmer){
                 cerr << "Problem opening " << EkmerFile << endl;
-                exit(1);
+                exit(EXIT_FAILURE);
             }
             while (Ekmer){
-                for (string temp; getline(Ekmer, temp, ' '); line_2.push_back(temp));
+                for (string temp; getline(Ekmer, temp, '\n'); line_2.push_back(temp));
                 kmers_2[line_2[1]] = 1;
                 total_1++;
                 if (kmers_2.find(line_2[1]) != kmers_2.end()){
@@ -188,7 +182,7 @@ int main(int argc, char **argv){
             ostringstream newOutput;
             newOutput << output_dir << "/" << "it" << i << "/";
             if (converge == 9){
-		data.fastrun = true;
+		data.settings.fastrun = true;
             //    wkCmdstream.str("");
             //    wkCmdstream << "./generateSNPEffectMatrix.cpp -PWM " << newPwm << " -merge_file " << dnase << " -big_wig " << chip <<" -TF_name " << tf << " -output " << newOutput.str() << " -threshold " << threshold << " -iteration " << iterID << " -writecache -readcache "<< cache << " -fastrun -verbose";
                 final_run = newOutput.str();
@@ -197,21 +191,14 @@ int main(int argc, char **argv){
             //    wkCmdstream.str("");
             //    wkCmdstream << "./generateSNPEffectMatrix.cpp -PWM " << newPwm << " -merge_file " << dnase << " -big_wig " << chip <<" -TF_name " << tf << " -output " << newOutput.str() << " -threshold " << threshold << " -iteration " << iterID << " -writecache -readcache "<< cache << " -verbose";
             }		
-            generateSNPEffectMatrix(data, output_dir);
+            generateSNPEffectMatrix(data);
 
-//          pwmCmdstream.str("");
-//          pwmCmdstream << "./src/generatePWMfromSEM.cpp -PWM " << newPwm << " -TF_name " << tf << " -output " << newOutput.str();
-//          pwmCmd = pwmCmdstream.str();
-//          system(pwmCmd.c_str());
-
-            generatePWMfromSEM(data, output_dir);
+            generatePWMfromSEM(data);
 
             pvals.erase(pvals.begin());
             pVal = pvals.front();
             newPwm = output_dir + "/" + tf + ".pwm";
-            threshstream.str("");
-            threshstream << "src/get_threshold.cpp" << newPwm << pVal;
-            threshCmd = threshstream.str();
+            threshold = get_threshold(data);
             if(threshold < 0){
                 threshold = 0;
             }
@@ -235,8 +222,6 @@ int main(int argc, char **argv){
             break;
         }
     }
-
-
 
 	return 0;
 }

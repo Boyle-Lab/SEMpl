@@ -2,7 +2,7 @@
 //  iterativeSEM.hpp
 //  SEMCPP
 //
-//  Created by Cody Morterud on 11/9/16.
+//  Created by Cody Morterud and Colten Williams on 11/9/16.
 //  Copyright © 2016 Boyle Lab. All rights reserved.
 //
 
@@ -44,7 +44,6 @@ struct Dataset {
 	
 	    static const int LINES_IN_FILE = 116018;
 	    
-	
 	    // "chr" and the chromosome number
 	    std::array<std::string, LINES_IN_FILE> chromosome;
 	    // first two numbers given
@@ -72,20 +71,27 @@ struct Dataset {
 		// max of output from accumSummary_scale.pl
 		std::vector<double> accum_max;
 	};
+	struct SettingsForSNPEffectMatrix{
+		bool delSNPList = true, delAlignmentBed = true, delFilteredBed = true; 
+		bool delSignalFile = false, writecache = false, fastrun = false, verbose = false;
+		int iteration = -1;
+	};
 
 	DNase DNase_data;
 	PWM PWM_data;
 	TFMdata TFM_data;
 	accumSummaryData accumSummary_data;
+	SettingsForSNPEffectMatrix settings;
 
-	std::string TF_name;
+	std::string command = "";
+
+	std::string TF_name = "";
 	
-	std::string PWM_file;
-	std::string bigwig_file;
-	std::string DNase_file;
-	std::string output_file;
-	
-	bool fastrun;
+	std::string PWM_file = "";
+	std::string bigwig_file = "";
+	std::string DNase_file = "";
+	std::string output_dir = "";
+	std::string cache_file = "";
 };
 
 #endif /* iterativeSEM_hpp */
