@@ -59,7 +59,7 @@ delete Signal files
 
  (2) <TF_name>_semplot.pdf -- graphical representation of the SNP Effect Matrix
 
- Bed and signal files from intermediate steps can also be kept 
+ Bed and signal files from intermediate steps can also be kept
 
 /////////////////////////////////////////
 
@@ -88,11 +88,21 @@ my $iteration = -1;
 #include "iterativeSEM.hpp"
 #include <iostream>
 #include <cstdlib>
+#include <string>
+#include <cstring>
 using namespace std;
+
+void enumerate_kmer(Dataset &data);
+void alignToGenomeWrapper(Dataset &data);
+void filterDNaseWrapper(Dataset &data);
+void find_signal(Dataset &data, double signal, string delFilteredBed, int length );
+void create_baselines(Dataset &data, double length, string dnase, string signal, string delAlignmentBed, string delFilteredBed, string delSNPList );
+void generate_output(Dataset &data);
+
 
 void generateSNPEffectMatrix(Dataset &data){
 	// default options are built into settings within data
-	
+
 	if(data.output_dir.empty()){
 		data.output_dir = "results/" + data.TF_name + "/";
 	}
@@ -105,7 +115,7 @@ void generateSNPEffectMatrix(Dataset &data){
 		system("mkdir -p " + data.output_dir.c_str());
 	}
 	closedir(dir);
-	
+
 	if(data.cache_file.empty()){
 		data.cache_file = data.output_dir + "/CACHE.db";
 	}
@@ -119,7 +129,110 @@ void generateSNPEffectMatrix(Dataset &data){
 			<< "Command: \n" << data.command << "\n";
 	}
 
-	// STEPS UNFINISHED
+	//Step 1: Generate Enumerated k-mers
+	cout << "Creating enumerated kmers from PWM file" << endl;
+
+    enumerate_kmer(data);
+
+	//Step 2: Change one base at each location in k-mers and align to genome
+    if(data.settings.verbose){
+        cout << "Aligning SNPs in kmers to the genome" << endl;
+    }
+    alignToGenomeWrapper(data);
+
+    //Step 3: Filter using DNase data and finding the signal at each location
+    if(data.settings.verbose){
+        cout << "Filtering using DNase data and finding the signal" << endl;
+    }
+    filterDNaseWrapper(data);
+
+    //Step 4: Find the signal using chIP-seq data
+    find_signal(data, signal, delFilteredBed, length);
+
+    //Step 5: Generate baselines
+    create_baselines(data, length, dnase,  signal,  delAlignmentBed,  delFilteredBed,  delSNPList );
+
+    //Step 6: Create R plot(s) and a SEM output
+    generate_output(data);
+
+    if(data.settings.verbose){
+        cout << "The SNP Effect Matrix has been completed  for " << data.TF_name << endl;
+
+    }
 
 }
 
+void find_signal(Dataset &data, string signal, string delFilteredBed, int length ){//This function call needs to be checked or altered
+    if(data.settings.verbose){
+        cout << "Finding the average signal" << endl;
+    }
+
+    //Processes bigwig
+    string targetDir = data.output_dir + "/ALIGNMENT/";
+    string filteredBedfile = "";
+    ifstream directory(targetDir);
+    string file;
+    while (directory >> file ){
+        if(file == "/pos/"){
+            targetDir += file + "/";
+            filteredBedfile = targetDir + file + "_filtered.bed";
+            accumSummary_scale(signal, delFilteredBed, length);
+            if(data.settings.writecache){
+                writeCache(data);
+            }
+            // Not sure on the implementation of the following line currently
+        }
+        string cachefile = targetDir + file + "signal.cache";
+
+    }
+    directory.close();
+
+    if (data.settings.verbose){
+        cout << "Creating directory SIGNAL " << endl;
+    }
+    string cmd = "rm -rf " + data.output_dir +"/SIGNAL";
+    char *convert = new char[cmd.length() +1];
+    strcpy(convert, cmd.c_str());
+    system(convert);
+    cmd = "mkdir " + data.output_dir +"/SIGNAL";
+    strcpy(convert, cmd.c_str());
+    system(convert);
+    cmd = "cp " + data.output_dir +"/ALIGNMENT/*/*/signal " + data.output_dir + "/SIGNAL/";
+    strcpy(convert, cmd.c_str());
+    system(convert);
+
+
+    //build signal summary
+    findMaximumAverageSignalWrapper(data);
+
+    cmd = "rm " + data.output_dir + "/SIGNAL/*.signal";
+    strcpy(convert, cmd.c_str());
+    system(convert);
+}
+
+void create_baselines(Dataset &data, double length, string dnase, string signal, string delAlignmentBed, string delFilteredBed, string delSNPList ){
+    if (data.settings.verbose){
+        cout << "Creating directory Baseline" << endl;
+    }
+    string cmd = "rm -rf " + data.output_dir +"/BASELINE";
+    char *convert = new char[100];
+    strcpy(convert, cmd.c_str());
+    system(convert);
+    cmd = "mkdir " + data.output_dir +"/BASELINE";
+    strcpy(convert, cmd.c_str());
+    system(convert);
+
+    //Create baseline from scrambled k-mers
+    cmd = "cut -f2 " + data.output_dir + "/Enumerated_kmer.txt > " + data.output_dir + "/BASELINE/Enumerated_kmer.txt";
+    strcpy(convert, cmd.c_str());
+    system(convert);
+
+    if(!data.settings.fastrun){
+        scramble_kmer(data);
+        checkCache(data);
+        seq_col_to_fa(data):
+        bowtie_genome_map(data);
+
+    }
+
+}

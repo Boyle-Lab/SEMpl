@@ -69,7 +69,7 @@ int main(int argc, char **argv){
 			cache = argv[i+1];
 		}
 
-		
+
 
 	}
 	cout << endl;
@@ -78,7 +78,7 @@ int main(int argc, char **argv){
 		cout << "No PWM file given" << endl;
 		exit(EXIT_FAILURE);
 	}
-	
+
 	if(output_dir.empty()){
 		cout << "No output file given" << endl;
 		exit(EXIT_FAILURE);
@@ -99,17 +99,17 @@ int main(int argc, char **argv){
 //  ostringstream threshstream;
 //  threshstream << "./get_threshold " << pwm << " " << pVal;
 //  string threshCmd = threshstream.str();
-    double threshold = get_threshold(data);
-    if (threshold < 0){				      // as opposed to system(string) calls?
-        threshold = 0;
+    data.settings.threshold = get_threshold(data);
+    if (data.settings.threshold < 0){				      // as opposed to system(string) calls?
+        data.settings.threshold = 0;
     }
 
     int iterID = rand() % 16777216 ;
     cout << "--- Iteration 0 ---" << endl;
- 
+
     generateSNPEffectMatrix(data);
     generatePWMfromSEM(data);
-    
+
 /*
 *	will change the Cmd's to functions, once the functions are implemented
 */
@@ -123,9 +123,9 @@ int main(int argc, char **argv){
 //    threshold = threshCmd.c_str();
 //    threshold = get_threshold( something here ) ;
 
-    threshold = get_threshold(data);
-    if (threshold < 0){
-        threshold = 0;
+    data.settings.threshold = get_threshold(data);
+    if (data.settings.threshold < 0){
+        data.settings.threshold = 0;
     }
 
 
@@ -190,7 +190,7 @@ int main(int argc, char **argv){
             else{
             //    wkCmdstream.str("");
             //    wkCmdstream << "./generateSNPEffectMatrix.cpp -PWM " << newPwm << " -merge_file " << dnase << " -big_wig " << chip <<" -TF_name " << tf << " -output " << newOutput.str() << " -threshold " << threshold << " -iteration " << iterID << " -writecache -readcache "<< cache << " -verbose";
-            }		
+            }
             generateSNPEffectMatrix(data);
 
             generatePWMfromSEM(data);
@@ -198,9 +198,9 @@ int main(int argc, char **argv){
             pvals.erase(pvals.begin());
             pVal = pvals.front();
             newPwm = output_dir + "/" + tf + ".pwm";
-            threshold = get_threshold(data);
-            if(threshold < 0){
-                threshold = 0;
+            data.settings.threshold = get_threshold(data);
+            if(data.settings.threshold < 0){
+                data.settings.threshold = 0;
             }
             cout << "\n";
         }

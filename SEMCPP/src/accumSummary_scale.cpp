@@ -12,8 +12,8 @@ using namespace std;
 void split(string str, string splitBy, vector<string>& tokens);
 
 			// contains all data, contains bigwig filename, region file, scale
-//REQUIRES: (?) 
-//MODIFIES: data
+//REQUIRES: data is valid Dataset, receives bigwig file, file containing regions to center, and scale size
+//MODIFIES: data, specifically accumsummary data
 //EFFECTS: gathers raw bigwig data (?)
 void accumSummary_scale(Dataset &data, string hfile, string cfile, int scale){
 
@@ -58,9 +58,9 @@ void accumSummary_scale(Dataset &data, string hfile, string cfile, int scale){
 		counter = 0;
 		direction = '\0';
 		chrom = nullptr;
-		split(line, splitBy, temp);	
+		split(line, splitBy, temp);
 		seqid = temp[0];
-		
+
 		// if lines begins with chr
 		if(temp[0][0] == 'c'){
 			if(temp[0][1] == 'h')
@@ -74,15 +74,15 @@ void accumSummary_scale(Dataset &data, string hfile, string cfile, int scale){
 		start = stoi(temp[1]) - 1;
 		end = stoi(temp[2]);
 		direction = temp[4];
-		
+
 		upstart = start - dist;
 		upend = end + dist;
-		
+
 		//char *fname = new char[hfile.length() + 1];
 		//strcpy(fname, hfile.c_str());
 		chrom = new char[seqid.length() + 1];
 		strcpy(chrom, seqid.c_str());
-		
+
 		// stats function used from library
 		//double *bwStats(bigWigFile_t *fp, char *chrom, uint32_t start, uint32_t end, uint32_t nBins, enum bwStatsType type);
 		values = bwStats(bwFile, chrom, static_cast<uint32_t>(0), static_cast<uint32_t>(total_size), static_cast<uint32_t>(total_size), type);
@@ -93,9 +93,9 @@ void accumSummary_scale(Dataset &data, string hfile, string cfile, int scale){
 			values[counter] = roundf(values[counter] * 1000) / 1000;
 			signal_array[counter] = values[counter];
 		}
-		
+
 		delete [] chrom;
-		
+
 		//output results
 		if(direction.find('+') != string::npos)
 			for(int k = 0; k < total_size; k++)
@@ -103,8 +103,8 @@ void accumSummary_scale(Dataset &data, string hfile, string cfile, int scale){
 				output[k] = signal_array[k];
 		else
 			for(int k = total_size - 1; k >= 0; k--)
-				output[k] = signal_array[k];	
-		
+				output[k] = signal_array[k];
+
 
 		max = 0;
 		hitcount = 0;
@@ -114,13 +114,13 @@ void accumSummary_scale(Dataset &data, string hfile, string cfile, int scale){
 			if(output[l] != "N")
 				hitcount++;
 		}
-			
+
 		if(hitcount / static_cast<double>(output.size()) < 0.9)
 			max = numeric_limits<double>::max();
 		// if max is maximum possible double value, then it is not applicable
 
 		data.accumSummary_data.accum_lines.push_back(line);
-		data.accumSummary_data.accum_max.push_back(max);	
+		data.accumSummary_data.accum_max.push_back(max);
 		}
 	bwClose(bwFile);
 	delete [] fname;
