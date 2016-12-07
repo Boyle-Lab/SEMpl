@@ -92,7 +92,7 @@ my $iteration = -1;
 #include <cstring>
 using namespace std;
 
-void enumerate_kmer(Dataset &data);
+void Enumerate_kmer(Dataset &data);
 void alignToGenomeWrapper(Dataset &data);
 void filterDNaseWrapper(Dataset &data);
 void find_signal(Dataset &data);
@@ -115,20 +115,20 @@ void generateSNPEffectMatrix(Dataset &data){
 	if(data.output_dir.empty()){
 		data.output_dir = "results/" + data.TF_name + "/";
 	}
-	/*
-	DIR* dir = opendir(data.output_dir);
-	if(dir){
-		// directory exists
-	}
-	else{
-		system("mkdir -p " + data.output_dir.c_str());
-	}
-	closedir(dir);
+
+  ifstream test_file(data.output_dir);
+  if(test_file){
+    // directory exists
+  }
+  else{
+    string s = "mkdir -p ";
+    s += data.output_dir.c_str();
+    system(s.c_str());
+  }
 
 	if(data.cache_file.empty()){
 		data.cache_file = data.output_dir + "/CACHE.db";
 	}
-	*/
 
 // main script content
 //---------------------------------------------------------
@@ -141,7 +141,7 @@ void generateSNPEffectMatrix(Dataset &data){
 	//Step 1: Generate Enumerated k-mers
 	cout << "Creating enumerated kmers from PWM file" << endl;
 
-    enumerate_kmer(data);
+    Enumerate_kmer(data);
 
 	//Step 2: Change one base at each location in k-mers and align to genome
     if(data.settings.verbose){

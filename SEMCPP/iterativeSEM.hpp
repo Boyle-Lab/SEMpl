@@ -29,7 +29,7 @@ struct Dataset {
 	// a struct to contain and manage the PWM data as given in the example file
 	struct PWM{
 
-	    static const int MATRIX_SIZE = 13, ROW_SIZE = 5;
+	    static const int NUM_ROWS = 13, NUM_COLUMNS = 5;
 
 
 	    // holds first three inputs as given in example
@@ -37,9 +37,9 @@ struct Dataset {
 	    // holds the characters at the end of each matrix row, holds the two characters at the end
 	    std::string end_of_line_char, end_of_matrix_char;
 	    // holds the integer values of the matrix
-	    std::array<std::array<int, ROW_SIZE>, MATRIX_SIZE> matrix_arr;
+	    std::array<std::array<int, NUM_COLUMNS>, NUM_ROWS> matrix_arr;
 	    // holds the modified SEM version of the PWM
-	    std::array<std::array<int, ROW_SIZE>, MATRIX_SIZE> sem_arr;
+	    std::array<std::array<int, NUM_COLUMNS>, NUM_ROWS> sem_arr;
 
 	};
 	struct DNase{
@@ -87,7 +87,6 @@ struct Dataset {
 	TFMdata TFM_data;
 	accumSummaryData accumSummary_data;
 	SettingsForSNPEffectMatrix settings;
-	newPWM newPWM_data;
 
 	std::string command = "";
 

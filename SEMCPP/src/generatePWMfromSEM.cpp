@@ -43,20 +43,20 @@ void generatePWMfromSEM(Dataset & data){
     vector<int> G;
 
 
-    for(int i=0; i < data.PWM_data.MATRIX_SIZE; i++){
+    for(int i=0; i < data.PWM_data.NUM_ROWS; i++){
             AA.push_back(data.PWM_data.matrix_arr[1][i]);
     }
-    for(int i=0; i < data.PWM_data.MATRIX_SIZE; i++){
+    for(int i=0; i < data.PWM_data.NUM_ROWS; i++){
             CC.push_back(data.PWM_data.matrix_arr[1][i]);
     }
-    for(int i=0; i < data.PWM_data.MATRIX_SIZE; i++){
+    for(int i=0; i < data.PWM_data.NUM_ROWS; i++){
             GG.push_back(data.PWM_data.matrix_arr[1][i]);
     }
-    for(int i=0; i < data.PWM_data.MATRIX_SIZE; i++){
+    for(int i=0; i < data.PWM_data.NUM_ROWS; i++){
             TT.push_back(data.PWM_data.matrix_arr[1][i]);
     }
 
-    for(int i = 0; i < data.PWM_data.MATRIX_SIZE; i++){
+    for(int i = 0; i < data.PWM_data.NUM_ROWS; i++){
         int rowmin = minimumScore;
         int denom =0;
         denom += (AA[i] - rowmin)/(avgScore-rowmin);
@@ -79,5 +79,3 @@ void generatePWMfromSEM(Dataset & data){
         data.PWM_data.sem_arr[4][i] = ((A[i] * alpha) + (data.PWM_data.matrix_arr[4][i] * rowsum * (1-alpha)) + .5);
     }
 }
-
-
