@@ -86,7 +86,7 @@ int main(int argc, char **argv){
 
 	if(cache.empty())  cache = output_dir + "/CACHE.DB";
 
-    vector<double> pvals;
+    vector<double> pvals(total_iterations + 1);
     pvals.push_back( pow(4, -5));
     double minPval= pow(4,-5.5);
     for(int i = pvals.size(); i <= total_iterations; i++){

@@ -87,6 +87,7 @@ struct Dataset {
 	TFMdata TFM_data;
 	accumSummaryData accumSummary_data;
 	SettingsForSNPEffectMatrix settings;
+	newPWM newPWM_data;
 
 	std::string command = "";
 
