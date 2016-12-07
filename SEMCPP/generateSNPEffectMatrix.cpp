@@ -95,10 +95,19 @@ using namespace std;
 void enumerate_kmer(Dataset &data);
 void alignToGenomeWrapper(Dataset &data);
 void filterDNaseWrapper(Dataset &data);
-void find_signal(Dataset &data, double signal, string delFilteredBed, int length );
-void create_baselines(Dataset &data, double length, string dnase, string signal, string delAlignmentBed, string delFilteredBed, string delSNPList );
+void find_signal(Dataset &data);
+void accumSummary_scale(Dataset &data);
+void writeCache(Dataset &data);
+void findMaximumAverageSignalWrapper(Dataset &data);
+void create_baselines(Dataset &data);
+void scramble_kmer(Dataset &data);
+void checkCache(Dataset &data);
+void seq_col_to_fa(Dataset &data);
+void bowtie_genome_map(Dataset &data);
 void generate_output(Dataset &data);
-
+void generateSEM(Dataset &data);
+void generateRplot(Dataset &data);
+void quality_control(Dataset &data);
 
 void generateSNPEffectMatrix(Dataset &data){
 	// default options are built into settings within data
@@ -147,10 +156,10 @@ void generateSNPEffectMatrix(Dataset &data){
     filterDNaseWrapper(data);
 
     //Step 4: Find the signal using chIP-seq data
-    find_signal(data, signal, delFilteredBed, length);
+    find_signal(data);
 
     //Step 5: Generate baselines
-    create_baselines(data, length, dnase,  signal,  delAlignmentBed,  delFilteredBed,  delSNPList );
+    create_baselines(data);
 
     //Step 6: Create R plot(s) and a SEM output
     generate_output(data);
@@ -162,7 +171,7 @@ void generateSNPEffectMatrix(Dataset &data){
 
 }
 
-void find_signal(Dataset &data, string signal, string delFilteredBed, int length ){//This function call needs to be checked or altered
+void find_signal(Dataset &data){//This function call needs to be checked or altered
     if(data.settings.verbose){
         cout << "Finding the average signal" << endl;
     }
@@ -176,7 +185,7 @@ void find_signal(Dataset &data, string signal, string delFilteredBed, int length
         if(file == "/pos/"){
             targetDir += file + "/";
             filteredBedfile = targetDir + file + "_filtered.bed";
-            accumSummary_scale(signal, delFilteredBed, length);
+            accumSummary_scale(data);
             if(data.settings.writecache){
                 writeCache(data);
             }
@@ -210,7 +219,7 @@ void find_signal(Dataset &data, string signal, string delFilteredBed, int length
     system(convert);
 }
 
-void create_baselines(Dataset &data, double length, string dnase, string signal, string delAlignmentBed, string delFilteredBed, string delSNPList ){
+void create_baselines(Dataset &data){
     if (data.settings.verbose){
         cout << "Creating directory Baseline" << endl;
     }
@@ -230,9 +239,69 @@ void create_baselines(Dataset &data, double length, string dnase, string signal,
     if(!data.settings.fastrun){
         scramble_kmer(data);
         checkCache(data);
-        seq_col_to_fa(data):
+        seq_col_to_fa(data);
         bowtie_genome_map(data);
-
+        cmd = "./bin/bedtools intersect -a " + data.output_dir + "/BASELINE/Scrambled_kmer.bed -b " + data.DNase_file + " -wa -u > "+ data.output_dir + "/BASELINE/Scrambled_kmer_filtered.bed";
+        strcpy(convert, cmd.c_str());
+        system(convert);
+        //accumSummary_scale(data, data.output_dir + "/BASELINE/Scrambled_kmer_filtered.bed", )
+        if (data.settings.writecache){
+            writeCache(data);
+        }
     }
 
+    cmd = "cat " + data.output_dir + "/BASELINE/Enumerated_kmer.cache | sort | uniq >> " + data.output_dir + "/BASELINE/Enumerated_kmer_filtered.signal";
+    strcpy(convert, cmd.c_str());
+    system(convert);
+    findMaximumAverageSignalWrapper(data);
+
+    if(data.settings.delAlignmentBed){
+        cmd = "rm -f " + data.output_dir + "/BASELINE/Scrambled_kmer.bed";
+        strcpy(convert, cmd.c_str());
+        system(convert);
+        cmd = "rm -f " + data.output_dir + "/BASELINE/Enumerated_kmer.bed";
+        strcpy(convert, cmd.c_str());
+        system(convert);
+    }
+
+    if(data.settings.delFilteredBed){
+        cmd = "rm -f " + data.output_dir + "/BASELINE/Scrambled_kmer_filtered.bed";
+        strcpy(convert, cmd.c_str());
+        system(convert);
+        cmd = "rm -f " + data.output_dir + "/BASELINE/Enumerated_kmer_filtered.bed";
+        strcpy(convert, cmd.c_str());
+        system(convert);
+    }
+
+    if(data.settings.delSNPList){
+        cmd = "rm -f " + data.output_dir + "/BASELINE/*.scrambled";
+        strcpy(convert, cmd.c_str());
+        system(convert);
+        cmd = "rm -f " + data.output_dir + "/BASELINE/*.fa";
+        strcpy(convert, cmd.c_str());
+        system(convert);
+        cmd = "rm -f " + data.output_dir + "/BASELINE/*.sm.txt";
+        strcpy(convert, cmd.c_str());
+        system(convert);
+        cmd = "rm -f " + data.output_dir + "/BASELINE/*.cache";
+        strcpy(convert, cmd.c_str());
+        system(convert);
+        cmd = "rm -f " + data.output_dir + "/BASELINE/*.Enumerated_kmer.txt";
+        strcpy(convert, cmd.c_str());
+        system(convert);
+    }
+}
+
+void generate_output(Dataset &data){
+
+    if (data.settings.verbose){
+        cout << "Generating Output" << endl;
+    }
+
+    generateSEM(data);
+
+    if(!data.settings.fastrun){
+        generateRplot(data);
+        quality_control(data);
+    }
 }
