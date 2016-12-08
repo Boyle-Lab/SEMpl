@@ -16,6 +16,9 @@ void split(string str, string splitBy, vector<string>& tokens);
 //REQUIRES: data is valid Dataset, receives bigwig file, file containing regions to center, and scale size
 //MODIFIES: data, specifically accumsummary data
 //EFFECTS: gathers raw bigwig data (?)
+
+//Extra parameters should be passed in the struct Dataset
+
 void accumSummary_scale(Dataset &data, string hfile, string cfile, int scale){
 
 	// open file using library, below code is necessary

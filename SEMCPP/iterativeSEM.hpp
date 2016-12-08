@@ -99,4 +99,34 @@ struct Dataset {
 	std::string cache_file = "";
 };
 
+//Declare functions in header to be used by other functions
+
+//main files
+void generateSNPEffectMatrix(Dataset &data);
+
+//src files
+void accumSummary_scale(Dataset &data);
+void alignToGenomeWrapper(Dataset &data);
+void bowtie_genome_map(Dataset &data);
+void changeBase(Dataset &data);
+void checkCache(Dataset &data);
+void combineBedFiles(Dataset &data);
+void common(Dataset &data);
+void Enumerate_kmer(Dataset &data);
+void filterDNaseWrapper(Dataset &data);
+void findMaximumAverageSignalWrapper(Dataset &data);
+void generatePWMfromSEM(Dataset &data);
+void generateRmeplot(Dataset &data);
+void generateRplot(Dataset &data);
+void generateSelfInfo(Dataset &data);
+void generateSEM(Dataset &data);
+void generateSignalMethylTable(Dataset &data);
+double get_threshold(Dataset &data);
+void pwm_to_tfm(Dataset &data);
+void quality_control(Dataset &data);
+void scramble_kmer(Dataset &data);
+void seq_col_to_fa(Dataset &data);
+void writeCache(Dataset &data);
+
+
 #endif /* iterativeSEM_hpp */

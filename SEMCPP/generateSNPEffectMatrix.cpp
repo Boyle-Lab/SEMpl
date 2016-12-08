@@ -92,22 +92,9 @@ my $iteration = -1;
 #include <cstring>
 using namespace std;
 
-void Enumerate_kmer(Dataset &data);
-void alignToGenomeWrapper(Dataset &data);
-void filterDNaseWrapper(Dataset &data);
 void find_signal(Dataset &data);
-void accumSummary_scale(Dataset &data);
-void writeCache(Dataset &data);
-void findMaximumAverageSignalWrapper(Dataset &data);
 void create_baselines(Dataset &data);
-void scramble_kmer(Dataset &data);
-void checkCache(Dataset &data);
-void seq_col_to_fa(Dataset &data);
-void bowtie_genome_map(Dataset &data);
 void generate_output(Dataset &data);
-void generateSEM(Dataset &data);
-void generateRplot(Dataset &data);
-void quality_control(Dataset &data);
 
 void generateSNPEffectMatrix(Dataset &data){
 	// default options are built into settings within data
