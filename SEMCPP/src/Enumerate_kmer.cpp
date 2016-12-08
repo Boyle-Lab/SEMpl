@@ -30,7 +30,7 @@ double log2(double x){
   return log(x) / log(2);
 }
 
-// EFFECTS: finds maximum mapped value 
+// EFFECTS: finds maximum mapped value
 int findMax(const map<int, double> &v){
   int max = 0;
   for(auto i : v){
@@ -108,6 +108,8 @@ static void parse_pwm(const Dataset &data,
                       map<pair<int, string>, int, hash_comp> &pwmHash,
                       vector<string> &nucleotideStack,
                       vector<int> &bestCase, map<string, int> &kmerHash){
+
+
   nucleotideStack.push_back("A");
   nucleotideStack.push_back("C");
   nucleotideStack.push_back("G");
