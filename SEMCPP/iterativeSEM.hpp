@@ -64,8 +64,9 @@ struct Dataset {
 	struct TFMdata{
 		// a c g t
 		static const int LETTER_NUM = 4;
-		// first letter is a, then c, then g, then t
-		std::array<std::vector<char>, LETTER_NUM> letter_array;
+		// first letter is a, then c, then g, then t, at least in example
+		std::array<std::vector<int>, LETTER_NUM> letter_array;
+    // should be int or char? int for now 
 	};
 	struct accumSummaryData{
 		// lines of output from accumSummary_scale.pl
@@ -78,7 +79,7 @@ struct Dataset {
 		bool delSignalFile = false, writecache = false, fastrun = false, verbose = false;
 		int iteration = -1;
 		double threshold;
-
+    bool debug = false;
 	};
 
 
@@ -88,10 +89,13 @@ struct Dataset {
 	accumSummaryData accumSummary_data;
 	SettingsForSNPEffectMatrix settings;
 
+  // name of original command passed in
 	std::string command = "";
 
+  // name of transcription factor
 	std::string TF_name = "";
 
+  // name of various files and directories
 	std::string PWM_file = "";
 	std::string bigwig_file = "";
 	std::string DNase_file = "";

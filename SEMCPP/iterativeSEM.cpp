@@ -29,7 +29,7 @@ using namespace std;
 
 int main(int argc, char **argv){
 
-	string pwm = "", dnase = "", chip = "", tf = "", output_dir = "", cache = "";
+	string pwm = "", dnase = "", chip = "", tf = "";
 
 	Dataset data;
 
@@ -63,10 +63,10 @@ int main(int argc, char **argv){
 			data.TF_name = tf = argv[i+1];
 		}
 		else if(parse == "-output"){
-			data.output_dir = output_dir = argv[i+1];
+			data.output_dir = argv[i+1];
 		}
 		else if(parse == "-readcache"){
-			cache = argv[i+1];
+			data.cache_file = argv[i+1];
 		}
 
 
@@ -79,12 +79,13 @@ int main(int argc, char **argv){
 		exit(EXIT_FAILURE);
 	}
 
-	if(output_dir.empty()){
+	if(data.output_dir.empty()){
 		cout << "No output file given" << endl;
 		exit(EXIT_FAILURE);
 	}
 
-	if(cache.empty())  cache = output_dir + "/CACHE.DB";
+// data.cache_file.empty() checks if the string is empty, not the actual file
+	if(data.cache_file.empty())  data.cache_file = data.output_dir+ "/CACHE.DB";
 
     vector<double> pvals(total_iterations + 1);
     pvals.push_back( pow(4, -5));
@@ -116,7 +117,7 @@ int main(int argc, char **argv){
 
     pvals.erase(pvals.begin());
     pVal = pvals.front();
-    string newPwm = output_dir + "/" + tf + ".pwm";
+    string newPwm = data.output_dir + "/" + tf + ".pwm";
 //    threshstream.str("");
 //    threshstream << "src/get_threshold.cpp " << newPwm << " " << pVal;
 //    threshCmd = threshstream.str();
@@ -140,14 +141,14 @@ int main(int argc, char **argv){
     string line = "";
 
     for (int i = 1; i < total_iterations; i++){
-	data.settings.fastrun = false;
+	      data.settings.fastrun = false;
         iterID = rand() % 16777216;
-        ofstream outFile(output_dir+"/kmer_similarity.out");
+        ofstream outFile(data.output_dir + "/kmer_similarity.out");
         if(i > 1 && converge < 10){
             int j = i -1;
             total_1 = same = diff = total_diff = 0;
             ostringstream Ekmerstream;
-            Ekmerstream << output_dir << "/it" << j << "/Enumerated_kmer.txt";
+            Ekmerstream << data.output_dir<< "/it" << j << "/Enumerated_kmer.txt";
             string EkmerFile = Ekmerstream.str();
             ifstream Ekmer(EkmerFile);
             if (!Ekmer){
@@ -180,16 +181,16 @@ int main(int argc, char **argv){
             outFile << i << "\t" << converge << "\t" << same << "\t" << diff << "\n";
             cout << "---Iteration " << i << "---"<< endl;
             ostringstream newOutput;
-            newOutput << output_dir << "/" << "it" << i << "/";
+            newOutput <<data.output_dir<< "/" << "it" << i << "/";
             if (converge == 9){
-		data.settings.fastrun = true;
+		            data.settings.fastrun = true;
             //    wkCmdstream.str("");
-            //    wkCmdstream << "./generateSNPEffectMatrix.cpp -PWM " << newPwm << " -merge_file " << dnase << " -big_wig " << chip <<" -TF_name " << tf << " -output " << newOutput.str() << " -threshold " << threshold << " -iteration " << iterID << " -writecache -readcache "<< cache << " -fastrun -verbose";
+            //    wkCmdstream << "./generateSNPEffectMatrix.cpp -PWM " << newPwm << " -merge_file " << dnase << " -big_wig " << chip <<" -TF_name " << tf << " -output " << newOutput.str() << " -threshold " << threshold << " -iteration " << iterID << " -writedata.cache_file-readdata.cache_file"<< data.cache_file<< " -fastrun -verbose";
                 final_run = newOutput.str();
             }
             else{
             //    wkCmdstream.str("");
-            //    wkCmdstream << "./generateSNPEffectMatrix.cpp -PWM " << newPwm << " -merge_file " << dnase << " -big_wig " << chip <<" -TF_name " << tf << " -output " << newOutput.str() << " -threshold " << threshold << " -iteration " << iterID << " -writecache -readcache "<< cache << " -verbose";
+            //    wkCmdstream << "./generateSNPEffectMatrix.cpp -PWM " << newPwm << " -merge_file " << dnase << " -big_wig " << chip <<" -TF_name " << tf << " -output " << newOutput.str() << " -threshold " << threshold << " -iteration " << iterID << " -writedata.cache_file-readdata.cache_file"<< data.cache_file<< " -verbose";
             }
             generateSNPEffectMatrix(data);
 
@@ -197,7 +198,7 @@ int main(int argc, char **argv){
 
             pvals.erase(pvals.begin());
             pVal = pvals.front();
-            newPwm = output_dir + "/" + tf + ".pwm";
+            newPwm =data.output_dir+ "/" + tf + ".pwm";
             data.settings.threshold = get_threshold(data);
             if(data.settings.threshold < 0){
                 data.settings.threshold = 0;
@@ -209,8 +210,8 @@ int main(int argc, char **argv){
 
             //link last iteration
             ostringstream newOutput;
-            newOutput << output_dir << "/final/";
-            string cmd = "ln -s " + final_run + " " +output_dir + " " + newOutput.str();
+            newOutput << data.output_dir << "/final/";
+            string cmd = "ln -s " + final_run + " " + data.output_dir + " " + newOutput.str();
             system(cmd.c_str());
             double diff_t;
             time_t endTime;
