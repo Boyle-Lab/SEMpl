@@ -96,6 +96,10 @@ void find_signal(Dataset &data);
 void create_baselines(Dataset &data);
 void generate_output(Dataset &data);
 
+void generate_kmers(Dataset &data);
+void Enumerate_kmer(Dataset &data);
+
+
 void generateSNPEffectMatrix(Dataset &data){
 	// default options are built into settings within data
 
@@ -129,6 +133,7 @@ void generateSNPEffectMatrix(Dataset &data){
 	cout << "Creating enumerated kmers from PWM file" << endl;
 
     Enumerate_kmer(data);
+    // data.kmerHash is now filled in!!!!
 
 	//Step 2: Change one base at each location in k-mers and align to genome
     if(data.settings.verbose){
@@ -157,6 +162,17 @@ void generateSNPEffectMatrix(Dataset &data){
     }
 
 }
+
+void generate_kmers(Dataset &data){
+  if(data.settings.verbose) cout << "Creating enumerated kmers" << '\n';
+
+  // convert_PWM_format.pl is effectively performed within Enumerate_kmer(args)
+
+  // threshold is stored within data.settings.threshold
+
+  // length = parse_wc(args) - 2;
+}
+
 
 void find_signal(Dataset &data){//This function call needs to be checked or altered
     if(data.settings.verbose){

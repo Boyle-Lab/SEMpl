@@ -42,31 +42,31 @@ int main(int argc, char **argv){
 
 	string parse = "";
 
-	for(int i = 0; i < argc; i++){
-		cout << argv[i] << ' ';
+	for(int iteration = 0; iteration < argc; iteration++){
+		cout << argv[iteration] << ' ';
 
-		data.command += argv[i];
+		data.command += argv[iteration];
 		data.command += " ";
 
-		parse = argv[i];
+		parse = argv[iteration];
 
 		if(parse == "-PWM"){
-			data.PWM_file = pwm = argv[i+1];
+			data.PWM_file = pwm = argv[iteration+1];
 		}
 		else if(parse == "-merge_file"){
-			data.DNase_file = dnase = argv[i+1];
+			data.DNase_file = dnase = argv[iteration+1];
 		}
 		else if(parse == "-big_wig"){
-			chip = argv[i+1];
+			chip = argv[iteration+1];
 		}
 		else if(parse == "-TF_name"){
-			data.TF_name = tf = argv[i+1];
+			data.TF_name = tf = argv[iteration+1];
 		}
 		else if(parse == "-output"){
-			data.output_dir = argv[i+1];
+			data.output_dir = argv[iteration+1];
 		}
 		else if(parse == "-readcache"){
-			data.cache_file = argv[i+1];
+			data.cache_file = argv[iteration+1];
 		}
 
 
@@ -90,7 +90,7 @@ int main(int argc, char **argv){
     vector<double> pvals(total_iterations + 1);
     pvals.push_back( pow(4, -5));
     double minPval= pow(4,-5.5);
-    for(int i = pvals.size(); i <= total_iterations; i++){
+    for(int iteration = pvals.size(); iteration <= total_iterations; iteration++){
         pvals.push_back(minPval);
     }
 
@@ -117,7 +117,7 @@ int main(int argc, char **argv){
 
     pvals.erase(pvals.begin());
     pVal = pvals.front();
-    string newPwm = data.output_dir + "/" + tf + ".pwm";
+//    string newPwm = data.output_dir + "/" + tf + ".pwm";
 //    threshstream.str("");
 //    threshstream << "src/get_threshold.cpp " << newPwm << " " << pVal;
 //    threshCmd = threshstream.str();
@@ -132,7 +132,6 @@ int main(int argc, char **argv){
 
     int converge = 0;
     vector<string> line_2;
-    map <string, int> kmers, kmers_2;
     int diff = 0;
     int same = 0;
     int total_1 = 0;
@@ -140,12 +139,14 @@ int main(int argc, char **argv){
     string final_run = "";
     string line = "";
 
-    for (int i = 1; i < total_iterations; i++){
+    map <string, int> kmers, kmers_2;
+
+    for (int iteration = 1; iteration < total_iterations; iteration++){
 	      data.settings.fastrun = false;
         iterID = rand() % 16777216;
         ofstream outFile(data.output_dir + "/kmer_similarity.out");
-        if(i > 1 && converge < 10){
-            int j = i -1;
+        if(iteration > 1 && converge < 10){
+            int j = iteration - 1;
             total_1 = same = diff = total_diff = 0;
             ostringstream Ekmerstream;
             Ekmerstream << data.output_dir<< "/it" << j << "/Enumerated_kmer.txt";
@@ -166,6 +167,7 @@ int main(int argc, char **argv){
                     diff++;
                 }
             }
+
             if (diff == 0){
                 converge++;
             }
@@ -178,10 +180,10 @@ int main(int argc, char **argv){
         }
 
         if(converge < 10){
-            outFile << i << "\t" << converge << "\t" << same << "\t" << diff << "\n";
-            cout << "---Iteration " << i << "---"<< endl;
+            outFile << iteration << "\t" << converge << "\t" << same << "\t" << diff << "\n";
+            cout << "---Iteration " << iteration << "---"<< endl;
             ostringstream newOutput;
-            newOutput <<data.output_dir<< "/" << "it" << i << "/";
+            newOutput <<data.output_dir<< "/" << "it" << iteration << "/";
             if (converge == 9){
 		            data.settings.fastrun = true;
             //    wkCmdstream.str("");
@@ -193,12 +195,13 @@ int main(int argc, char **argv){
             //    wkCmdstream << "./generateSNPEffectMatrix.cpp -PWM " << newPwm << " -merge_file " << dnase << " -big_wig " << chip <<" -TF_name " << tf << " -output " << newOutput.str() << " -threshold " << threshold << " -iteration " << iterID << " -writedata.cache_file-readdata.cache_file"<< data.cache_file<< " -verbose";
             }
             generateSNPEffectMatrix(data);
+            // kmerHash should be filled in after the above line, within data!!!!
 
             generatePWMfromSEM(data);
 
             pvals.erase(pvals.begin());
             pVal = pvals.front();
-            newPwm =data.output_dir+ "/" + tf + ".pwm";
+//            newPwm = data.output_dir+ "/" + tf + ".pwm";
             data.settings.threshold = get_threshold(data);
             if(data.settings.threshold < 0){
                 data.settings.threshold = 0;

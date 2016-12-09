@@ -14,6 +14,7 @@
 #include <fstream>
 #include <vector>
 #include <cassert>
+#include <map>
 
 /*
  example execution from command line
@@ -66,7 +67,7 @@ struct Dataset {
 		static const int LETTER_NUM = 4;
 		// first letter is a, then c, then g, then t, at least in example
 		std::array<std::vector<int>, LETTER_NUM> letter_array;
-    // should be int or char? int for now 
+    // should be int or char? int for now
 	};
 	struct accumSummaryData{
 		// lines of output from accumSummary_scale.pl
@@ -101,6 +102,8 @@ struct Dataset {
 	std::string DNase_file = "";
 	std::string output_dir = "";
 	std::string cache_file = "";
+
+  std::map<std::string, int> kmerHash;
 };
 
 //Declare functions in header to be used by other functions

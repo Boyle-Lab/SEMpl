@@ -43,7 +43,8 @@ int findMax(const map<int, double> &v){
 static void create_kmer(const Dataset &data,
                         map<pair<int, string>, int, hash_comp> &pwmHash,
                         vector<string> &nucleotideStack,
-                        vector<int> &bestCase, map<string, int> &kmerHash){
+                        vector<int> &bestCase, map<string, int> &kmerHash,
+                        const double cutoff){
                         if(data.settings.verbose){
                           cout << "Generating kmer list.\n";
                         }
@@ -60,16 +61,30 @@ static void create_kmer(const Dataset &data,
 
                         vector<int> maxScores(bestCase.size() + 1);
                         maxScores[bestCase.size()] = 0;
-                        for(int i = static_cast<int>(bestCase.size()); i >= 0; i--){
+                        for(int i = static_cast<int>(bestCase.size()) - 1; i >= 0; i--){
                           maxScores[i] = maxScores[i+1] + bestCase[i];
                         }
 
-
-                        for(size_t i = 1; i < bestCase.size(); i++){
-                          for(auto pair : kmerHash){
-
+                          // watch to debug below here
+                          for(size_t i = 1; i < bestCase.size(); i++){
+                            for(auto pair : kmerHash){
+                              int score = kmerHash[pair.first];
+                              int length = static_cast<int>(pair.first.size());
+                              int maxscore = maxScores[length] + score;
+                              if(maxscore < cutoff){
+                                kmerHash.erase(pair.first);
+                              }
+                              else{
+                                kmerHash.erase(pair.first);
+                                for(size_t j = 0; j < nucleotideStack.size(); j++){
+                                  string newkey = pair.first + nucleotideStack[j];
+                                  int newscore = score + pwmHash[{i + 1, nucleotideStack[j]}];
+                                  kmerHash[newkey] = newscore;
+                                }
+                              }
+                            }
+                          // debug above here
                           }
-                        }
                       }
 
 static double get_cutoff(const Dataset &data,
@@ -140,9 +155,9 @@ static void parse_pwm(const Dataset &data,
 }
 
 // REQUIRES: within data, PWM_data is filled in
-// EFFECTS: created enumerated kmers using a cutoff and a PWM matrix
+// EFFECTS: created enumerated kmers using a cutoff and a PWM matrix, returns the map
 // note: for now, searches for a pre-calculated cutoff
-void Enumerate_kmer(const Dataset &data){
+void Enumerate_kmer(Dataset &data){
   map<pair<int, string>, int, hash_comp> pwmHash;
   vector<string> nucleotideStack;
   vector<int> bestCase;
@@ -156,12 +171,12 @@ void Enumerate_kmer(const Dataset &data){
   }
   cutoff = get_cutoff(data, pwmHash, nucleotideStack, bestCase, kmerHash);
 
-  create_kmer(data, pwmHash, nucleotideStack, bestCase, kmerHash);
+  if(cutoff == 0.0){
+    cerr << "cutoff value unchanged within Enumerate_kmer.cpp\n\tEXITING\n";
+    exit(EXIT_FAILURE);
+  }
 
-  // if(data.settings.verbose){
-  //   cout << "Using user defined cutoff." << '\n';
-  // }
+  create_kmer(data, pwmHash, nucleotideStack, bestCase, kmerHash, cutoff);
 
-
-
+  data.kmerHash = kmerHash;
 }
