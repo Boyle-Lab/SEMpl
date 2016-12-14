@@ -78,8 +78,8 @@ struct Dataset {
 	struct SettingsForSNPEffectMatrix{
 		bool delSNPList = true, delAlignmentBed = true, delFilteredBed = true;
 		bool delSignalFile = false, writecache = false, fastrun = false, verbose = false;
-		int iteration = -1;
-		double threshold;
+    int iteration = -1;
+		double threshold = 0.0;
     bool debug = false;
 	};
 

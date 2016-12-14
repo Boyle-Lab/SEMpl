@@ -1,0 +1,6 @@
+.DS_Store
+*.o
+../kent/
+../.DS_Store
+../Bio-BigFile-1.07/
+examples

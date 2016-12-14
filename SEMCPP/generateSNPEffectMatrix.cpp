@@ -95,9 +95,10 @@ using namespace std;
 void find_signal(Dataset &data);
 void create_baselines(Dataset &data);
 void generate_output(Dataset &data);
-
-void generate_kmers(Dataset &data);
+int generate_kmers(Dataset &data);
 void Enumerate_kmer(Dataset &data);
+
+string revCompDNA(string);
 
 
 void generateSNPEffectMatrix(Dataset &data){
@@ -163,18 +164,28 @@ void generateSNPEffectMatrix(Dataset &data){
 
 }
 
-void generate_kmers(Dataset &data){
+int generate_kmers(Dataset &data){
   if(data.settings.verbose) cout << "Creating enumerated kmers" << '\n';
+
+  Enumerate_kmer(data);
+  // data.kmerHash is now filled in!!!
+
+  return Dataset::PWM::NUM_ROWS;
 
   // convert_PWM_format.pl is effectively performed within Enumerate_kmer(args)
 
   // threshold is stored within data.settings.threshold
 
-  // length = parse_wc(args) - 2;
+  // length = numer of lines in example transcription factor(?) file - 2;
 }
 
+void align_to_genome(Dataset &data, int iteration){
+  if(data.settings.verbose) cout << "Aligning SNPs in kmers to the genome\n";
+  // align all to genome
+  alignToGenomeWrapper(data);
+}
 
-void find_signal(Dataset &data){//This function call needs to be checked or altered
+void find_signal(Dataset &data){ //This function call needs to be checked or altered
     if(data.settings.verbose){
         cout << "Finding the average signal" << endl;
     }
