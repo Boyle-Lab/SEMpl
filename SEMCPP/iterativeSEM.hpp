@@ -109,7 +109,7 @@ struct Dataset {
 //Declare functions in header to be used by other functions
 
 //main files
-void generateSNPEffectMatrix(Dataset &data);
+void generateSNPEffectMatrix(Dataset &data, int iteration);
 
 //src files
 void accumSummary_scale(Dataset &data);

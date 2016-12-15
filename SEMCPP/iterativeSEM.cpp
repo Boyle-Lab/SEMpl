@@ -26,6 +26,7 @@ using namespace std;
  -TF_name HNF4A -output examples/HNF4A/"
  */
 
+void generateSNPEffectMatrix(Dataset &data);
 
 int main(int argc, char **argv){
 
@@ -108,6 +109,7 @@ int main(int argc, char **argv){
     int iterID = rand() % 16777216 ;
     cout << "--- Iteration 0 ---" << endl;
 
+    data.settings.iteration = 0;
     generateSNPEffectMatrix(data);
     generatePWMfromSEM(data);
 

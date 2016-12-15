@@ -93,11 +93,18 @@ my $iteration = -1;
 using namespace std;
 
 void find_signal(Dataset &data);
-void create_baselines(Dataset &data);
+void create_baselines(Dataset &data, int length);
 void generate_output(Dataset &data);
 int generate_kmers(Dataset &data);
 void Enumerate_kmer(Dataset &data);
 
+// definition in another file
+void alignToGenomeWrapper(Dataset &data);
+
+// definition in another file
+void align_to_genome(Dataset &data);
+
+// helper function below
 string revCompDNA(string);
 
 
@@ -133,14 +140,14 @@ void generateSNPEffectMatrix(Dataset &data){
 	//Step 1: Generate Enumerated k-mers
 	cout << "Creating enumerated kmers from PWM file" << endl;
 
-    Enumerate_kmer(data);
+    int length = generate_kmers(data);
     // data.kmerHash is now filled in!!!!
 
 	//Step 2: Change one base at each location in k-mers and align to genome
     if(data.settings.verbose){
         cout << "Aligning SNPs in kmers to the genome" << endl;
     }
-    alignToGenomeWrapper(data);
+    align_to_genome(data);
 
     //Step 3: Filter using DNase data and finding the signal at each location
     if(data.settings.verbose){
@@ -152,14 +159,13 @@ void generateSNPEffectMatrix(Dataset &data){
     find_signal(data);
 
     //Step 5: Generate baselines
-    create_baselines(data);
+    create_baselines(data, length);
 
     //Step 6: Create R plot(s) and a SEM output
     generate_output(data);
 
     if(data.settings.verbose){
         cout << "The SNP Effect Matrix has been completed  for " << data.TF_name << endl;
-
     }
 
 }
@@ -179,7 +185,7 @@ int generate_kmers(Dataset &data){
   // length = numer of lines in example transcription factor(?) file - 2;
 }
 
-void align_to_genome(Dataset &data, int iteration){
+void align_to_genome(Dataset &data){
   if(data.settings.verbose) cout << "Aligning SNPs in kmers to the genome\n";
   // align all to genome
   alignToGenomeWrapper(data);
@@ -233,7 +239,7 @@ void find_signal(Dataset &data){ //This function call needs to be checked or alt
     system(convert);
 }
 
-void create_baselines(Dataset &data){
+void create_baselines(Dataset &data, int length){
     if (data.settings.verbose){
         cout << "Creating directory Baseline" << endl;
     }

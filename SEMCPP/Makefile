@@ -2,6 +2,8 @@ CC=g++
 
 C++FLAGS=-Wall -Werror -pedantic --std=c++11
 
+DEBUG_OR_OPTIMIZE = -g
+
 C++SOURCES=iterativeSEM.cpp src/pwm_to_tfm.cpp src/get_threshold.cpp src/accumSummary_scale.cpp src/generatePWMfromSEM.cpp generateSNPEffectMatrix.cpp src/Enumerate_kmer.cpp src/common.cpp src/alignToGenomeWrapper.cpp
 BIGWIGLIBRARYLOC=-Llib/libBigWig-master
 BIGWIGLIBRARY=-lBigWig
@@ -11,7 +13,7 @@ TFMHEADER=lib/TFM-Pvalue/{Matrix,ParseException,ArgumentException,FileException}
 EXECUTABLE=iterativeSEM.exe
 
 all:
-	$(CC) $(C++FLAGS) -O1 $(C++SOURCES) $(BIGWIGLIBRARYLOC) $(BIGWIGLIBRARY) $(TFMHEADER) -o $(EXECUTABLE)
+	$(CC) $(C++FLAGS) $(DEBUG_OR_OPTIMIZE) $(C++SOURCES) $(BIGWIGLIBRARYLOC) $(BIGWIGLIBRARY) $(TFMHEADER) -o $(EXECUTABLE)
 debug:
 	$(CC) $(C++FLAGS) -g $(C++SOURCES) $(BIGWIGLIBRARYLOC) $(BIGWIGLIBRARY) $(TFMHEADER) -o $(EXECUTABLE)
 
