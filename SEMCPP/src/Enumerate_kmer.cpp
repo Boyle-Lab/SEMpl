@@ -45,47 +45,47 @@ static void create_kmer(const Dataset &data,
                         vector<string> &nucleotideStack,
                         vector<int> &bestCase, map<string, int> &retHash,
                         const double cutoff){
-                        if(data.settings.verbose){
-                          cout << "Generating kmer list.\n";
-                        }
-                        { // test block begin
-                          size_t check = pwmHash.size();
-                          for(size_t i = 0; i < nucleotideStack.size(); i++){
-                            retHash[nucleotideStack[i]] = pwmHash[{1, nucleotideStack[i]}];
-                          }
-                          if(check != pwmHash.size()){
-                            cerr << "size of pwmHash was modified within create_kmer\n\tEXITING\n";
-                            exit(EXIT_FAILURE);
-                          }
-                        } // test block end
+  if(data.settings.verbose){
+    cout << "Generating kmer list.\n";
+  }
+  { // test block begin
+    size_t check = pwmHash.size();
+    for(size_t i = 0; i < nucleotideStack.size(); i++){
+      retHash[nucleotideStack[i]] = pwmHash[{1, nucleotideStack[i]}];
+    }
+    if(check != pwmHash.size()){
+      cerr << "size of pwmHash was modified within create_kmer\n\tEXITING\n";
+      exit(EXIT_FAILURE);
+    }
+  } // test block end
 
-                        vector<int> maxScores(bestCase.size() + 1);
-                        maxScores[bestCase.size()] = 0;
-                        for(int i = static_cast<int>(bestCase.size()) - 1; i >= 0; i--){
-                          maxScores[i] = maxScores[i+1] + bestCase[i];
-                        }
+  vector<int> maxScores(bestCase.size() + 1);
+  maxScores[bestCase.size()] = 0;
+  for(int i = static_cast<int>(bestCase.size()) - 1; i >= 0; i--){
+    maxScores[i] = maxScores[i+1] + bestCase[i];
+  }
 
-                          // watch to debug below here
-                          for(size_t i = 1; i < bestCase.size(); i++){
-                            for(auto pair : retHash){
-                              int score = retHash[pair.first];
-                              int length = static_cast<int>(pair.first.size());
-                              int maxscore = maxScores[length] + score;
-                              if(maxscore < cutoff){
-                                retHash.erase(pair.first);
-                              }
-                              else{
-                                retHash.erase(pair.first);
-                                for(size_t j = 0; j < nucleotideStack.size(); j++){
-                                  string newkey = pair.first + nucleotideStack[j];
-                                  int newscore = score + pwmHash[{i + 1, nucleotideStack[j]}];
-                                  retHash[newkey] = newscore;
-                                }
-                              }
-                            }
-                          // debug above here
-                          }
-                      }
+  // watch to debug below here
+  for(size_t i = 1; i < bestCase.size(); i++){
+    for(auto pair : retHash){
+      int score = pair.second;
+      int length = static_cast<int>(pair.first.size());
+      int maxscore = maxScores[length] + score;
+      if(maxscore < cutoff){
+        retHash.erase(pair.first);
+      }
+      else{
+        retHash.erase(pair.first);
+        for(size_t j = 0; j < nucleotideStack.size(); j++){
+          string newkey = pair.first + nucleotideStack[j];
+          int newscore = score + pwmHash[{i + 1, nucleotideStack[j]}];
+          retHash[newkey] = newscore;
+        }
+      }
+    }
+  // debug above here
+  }
+}
 
 static double get_cutoff(const Dataset &data,
                       map<pair<int, string>, int, hash_comp> &pwmHash,

@@ -135,5 +135,4 @@ void scramble_kmer(Dataset &data);
 void seq_col_to_fa(Dataset &data);
 void writeCache(Dataset &data);
 
-
 #endif /* iterativeSEM_hpp */

@@ -104,7 +104,7 @@ void alignToGenomeWrapper(Dataset &data);
 // definition in another file
 void align_to_genome(Dataset &data);
 
-// helper function below
+// helper function
 string revCompDNA(string);
 
 
@@ -166,6 +166,7 @@ void generateSNPEffectMatrix(Dataset &data){
 
     if(data.settings.verbose){
         cout << "The SNP Effect Matrix has been completed  for " << data.TF_name << endl;
+
     }
 
 }
