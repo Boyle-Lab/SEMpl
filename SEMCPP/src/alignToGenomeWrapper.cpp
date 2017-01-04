@@ -2,10 +2,10 @@
 #include <iostream>
 using namespace std;
 
-int getLength(Dataset &data);
+static int getLength(Dataset &data);
 static void align_SNPs(Dataset &data, int length, const vector<string> &nucleotideStack);
-void changeBase(Dataset &data, int position, string nucleotide);
-void checkCache(Dataset &data);
+void changeBase(Dataset &data, int position, string nucleotide, vector<string> &new_kmer_vec);
+void checkCache(Dataset &data, string outfile);
 void seq_col_to_fa(Dataset &data);
 void bowtie_genome_map(Dataset &data, int length);
 
@@ -29,11 +29,15 @@ void alignToGenomeWrapper(Dataset &data, int iteration, string genome = "hg19") 
 }
 
 static void align_SNPs(Dataset &data, int length, const vector<string> &nucleotideStack){
-  for(int i = 0; i < length; i++){
+  for(int position  = 0; position  < length; position++){
     for(int j = 0; j < static_cast<int>(nucleotideStack.size()); j++){
-      string name = nucleotideStack[j] + "_pos" + to_string(i);
-      changeBase(data, i, nucleotideStack[j]);
+      string name =  "fa/" + nucleotideStack[j] + "_pos" + to_string(i);
+
+      vector<string> new_kmer;
+                                  // nucleotide
+      changeBase(data, position, nucleotideStack[j], new_kmer);
       checkCache(data);
+      // pass in a sequence column, which is from output of checkCache
       seq_col_to_fa(data);
       bowtie_genome_map(data, length);
     }
@@ -41,6 +45,6 @@ static void align_SNPs(Dataset &data, int length, const vector<string> &nucleoti
 }
 
 // getlength accesses first(?) element of kmerHash and returns the key length
-int getLength(Dataset &data){
+static int getLength(Dataset &data){
   return static_cast<int>(data.kmerHash.begin()->first.size());
 }

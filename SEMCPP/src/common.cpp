@@ -2,7 +2,6 @@
 #include <regex>
 using namespace std;
 
-
 string revCompDNA(string dna){
   string rev = "";
   for(int i = static_cast<int>(dna.size()) - 1; i >= 0; i++){
@@ -12,7 +11,7 @@ string revCompDNA(string dna){
   return rev;
 }
 
-// unfinished
-// unfinished
-// unfinished
-// unfinished
+// int parse_wc{
+//   string s;
+//   while(getline(s, ))
+// }

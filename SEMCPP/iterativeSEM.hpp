@@ -101,7 +101,7 @@ struct Dataset {
 	std::string bigwig_file = "";
 	std::string DNase_file = "";
 	std::string output_dir = "";
-	std::string cache_file = "";
+	std::string cachefile = "";
 
   std::map<std::string, int> kmerHash;
 };
@@ -109,14 +109,14 @@ struct Dataset {
 //Declare functions in header to be used by other functions
 
 //main files
-void generateSNPEffectMatrix(Dataset &data, int iteration);
+void generateSNPEffectMatrix(Dataset &data);
 
 //src files
 void accumSummary_scale(Dataset &data);
 void alignToGenomeWrapper(Dataset &data);
 void bowtie_genome_map(Dataset &data);
 void changeBase(Dataset &data);
-void checkCache(Dataset &data);
+void checkCache(Dataset &data, std::string outfile = "none");
 void combineBedFiles(Dataset &data);
 void common(Dataset &data);
 void Enumerate_kmer(Dataset &data);

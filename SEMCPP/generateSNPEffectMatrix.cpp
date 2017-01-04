@@ -125,8 +125,8 @@ void generateSNPEffectMatrix(Dataset &data){
     system(s.c_str());
   }
 
-	if(data.cache_file.empty()){
-		data.cache_file = data.output_dir + "/CACHE.db";
+	if(data.cachefile.empty()){
+		data.cachefile = data.output_dir + "/CACHE.db";
 	}
 
 // main script content
@@ -183,7 +183,7 @@ int generate_kmers(Dataset &data){
 
   // threshold is stored within data.settings.threshold
 
-  // length = numer of lines in example transcription factor(?) file - 2;
+  // length = number of lines in example transcription factor(?) file - 2;
 }
 
 void align_to_genome(Dataset &data){
@@ -222,22 +222,22 @@ void find_signal(Dataset &data){ //This function call needs to be checked or alt
     }
     string cmd = "rm -rf " + data.output_dir +"/SIGNAL";
     char *convert = new char[cmd.length() +1];
-    strcpy(convert, cmd.c_str());
-    system(convert);
+
+    system(cmd.c_str());
     cmd = "mkdir " + data.output_dir +"/SIGNAL";
-    strcpy(convert, cmd.c_str());
-    system(convert);
+
+    system(cmd.c_str());
     cmd = "cp " + data.output_dir +"/ALIGNMENT/*/*/signal " + data.output_dir + "/SIGNAL/";
-    strcpy(convert, cmd.c_str());
-    system(convert);
+
+    system(cmd.c_str());
 
 
     //build signal summary
     findMaximumAverageSignalWrapper(data);
 
     cmd = "rm " + data.output_dir + "/SIGNAL/*.signal";
-    strcpy(convert, cmd.c_str());
-    system(convert);
+
+    system(cmd.c_str());
 }
 
 void create_baselines(Dataset &data, int length){
@@ -246,16 +246,16 @@ void create_baselines(Dataset &data, int length){
     }
     string cmd = "rm -rf " + data.output_dir +"/BASELINE";
     char *convert = new char[100];
-    strcpy(convert, cmd.c_str());
-    system(convert);
+
+    system(cmd.c_str());
     cmd = "mkdir " + data.output_dir +"/BASELINE";
-    strcpy(convert, cmd.c_str());
-    system(convert);
+
+    system(cmd.c_str());
 
     //Create baseline from scrambled k-mers
     cmd = "cut -f2 " + data.output_dir + "/Enumerated_kmer.txt > " + data.output_dir + "/BASELINE/Enumerated_kmer.txt";
-    strcpy(convert, cmd.c_str());
-    system(convert);
+
+    system(cmd.c_str());
 
     if(!data.settings.fastrun){
         scramble_kmer(data);
@@ -263,8 +263,8 @@ void create_baselines(Dataset &data, int length){
         seq_col_to_fa(data);
         bowtie_genome_map(data);
         cmd = "./bin/bedtools intersect -a " + data.output_dir + "/BASELINE/Scrambled_kmer.bed -b " + data.DNase_file + " -wa -u > "+ data.output_dir + "/BASELINE/Scrambled_kmer_filtered.bed";
-        strcpy(convert, cmd.c_str());
-        system(convert);
+
+        system(cmd.c_str());
         //accumSummary_scale(data, data.output_dir + "/BASELINE/Scrambled_kmer_filtered.bed", )
         if (data.settings.writecache){
             writeCache(data);
@@ -272,45 +272,45 @@ void create_baselines(Dataset &data, int length){
     }
 
     cmd = "cat " + data.output_dir + "/BASELINE/Enumerated_kmer.cache | sort | uniq >> " + data.output_dir + "/BASELINE/Enumerated_kmer_filtered.signal";
-    strcpy(convert, cmd.c_str());
-    system(convert);
+
+    system(cmd.c_str());
     findMaximumAverageSignalWrapper(data);
 
     if(data.settings.delAlignmentBed){
         cmd = "rm -f " + data.output_dir + "/BASELINE/Scrambled_kmer.bed";
-        strcpy(convert, cmd.c_str());
-        system(convert);
+
+        system(cmd.c_str());
         cmd = "rm -f " + data.output_dir + "/BASELINE/Enumerated_kmer.bed";
-        strcpy(convert, cmd.c_str());
-        system(convert);
+
+        system(cmd.c_str());
     }
 
     if(data.settings.delFilteredBed){
         cmd = "rm -f " + data.output_dir + "/BASELINE/Scrambled_kmer_filtered.bed";
-        strcpy(convert, cmd.c_str());
-        system(convert);
+
+        system(cmd.c_str());
         cmd = "rm -f " + data.output_dir + "/BASELINE/Enumerated_kmer_filtered.bed";
-        strcpy(convert, cmd.c_str());
-        system(convert);
+
+        system(cmd.c_str());
     }
 
-    if(data.settings.delSNPList){
-        cmd = "rm -f " + data.output_dir + "/BASELINE/*.scrambled";
-        strcpy(convert, cmd.c_str());
-        system(convert);
-        cmd = "rm -f " + data.output_dir + "/BASELINE/*.fa";
-        strcpy(convert, cmd.c_str());
-        system(convert);
-        cmd = "rm -f " + data.output_dir + "/BASELINE/*.sm.txt";
-        strcpy(convert, cmd.c_str());
-        system(convert);
-        cmd = "rm -f " + data.output_dir + "/BASELINE/*.cache";
-        strcpy(convert, cmd.c_str());
-        system(convert);
-        cmd = "rm -f " + data.output_dir + "/BASELINE/*.Enumerated_kmer.txt";
-        strcpy(convert, cmd.c_str());
-        system(convert);
-    }
+    // if(data.settings.delSNPList){
+    //     cmd = "rm -f " + data.output_dir + "/BASELINE/*.scrambled";
+    //
+    //     system(cmd.c_str());
+    //     cmd = "rm -f " + data.output_dir + "/BASELINE/*.fa";
+    //
+    //     system(cmd.c_str());
+    //     cmd = "rm -f " + data.output_dir + "/BASELINE/*.sm.txt";
+    //
+    //     system(cmd.c_str());
+    //     cmd = "rm -f " + data.output_dir + "/BASELINE/*.cache";
+    //
+    //     system(cmd.c_str());
+    //     cmd = "rm -f " + data.output_dir + "/BASELINE/*.Enumerated_kmer.txt";
+    //
+    //     system(cmd.c_str());
+    // }
 }
 
 void generate_output(Dataset &data){

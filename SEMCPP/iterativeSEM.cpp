@@ -67,7 +67,7 @@ int main(int argc, char **argv){
 			data.output_dir = argv[iteration+1];
 		}
 		else if(parse == "-readcache"){
-			data.cache_file = argv[iteration+1];
+			data.cachefile = argv[iteration+1];
 		}
 
 
@@ -85,8 +85,8 @@ int main(int argc, char **argv){
 		exit(EXIT_FAILURE);
 	}
 
-// data.cache_file.empty() checks if the string is empty, not the actual file
-	if(data.cache_file.empty())  data.cache_file = data.output_dir+ "/CACHE.DB";
+// data.cachefile.empty() checks if the string is empty, not the actual file
+	if(data.cachefile.empty())  data.cachefile = data.output_dir+ "/CACHE.DB";
 
     vector<double> pvals(total_iterations + 1);
     pvals.push_back( pow(4, -5));
@@ -189,12 +189,12 @@ int main(int argc, char **argv){
             if (converge == 9){
 		            data.settings.fastrun = true;
             //    wkCmdstream.str("");
-            //    wkCmdstream << "./generateSNPEffectMatrix.cpp -PWM " << newPwm << " -merge_file " << dnase << " -big_wig " << chip <<" -TF_name " << tf << " -output " << newOutput.str() << " -threshold " << threshold << " -iteration " << iterID << " -writedata.cache_file-readdata.cache_file"<< data.cache_file<< " -fastrun -verbose";
+            //    wkCmdstream << "./generateSNPEffectMatrix.cpp -PWM " << newPwm << " -merge_file " << dnase << " -big_wig " << chip <<" -TF_name " << tf << " -output " << newOutput.str() << " -threshold " << threshold << " -iteration " << iterID << " -writedata.cachefile-readdata.cachefile"<< data.cachefile<< " -fastrun -verbose";
                 final_run = newOutput.str();
             }
             else{
             //    wkCmdstream.str("");
-            //    wkCmdstream << "./generateSNPEffectMatrix.cpp -PWM " << newPwm << " -merge_file " << dnase << " -big_wig " << chip <<" -TF_name " << tf << " -output " << newOutput.str() << " -threshold " << threshold << " -iteration " << iterID << " -writedata.cache_file-readdata.cache_file"<< data.cache_file<< " -verbose";
+            //    wkCmdstream << "./generateSNPEffectMatrix.cpp -PWM " << newPwm << " -merge_file " << dnase << " -big_wig " << chip <<" -TF_name " << tf << " -output " << newOutput.str() << " -threshold " << threshold << " -iteration " << iterID << " -writedata.cachefile-readdata.cachefile"<< data.cachefile<< " -verbose";
             }
             generateSNPEffectMatrix(data);
             // kmerHash should be filled in after the above line, within data!!!!
