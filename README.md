@@ -11,19 +11,19 @@ Run "make" again.
 #Tasks
 
 Continue C++ implementation of algorithm.
-	Use single header file or multiple, but plan to equate
-	each .cpp file with each .pl file
-	Use descriptive variable names
+Use single header file or multiple, but plan to equate
+each .cpp file with each .pl file
+Use descriptive variable names
 	
-	ALWAYS INITIALIZE VARIABLES
-		can be quite difficult to debug uninitialized variables
-	Use compiler flags as provided in Makefile
-	Will use struct as opposed to class for simplicity
-	Will use public data members for simplicity of struct
+ALWAYS INITIALIZE VARIABLES
+	can be quite difficult to debug uninitialized variables
+Use compiler flags as provided in Makefile
+Will use struct as opposed to class for simplicity
+Will use public data members for simplicity of struct
 
-	Use assert(bool) to check REQUIRES clauses and for error checking
+Use assert(bool) to check REQUIRES clauses and for error checking
 	
-	More comments
+More comments
 	
 #Notes
 
