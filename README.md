@@ -2,18 +2,19 @@
 C++ implementation of the SEM algorithm
 
 #Compilation
-Copy entire repository to computer, then cd into lib/libBigWig-master/ and run "make"
+Copy entire repository to computer, then cd into lib/libBigWig-master/ and run "make".
 
-cd back into directory where makefile is present, or from the previous location "cd .." twice
+cd back into directory where makefile is present, or from the previous location "cd .." twice.
+
+Run "make" again.
 
 #Tasks
 
-Determine how to interface Bio::DB::BigWig module in original code with the current code.
-
 Continue C++ implementation of algorithm.
-	May use a single header file or multiple, but plan to equate
+	Use single header file or multiple, but plan to equate
 	each .cpp file with each .pl file
 	Use descriptive variable names
+	
 	ALWAYS INITIALIZE VARIABLES
 		can be quite difficult to debug uninitialized variables
 	Use compiler flags as provided in Makefile
@@ -21,6 +22,7 @@ Continue C++ implementation of algorithm.
 	Will use public data members for simplicity of struct
 
 	Use assert(bool) to check REQUIRES clauses and for error checking
+	
 	More comments
 	
 #Notes
