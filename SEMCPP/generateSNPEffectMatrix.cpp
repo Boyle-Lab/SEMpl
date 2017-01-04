@@ -221,7 +221,7 @@ void find_signal(Dataset &data){ //This function call needs to be checked or alt
         cout << "Creating directory SIGNAL " << endl;
     }
     string cmd = "rm -rf " + data.output_dir +"/SIGNAL";
-    char *convert = new char[cmd.length() +1];
+
 
     system(cmd.c_str());
     cmd = "mkdir " + data.output_dir +"/SIGNAL";
@@ -242,13 +242,12 @@ void find_signal(Dataset &data){ //This function call needs to be checked or alt
 
 void create_baselines(Dataset &data, int length){
     if (data.settings.verbose){
-        cout << "Creating directory Baseline" << endl;
+        cout << "Creating directory BASELINE" << endl;
     }
-    string cmd = "rm -rf " + data.output_dir +"/BASELINE";
-    char *convert = new char[100];
+    string cmd = "rm -rf " + data.output_dir + "/BASELINE";
 
     system(cmd.c_str());
-    cmd = "mkdir " + data.output_dir +"/BASELINE";
+    cmd = "mkdir " + data.output_dir + "/BASELINE";
 
     system(cmd.c_str());
 
@@ -260,10 +259,9 @@ void create_baselines(Dataset &data, int length){
     if(!data.settings.fastrun){
         scramble_kmer(data);
         checkCache(data);
-        seq_col_to_fa(data);
+        seq_col_to_fa(data, 0);
         bowtie_genome_map(data);
         cmd = "./bin/bedtools intersect -a " + data.output_dir + "/BASELINE/Scrambled_kmer.bed -b " + data.DNase_file + " -wa -u > "+ data.output_dir + "/BASELINE/Scrambled_kmer_filtered.bed";
-
         system(cmd.c_str());
         //accumSummary_scale(data, data.output_dir + "/BASELINE/Scrambled_kmer_filtered.bed", )
         if (data.settings.writecache){
@@ -274,6 +272,7 @@ void create_baselines(Dataset &data, int length){
     cmd = "cat " + data.output_dir + "/BASELINE/Enumerated_kmer.cache | sort | uniq >> " + data.output_dir + "/BASELINE/Enumerated_kmer_filtered.signal";
 
     system(cmd.c_str());
+
     findMaximumAverageSignalWrapper(data);
 
     if(data.settings.delAlignmentBed){
@@ -314,7 +313,6 @@ void create_baselines(Dataset &data, int length){
 }
 
 void generate_output(Dataset &data){
-
     if (data.settings.verbose){
         cout << "Generating Output" << endl;
     }

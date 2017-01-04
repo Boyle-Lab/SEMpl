@@ -35,8 +35,6 @@ Also found appropriate pv2sc library, sucessfully compiles, need to test
 11-16-2016
 In process of finding a C++/C interface for BigWig files/software, as opposed to attempting to rewrite perl module,
 
-Below notes are now irrelevant
-
 #Resources
 
 http://search.cpan.org/~lds/Bio-BigFile/lib/Bio/DB/BigWig.pm
@@ -52,3 +50,5 @@ Possible BigWig file/software interface below
 https://github.com/deltadev/bbi
 
 github.com/jayhesselberth/libBigWig
+
+https://github.com/BenLangmead/bowtie/tree/85fad1d77775e773611c3d16f3d1fb527c32f4b7

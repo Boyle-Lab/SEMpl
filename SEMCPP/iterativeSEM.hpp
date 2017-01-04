@@ -75,6 +75,7 @@ struct Dataset {
 		// max of output from accumSummary_scale.pl
 		std::vector<double> accum_max;
 	};
+  // contains default settings
 	struct SettingsForSNPEffectMatrix{
 		bool delSNPList = true, delAlignmentBed = true, delFilteredBed = true;
 		bool delSignalFile = false, writecache = false, fastrun = false, verbose = false;
@@ -132,7 +133,7 @@ double get_threshold(Dataset &data);
 void pwm_to_tfm(Dataset &data);
 void quality_control(Dataset &data);
 void scramble_kmer(Dataset &data);
-void seq_col_to_fa(Dataset &data);
+bool seq_col_to_fa(Dataset &data, int col);
 void writeCache(Dataset &data);
 
 #endif /* iterativeSEM_hpp */
