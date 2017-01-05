@@ -10,6 +10,7 @@ bool seq_col_to_fa(Dataset &data, int col);
 void bowtie_genome_map(Dataset &data, int length);
 
 // default genome is "hg19"
+// INFILE FROM ORIGINAL ALGORITHM IS ENUMERATED_KMER 
 void alignToGenomeWrapper(Dataset &data, int iteration, string genome = "hg19") {
 
   vector<string> nucleotideStack(4);

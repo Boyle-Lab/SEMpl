@@ -166,13 +166,14 @@ void generateSNPEffectMatrix(Dataset &data){
 
     if(data.settings.verbose){
         cout << "The SNP Effect Matrix has been completed  for " << data.TF_name << endl;
-
     }
 
 }
 
 int generate_kmers(Dataset &data){
-  if(data.settings.verbose) cout << "Creating enumerated kmers" << '\n';
+  if(data.settings.verbose){
+    cout << "Creating enumerated kmers" << '\n';
+  }
 
   Enumerate_kmer(data);
   // data.kmerHash is now filled in!!!
@@ -220,14 +221,14 @@ void find_signal(Dataset &data){ //This function call needs to be checked or alt
     if (data.settings.verbose){
         cout << "Creating directory SIGNAL " << endl;
     }
-    string cmd = "rm -rf " + data.output_dir +"/SIGNAL";
+    string cmd = "rm -rf " + data.output_dir + "/SIGNAL";
 
 
     system(cmd.c_str());
-    cmd = "mkdir " + data.output_dir +"/SIGNAL";
+    cmd = "mkdir " + data.output_dir + "/SIGNAL";
 
     system(cmd.c_str());
-    cmd = "cp " + data.output_dir +"/ALIGNMENT/*/*/signal " + data.output_dir + "/SIGNAL/";
+    cmd = "cp " + data.output_dir + "/ALIGNMENT/*/*/signal " + data.output_dir + "/SIGNAL/";
 
     system(cmd.c_str());
 
@@ -235,9 +236,9 @@ void find_signal(Dataset &data){ //This function call needs to be checked or alt
     //build signal summary
     findMaximumAverageSignalWrapper(data);
 
-    cmd = "rm " + data.output_dir + "/SIGNAL/*.signal";
-
-    system(cmd.c_str());
+    // cmd = "rm " + data.output_dir + "/SIGNAL/*.signal";
+    //
+    // system(cmd.c_str());
 }
 
 void create_baselines(Dataset &data, int length){

@@ -9,15 +9,18 @@ BIGWIGLIBRARYLOC=-Llib/libBigWig-master
 BIGWIGLIBRARY=-lBigWig
 CSOURCES=lib/libBigWig-master/bw{Read,Stats,Values,Write}.c
 TFMHEADER=lib/TFM-Pvalue/{Matrix,ParseException,ArgumentException,FileException}.cpp
+SQLITESOURCE=lib/sqlite3/sqlite3.c
 
-OBJ=iterativeSEM.o pwm_to_tfm.o get_threshold.o accumSummary_scale.o generatePWMfromSEM.o generateSNPEffectMatrix.o Enumerate_kmer.o common.o alignToGenomeWrapper.o checkCache.o
+OBJ=iterativeSEM.o pwm_to_tfm.o get_threshold.o accumSummary_scale.o generatePWMfromSEM.o generateSNPEffectMatrix.o Enumerate_kmer.o common.o alignToGenomeWrapper.o checkCache.o sqlite3.o
 
 EXECUTABLE=iterativeSEM.exe
 
+
+
 all: $(EXECUTABLE)
 
-iterativeSEM.exe: iterativeSEM.o pwm_to_tfm.o get_threshold.o accumSummary_scale.o generatePWMfromSEM.o generateSNPEffectMatrix.o Enumerate_kmer.o common.o alignToGenomeWrapper.o seq_col_to_fa.o checkCache.o
-	$(CC) $(C++FLAGS) $(BIGWIGLIBRARYLOC) $(BIGWIGLIBRARY) $(TFMHEADER) -o $(EXECUTABLE) $(OBJ)
+iterativeSEM.exe: $(OBJ)
+	$(CC) $(C++FLAGS) $(BIGWIGLIBRARYLOC) $(BIGWIGLIBRARY) $(TFMHEADER)  -o $(EXECUTABLE) $(OBJ)
  
 
 iterativeSEM.o: iterativeSEM.cpp
@@ -42,6 +45,8 @@ seq_col_to_fa.o: src/seq_col_to_fa.cpp
 	$(CC) $(C++FLAGS) $(DEBUG_OR_OPTIMIZE) -c src/seq_col_to_fa.cpp
 checkCache.o: src/checkCache.cpp
 	$(CC) $(C++FLAGS) $(DEBUG_OR_OPTIMIZE) -c src/checkCache.cpp
+sqlite3.o: lib/sqlite3/sqlite3.c
+	gcc $(DEBUG_OR_OPTIMIZE) -c lib/sqlite3/sqlite3.c
 
 clean:
 	rm *.o
