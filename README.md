@@ -52,3 +52,5 @@ https://github.com/deltadev/bbi
 github.com/jayhesselberth/libBigWig
 
 https://github.com/BenLangmead/bowtie/tree/85fad1d77775e773611c3d16f3d1fb527c32f4b7
+
+sqlite.org
