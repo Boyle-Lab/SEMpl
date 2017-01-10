@@ -1,6 +1,6 @@
 #include <vector>
 #include <string>
-#include "../IterativeSEM.hpp"
+#include "iterativeSEM.hpp"
 using namespace std;
 
 //REQUIRES: pwm data in data is filled in with correct data

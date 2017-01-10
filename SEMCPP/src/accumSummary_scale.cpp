@@ -1,5 +1,5 @@
 #include "../lib/libBigWig-master/BigWig.h"
-#include "../iterativeSEM.hpp"
+#include "iterativeSEM.hpp"
 #include <fstream>
 #include <string>
 #include <iostream>

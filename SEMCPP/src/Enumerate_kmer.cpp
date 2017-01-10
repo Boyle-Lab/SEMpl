@@ -1,4 +1,4 @@
-#include "../iterativeSEM.hpp"
+#include "iterativeSEM.hpp"
 #include <map>
 #include <cmath>
 #include <utility>

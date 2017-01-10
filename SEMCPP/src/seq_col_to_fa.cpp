@@ -1,4 +1,4 @@
-#include "../iterativeSEM.hpp"
+#include "iterativeSEM.hpp"
 using namespace std;
 
 bool seq_col_to_fa(Dataset &data, int col){

@@ -1,4 +1,4 @@
-#include "../iterativeSEM.hpp"
+#include "iterativeSEM.hpp"
 #include "../lib/TFM-Pvalue/Matrix.h"
 using namespace std;
 
