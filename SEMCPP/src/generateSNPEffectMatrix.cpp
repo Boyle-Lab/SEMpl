@@ -7,62 +7,6 @@
 //  --TF_name TF name
 /*
 
-=head1 DESCRIPTION
-
-This is the current version of the technique to generate a SNP Effect Matrix.
-
-=head1 OPTIONS
-
-=over 8
-
-=item B<-h, --help>
-
-Print this brief help message from the command line.
-
-=item B<-d, --debug>
-
-Print debug output.
-
-=item B<-v, --verbose>
-
-Verbose output.
-
-=item B<--output <target>>
-
-Define the output location [Default: results/TFname/]
-
-=item B<--Threshold <value>>
-
-Set PWM cutoff threshold (if not a pre-computed PWM)
-
-=item B<--delSNP>
-
-delete SNP file [default]
-
-=item B<--delAlign>
-
-delete Alignment Bed file
-
-=item B<--delFiltered>
-
-delete DNase filtered Bed file [default]
-
-=item B<--delSignal>
-
-delete Signal files
-
-=back
-
-=head1 OUTPUT
-
- (1) <TF_name>.sem -- has the numerical values of the SNP Effect Matrix
-
- (2) <TF_name>_semplot.pdf -- graphical representation of the SNP Effect Matrix
-
- Bed and signal files from intermediate steps can also be kept
-
-/////////////////////////////////////////
-
 my $savedCmd = join(" ", @ARGV);
 
 #other command line options
