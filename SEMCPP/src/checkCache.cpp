@@ -8,9 +8,8 @@
 extern "C"{
   #include "../lib/sqlite3/sqlite3.h"
 }
-#include <iostream>
-#include <cstdlib>
 #include <sys/stat.h>
+#include <iostream>
 using namespace std;
 
   // takes in_file, out_file, out_cache, cache(location of cache), current iteration,
@@ -27,8 +26,9 @@ static void problemEncountered(int message, const string &what);
 static bool isRowReady(int message);
 
 
-void checkCache(Dataset &data, string outfile){
+void checkCache(const Dataset &data, string outfile){
   vector<string> output;
+
   bool newcache = fileExists(data.cachefile);
     // data_local.cachefile is Cache in original algorithm!!
     // data_local.cachefile was defined in generateSNPEffectMatrix!!
@@ -40,27 +40,34 @@ void checkCache(Dataset &data, string outfile){
   sqlite3 *cacheDB;
   int message;
   string msg = "SELECT count(*) FROM seen_cache WHERE kmer=? AND iter!=?";
-  const char* tail_msg;
+  //const char* tail_msg;
 
   message = sqlite3_open(data.cachefile.c_str(), &cacheDB);
   problemEncountered(message, "open");
 
   if(newcache){
+
+    ofstream OUTF(outfile);
+    if(!OUTF){
+      cerr << "There is a problem with " << data.cachefile << "\n\tEXITING\n";
+      exit(1);
+    }
+
     sqlite3_stmt* seen_query;
-    message = sqlite3_prepare(cacheDB, msg.c_str(), static_cast<int>(msg.size()), &seen_query, &tail_msg);
-    if(*tail_msg) delete[] tail_msg;
+    message = sqlite3_prepare(cacheDB, msg.c_str(), static_cast<int>(msg.size()), &seen_query, NULL);
+    //if(*tail_msg) delete[] tail_msg;
     problemEncountered(message, "seen query");
 
     msg = "SELECT kmer, alignment FROM kmer_cache WHERE kmer=?";
     sqlite3_stmt* data_query;
-    message = sqlite3_prepare(cacheDB, msg.c_str(), static_cast<int>(msg.size()), &data_query, &tail_msg);
-    if(*tail_msg) delete[] tail_msg;
+    message = sqlite3_prepare(cacheDB, msg.c_str(), static_cast<int>(msg.size()), &data_query, NULL);
+    //if(*tail_msg) delete[] tail_msg;
     problemEncountered(message, "data query");
 
     msg = "INSERT OR IGNORE INTO seen_cache VALUES(?, ?)";
     sqlite3_stmt* staged_query;
-    message = sqlite3_prepare(cacheDB, msg.c_str(), static_cast<int>(msg.size()), &staged_query, &tail_msg);
-    if(*tail_msg) delete[] tail_msg;
+    message = sqlite3_prepare(cacheDB, msg.c_str(), static_cast<int>(msg.size()), &staged_query, NULL);
+    //if(*tail_msg) delete[] tail_msg;
     problemEncountered(message, "staged query");
     // range for loop, ranges over every pair within the "map"
     for(auto kmer_pair : data.kmerHash){
@@ -71,7 +78,7 @@ void checkCache(Dataset &data, string outfile){
       problemEncountered(message, "step data_query");
       if(!isRowReady(message)){
         cerr << "Row isn't ready!!\n\tEXITING\n";
-        exit(EXIT_FAILURE);
+        exit(1);
       }
 
       // seems like I will have to extract data with multiple calls, as it appears
@@ -87,58 +94,140 @@ void checkCache(Dataset &data, string outfile){
 
       if(num_col < 0) {
         cerr << "Number of columns from data_query is less than 0!!\n\tEXITING" << endl;
-        exit(EXIT_FAILURE);
+        exit(1);
       }
       vector<string> data_local;
       // const unsigned char *sqlite3_column_text(sqlite3_stmt*, int iCol);
-      for(int i = 0; i < num_col; i++){
 
-        const unsigned char* store = sqlite3_column_text(data_query, i);
-        // conversion needs to be made so string can receive, will investigate
-        //data_local.push_back(store);
-      }
-      if(data_local.size() > 1){
-        output.push_back(data_local[1]);
-      }
-      else{
-        message = sqlite3_bind_text(seen_query, 1, kmer_pair.first.c_str(), static_cast<int>(kmer_pair.first.size()),NULL);
-        problemEncountered(message, "bind_text for seen_query");
-        // int sqlite3_bind_int(sqlite3_stmt*, int, int);
-        message = sqlite3_bind_int(seen_query, 2, data.settings.iteration);
-        problemEncountered(message, "bind_int for seen_query");
-
-        //UNSURE OF BELOW line
-        message = sqlite3_step(data_query);
-        if(message != SQLITE_DONE){
-          cerr << "Statement is not done!\n\tEXITING" << endl;
-          exit(1);
+      // check the type of whatever is in data_query
+      message = sqlite3_column_type(data_query, 0);
+      if(message == SQLITE3_TEXT){
+        for(int i = 0; i < num_col; i++){
+          //const unsigned char* store = sqlite3_column_text(data_query, i);
+          // IMPLEMENTATION DEPENEDENT JUST BELOW
+          // sqlite3_column_text returns const unsigned char*, but C++ string library words with const char*
+          data_local.push_back(reinterpret_cast<const char*>(sqlite3_column_text(data_query, i)));
         }
-        ofstream OUTF(data.cachefile);
-        OUTF << kmer_pair.first << '\n';
-        OUTF.close();
+        if(data_local.size() > 1){
+          output.push_back(data_local[1]);
+        }
+        else{
+          message = sqlite3_bind_text(seen_query, 1, kmer_pair.first.c_str(), static_cast<int>(kmer_pair.first.size()), NULL);
+          problemEncountered(message, "bind_text for seen_query");
+          // int sqlite3_bind_int(sqlite3_stmt*, int, int);
+          message = sqlite3_bind_int(seen_query, 2, data.settings.iteration);
+          problemEncountered(message, "bind_int for seen_query");
+
+
+          num_col = sqlite3_column_count(seen_query);
+          if(num_col < 0){
+            cerr << "num_col for seen_query is less than 1!!\n\tEXITING" << endl;
+            exit(1);
+          }
+          vector<int> count;
+          for(int i = 0; i < num_col; i++){
+            // IMPLEMENTATION DEPENEDENT JUST BELOW
+            //count.push_back(reinterpret_cast<const char*>(sqlite3_column_text(seen_query, i)));
+
+            count.push_back(sqlite3_column_int(seen_query, i));
+          }
+          if(count[0] > 0){
+            // have already seen this before, was filtered
+          }
+          else{
+            message = sqlite3_bind_text(staged_query, 1, kmer_pair.first.c_str(), static_cast<int>(kmer_pair.first.size()), NULL);
+            problemEncountered(message, "bind_text for staged_query");
+            // int sqlite3_bind_int(sqlite3_stmt*, int, int);
+            message = sqlite3_bind_int(staged_query, 2, data.settings.iteration);
+            problemEncountered(message, "bind_int for staged_query");
+
+            message = sqlite3_step(staged_query);
+            if(message != SQLITE_DONE){
+              cerr << "Statement is not done!\n\tEXITING" << endl;
+              exit(1);
+            }
+          }
+
+          message = sqlite3_step(data_query);
+          if(message != SQLITE_DONE){
+            cerr << "Statement is not done!\n\tEXITING" << endl;
+            exit(1);
+          }
+          OUTF << kmer_pair.first << '\n';
+        }
       }
-
     }
-  }
-
-
-
-  if(outfile != "none"){
-    string cmd = "rm -f " + outfile;
-    system(cmd.c_str());
-  }
-
-
-  if(newcache){
-    // open infile
-    // open outfile
+    OUTF.close();
+    OUTF.open(data.cachefile);
+    for(auto el : output){
+      OUTF << el << '\n';
+    }
+    OUTF.close();
   }
   else{
     if(data.settings.verbose){
       cout << "No existing cache!\n";
     }
+    // BLOB? why is it a BLOB? I used "text" not "blob", will need to ask about this
 
+      sqlite3_stmt *build_statement;
+
+      msg = "CREATE TABLE kmer_cache (kmer TEXT PRIMARY KEY NOT NULL, alignment BLOB)";
+      message = sqlite3_prepare(cacheDB, msg.c_str(), static_cast<int>(msg.size()), &build_statement, NULL);
+      problemEncountered(message, "preparing build_statement");
+      message = sqlite3_step(build_statement);
+      if(message != SQLITE_DONE){
+        cerr << "Build statement is not done!\n\tEXITING\n";
+        exit(1);
+      }
+
+      msg = "CREATE UNIQUE INDEX kmerIDX ON kmer_cache(kmer)";
+      message = sqlite3_prepare(cacheDB, msg.c_str(), static_cast<int>(msg.size()), &build_statement, NULL);
+      problemEncountered(message, "preparing build_statement");
+      message = sqlite3_step(build_statement);
+      if(message != SQLITE_DONE){
+        cerr << "Build statement is not done!\n\tEXITING\n";
+        exit(1);
+      }
+
+      msg = "CREATE TABLE seen_cache (kmer TEXT PRIMARY KEY NOT NULL, iter INT NOT NULL)";
+      message = sqlite3_prepare(cacheDB, msg.c_str(), static_cast<int>(msg.size()), &build_statement, NULL);
+      problemEncountered(message, "preparing build_statement");
+      message = sqlite3_step(build_statement);
+      if(message != SQLITE_DONE){
+        cerr << "Build statement is not done!\n\tEXITING\n";
+        exit(1);
+      }
+
+      msg = "CREATE UNIQUE INDEX seenIDX ON seen_cache(kmer)";
+      message = sqlite3_prepare(cacheDB, msg.c_str(), static_cast<int>(msg.size()), &build_statement, NULL);
+      problemEncountered(message, "preparing build_statement");
+      message = sqlite3_step(build_statement);
+      if(message != SQLITE_DONE){
+        cerr << "Build statement is not done!\n\tEXITING\n";
+        exit(1);
+      }
+
+      sqlite3_stmt *staged_query;
+      msg = "INSERT OR IGNORE INTO kmer_cache VALUES(?,?)";
+      message = sqlite3_prepare(cacheDB, msg.c_str(), static_cast<int>(msg.size()), &staged_query, NULL);
+      problemEncountered(message, "staged_query for INSERT OR IGNORE");
+
+      for(auto kmer_pair : data.kmerHash){
+        message = sqlite3_bind_text(staged_query, 1, kmer_pair.first.c_str(), static_cast<int>(kmer_pair.first.size()), NULL);
+        problemEncountered(message, "bind text for INSERT OR IGNORE");
+        message = sqlite3_bind_int(staged_query, 2, data.settings.iteration);
+        problemEncountered(message, "bind int for INSERT OR IGNORE");
+        message = sqlite3_step(staged_query);
+        if(message != SQLITE_DONE){
+          cerr << "Build statement is not done!\n\tEXITING\n";
+          exit(1);
+        }
+      }
+      // do I copy over something? investigate
   }
+  message = sqlite3_close(cacheDB);
+  problemEncountered(message, "closing the connection");
 }
 
 
@@ -152,7 +241,7 @@ static bool fileExists(const string &filename){
 static void problemEncountered(int message, const string &what){
   if(message != SQLITE_OK){
     cerr << "Problem encountered opening " << what << "!\n\tEXITING\n";
-    exit(EXIT_FAILURE);
+    exit(1);
   }
 }
 

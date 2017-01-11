@@ -77,12 +77,12 @@ int main(int argc, char **argv){
 
 	if(pwm.empty()){
 		cout << "No PWM file given" << endl;
-		exit(EXIT_FAILURE);
+		exit(1);
 	}
 
 	if(data.output_dir.empty()){
 		cout << "No output file given" << endl;
-		exit(EXIT_FAILURE);
+		exit(1);
 	}
 
 // data.cachefile.empty() checks if the string is empty, not the actual file
@@ -156,7 +156,7 @@ int main(int argc, char **argv){
             ifstream Ekmer(EkmerFile);
             if (!Ekmer){
                 cerr << "Problem opening " << EkmerFile << endl;
-                exit(EXIT_FAILURE);
+                exit(1);
             }
             while (Ekmer){
                 for (string temp; getline(Ekmer, temp, '\n'); line_2.push_back(temp));

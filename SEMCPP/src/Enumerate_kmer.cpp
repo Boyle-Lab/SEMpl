@@ -55,7 +55,7 @@ static void create_kmer(const Dataset &data,
     }
     if(check != pwmHash.size()){
       cerr << "size of pwmHash was modified within create_kmer\n\tEXITING\n";
-      exit(EXIT_FAILURE);
+      exit(1);
     }
   } // test block end
 
@@ -100,7 +100,7 @@ static double get_cutoff(const Dataset &data,
 
   if(!IN_HANDLE){
     cerr << "Failure to open src/PWM_SCORES_FINAL.txt\n\tEXITING" << '\n';
-    exit(EXIT_FAILURE);
+    exit(1);
   }
 
   while(getline(IN_HANDLE, curr_line)){
@@ -115,7 +115,7 @@ static double get_cutoff(const Dataset &data,
     }
   }
   cerr << "Unable to find pre-caluclated cutoff in file\n\tEXITING\n";
-  exit(EXIT_FAILURE);
+  exit(1);
   return 0.0;
 }
 
@@ -173,7 +173,7 @@ void Enumerate_kmer(Dataset &data){
 
   if(cutoff == 0.0){
     cerr << "cutoff value unchanged within Enumerate_kmer.cpp\n\tEXITING\n";
-    exit(EXIT_FAILURE);
+    exit(1);
   }
 
   create_kmer(data, pwmHash, nucleotideStack, bestCase, retHash, cutoff);

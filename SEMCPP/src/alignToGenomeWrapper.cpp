@@ -29,7 +29,7 @@ void alignToGenomeWrapper(Dataset &data, int iteration, string genome = "hg19") 
   align_SNPs(data, length, nucleotideStack);
 }
 
-// INFILE FROM ORIGINAL ALGORITHM IS ENUMERATED_KMER 
+// INFILE FROM ORIGINAL ALGORITHM IS ENUMERATED_KMER
 static void align_SNPs(Dataset &data, int length, const vector<string> &nucleotideStack){
   for(int position  = 0; position  < length; position++){
     for(int j = 0; j < static_cast<int>(nucleotideStack.size()); j++){

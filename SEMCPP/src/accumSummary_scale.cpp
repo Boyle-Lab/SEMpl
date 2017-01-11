@@ -44,7 +44,7 @@ void accumSummary_scale(Dataset &data, string hfile, string cfile, int scale){
 	ifstream input(cfile);
 	if(!input){
 		cout << "Failure to open cfile in accumSummary_scale.cpp\n";
-		exit(EXIT_FAILURE);
+		exit(1);
 	}
 	const string splitBy = "\t";
 	char *chrom = nullptr;
@@ -92,7 +92,7 @@ void accumSummary_scale(Dataset &data, string hfile, string cfile, int scale){
 		values = bwStats(bwFile, chrom, static_cast<uint32_t>(0), static_cast<uint32_t>(total_size), static_cast<uint32_t>(total_size), type);
     if(values == NULL){
       cerr << "Failure to use bwStats!\n\tEXITING\n";
-      exit(EXIT_FAILURE);
+      exit(1);
     }
 		counter = 0;
 
