@@ -25,13 +25,52 @@ public:
   }
 };
 
-// EFFECTS: calculates log base 2 of x
-double log2(double x){
-  return log(x) / log(2);
+static double findMax(const map<int, double> &v);
+static double get_cutoff(const Dataset &data);
+static void create_kmer(const Dataset &data,
+                        const map<pair<int, string>, int, hash_comp> &pwmHash,
+                        const vector<string> &nucleotideStack,
+                        const vector<int> &bestCase,
+                        map<string, int> &retHash,
+                        const double cutoff);
+static void parse_pwm(const Dataset &data,
+                      map<pair<int, string>, int, hash_comp> &pwmHash,
+                      vector<string> &nucleotideStack,
+                      vector<int> &bestCase);
+
+// REQUIRES: within data, PWM_data is filled in
+// EFFECTS: created enumerated kmers using a cutoff and a PWM matrix, returns the map
+// note: for now, searches for a pre-calculated cutoff
+void Enumerate_kmer(Dataset &data){
+  map<pair<int, string>, int, hash_comp> pwmHash;
+  vector<string> nucleotideStack;
+  vector<int> bestCase;
+  double cutoff = 0.0;
+
+  parse_pwm(data, pwmHash, nucleotideStack, bestCase);
+  // pwmHash is now filled in, along with bestCase
+  if(data.settings.verbose){
+    cout << "No cutoff defined, so earching for pre-calculated cutoff." << '\n';
+  }
+  cutoff = get_cutoff(data);
+
+  if(cutoff == 0.0){
+    cerr << "cutoff value unchanged within Enumerate_kmer.cpp\n\tEXITING\n";
+    exit(1);
+  }
+
+  create_kmer(data, pwmHash, nucleotideStack, bestCase, data.kmerHash, cutoff);
+
+  // print_kmer is replaced by a simple object assignment
+  for(auto pair : data.kmerHash){
+    if(pair.second <= cutoff){
+      data.kmerHash.erase(pair.first);
+    }
+  }
 }
 
 // EFFECTS: finds maximum mapped value
-int findMax(const map<int, double> &v){
+static double findMax(const map<int, double> &v){
   int max = 0;
   for(auto i : v){
     if(i.second > max)
@@ -41,23 +80,17 @@ int findMax(const map<int, double> &v){
 }
 
 static void create_kmer(const Dataset &data,
-                        map<pair<int, string>, int, hash_comp> &pwmHash,
-                        vector<string> &nucleotideStack,
-                        vector<int> &bestCase, map<string, int> &retHash,
+                        const map<pair<int, string>, int, hash_comp> &pwmHash,
+                        const vector<string> &nucleotideStack,
+                        const vector<int> &bestCase,
+                        map<string, int> &retHash,
                         const double cutoff){
   if(data.settings.verbose){
     cout << "Generating kmer list.\n";
   }
-  { // test block begin
-    size_t check = pwmHash.size();
     for(size_t i = 0; i < nucleotideStack.size(); i++){
-      retHash[nucleotideStack[i]] = pwmHash[{1, nucleotideStack[i]}];
+      retHash[nucleotideStack[i]] = pwmHash.at({1, nucleotideStack[i]});
     }
-    if(check != pwmHash.size()){
-      cerr << "size of pwmHash was modified within create_kmer\n\tEXITING\n";
-      exit(1);
-    }
-  } // test block end
 
   vector<int> maxScores(bestCase.size() + 1);
   maxScores[bestCase.size()] = 0;
@@ -78,7 +111,7 @@ static void create_kmer(const Dataset &data,
         retHash.erase(pair.first);
         for(size_t j = 0; j < nucleotideStack.size(); j++){
           string newkey = pair.first + nucleotideStack[j];
-          int newscore = score + pwmHash[{i + 1, nucleotideStack[j]}];
+          int newscore = score + pwmHash.at({i + 1, nucleotideStack[j]});
           retHash[newkey] = newscore;
         }
       }
@@ -87,15 +120,13 @@ static void create_kmer(const Dataset &data,
   }
 }
 
-static double get_cutoff(const Dataset &data,
-                      map<pair<int, string>, int, hash_comp> &pwmHash,
-                      vector<string> &nucleotideStack,
-                      vector<int> &bestCase, map<string, int> &retHash){
+static double get_cutoff(const Dataset &data){
   if(data.settings.verbose){
     cout << "Searching for pre-calculated cutoff" << '\n';
   }
 
   string curr_line = "";
+  // will need to change below line eventually to be specified
   ifstream IN_HANDLE("src/PWM_SCORES_FINAL.txt");
 
   if(!IN_HANDLE){
@@ -111,6 +142,9 @@ static double get_cutoff(const Dataset &data,
       parse >> curr_line; // NEEDS TO BE TESTED
       double a;
       parse >> a;
+      if(data.settings.verbose)
+        cout << "Pre-calculated threshold identified as " << a << '\n';
+      IN_HANDLE.close();
       return a;
     }
   }
@@ -122,67 +156,37 @@ static double get_cutoff(const Dataset &data,
 static void parse_pwm(const Dataset &data,
                       map<pair<int, string>, int, hash_comp> &pwmHash,
                       vector<string> &nucleotideStack,
-                      vector<int> &bestCase, map<string, int> &retHash){
-
+                      vector<int> &bestCase){
 
   nucleotideStack.push_back("A");
   nucleotideStack.push_back("C");
   nucleotideStack.push_back("G");
   nucleotideStack.push_back("T");
 
-  {
-    // modifiedFields is indexed from 1 in original implementation
-    // in original implementation, fields[0] contains number of row
-    // first row with numbers is indexed from 0, thus the last row is 12
-    // but there are 13 total rows
+  // modifiedFields is indexed from 1 in original implementation
+  // in original implementation, fields[0] contains number of row
+  // first row with numbers is indexed from 0, thus the last row is 12
+  // but there are 13 total rows
+
+  for(int i = 0; i < Dataset::PWM::NUM_ROWS; i++){
     int sum = 0;
-    for(int i = 0; i < Dataset::PWM::NUM_ROWS; i++){
-      map<int, double> modifiedFields;
-      for(int j = 0; j < Dataset::PWM::NUM_COLUMNS; j++){
-        sum += data.PWM_data.matrix_arr[i][j];
-        modifiedFields[j+1] = log2((data.PWM_data.matrix_arr[i][j] + 0.25) / (sum + 1)) - log2(0.25);
-      }
-      // TEST ME!!!
-      // TEST ME!!!
-      // TEST ME!!!
-      int max = findMax(modifiedFields);
-      bestCase.push_back(max);
-      for(int k = 1; k < Dataset::PWM::NUM_COLUMNS; k++){
-        pwmHash[{data.PWM_data.matrix_arr[i][0] + 1, nucleotideStack[k - 1]}] = modifiedFields[k];
-      }
+    map<int, double> modifiedFields;
+    for(int j = 0; j < Dataset::PWM::NUM_COLUMNS; j++){
+      sum += data.PWM_data.matrix_arr[i][j];
+      modifiedFields[j+1] = log2((static_cast<double>(data.PWM_data.matrix_arr[i][j]) + 0.25) / (sum + 1)) - log2(0.25);
+    }
+    size_t sz = modifiedFields.size();
+    // TEST ME!!!
+    // TEST ME!!!
+    // TEST ME!!!
+    bestCase.push_back(findMax(modifiedFields));
+    for(int k = 1; k < Dataset::PWM::NUM_COLUMNS + 1; k++){
+      pwmHash[{data.PWM_data.matrix_arr[i][0] + 1, nucleotideStack[k - 1]}] = modifiedFields[k];
+    }
+    if(sz != modifiedFields.size()){
+      cerr << "modifiedFields has changed in size!!\n\tEXITING\n";
+      exit(1);
     }
   }
-}
 
-// REQUIRES: within data, PWM_data is filled in
-// EFFECTS: created enumerated kmers using a cutoff and a PWM matrix, returns the map
-// note: for now, searches for a pre-calculated cutoff
-void Enumerate_kmer(Dataset &data){
-  map<pair<int, string>, int, hash_comp> pwmHash;
-  vector<string> nucleotideStack;
-  vector<int> bestCase;
-  map<string, int> retHash;
-  double cutoff = 0.0;
-
-  parse_pwm(data, pwmHash, nucleotideStack, bestCase, retHash);
-  // pwmHash is now filled in, along with bestCase
-  if(data.settings.verbose){
-    cout << "No cutoff defined, so earching for pre-calculated cutoff." << '\n';
-  }
-  cutoff = get_cutoff(data, pwmHash, nucleotideStack, bestCase, retHash);
-
-  if(cutoff == 0.0){
-    cerr << "cutoff value unchanged within Enumerate_kmer.cpp\n\tEXITING\n";
-    exit(1);
-  }
-
-  create_kmer(data, pwmHash, nucleotideStack, bestCase, retHash, cutoff);
-
-  // print_kmer is replaced by a simple object assignment
-  for(auto pair : retHash){
-    if(pair.second > cutoff){
-      retHash.erase(pair.first);
-    }
-  }
-  data.kmerHash = retHash;
 }
