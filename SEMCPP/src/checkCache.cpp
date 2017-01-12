@@ -147,6 +147,8 @@ void checkCache(const Dataset &data, string outfile){
           message = sqlite3_bind_int(staged_query, 2, data.settings.iteration);
           problemEncountered(message, "bind_int for staged_query");
 
+          // MAKE CHANGES HERE 
+
           message = sqlite3_step(staged_query);
           if(message != SQLITE_DONE){
             cerr << "Statement is not done!\n\tEXITING" << endl;
