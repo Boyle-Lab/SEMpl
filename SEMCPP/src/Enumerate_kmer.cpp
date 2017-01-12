@@ -35,7 +35,7 @@ static void create_kmer(const Dataset &data,
                         const double cutoff);
 static void parse_pwm(const Dataset &data,
                       map<pair<int, string>, int, hash_comp> &pwmHash,
-                      vector<string> &nucleotideStack,
+                      const vector<string> &nucleotideStack,
                       vector<int> &bestCase);
 
 // REQUIRES: within data, PWM_data is filled in
@@ -43,7 +43,7 @@ static void parse_pwm(const Dataset &data,
 // note: for now, searches for a pre-calculated cutoff
 void Enumerate_kmer(Dataset &data){
   map<pair<int, string>, int, hash_comp> pwmHash;
-  vector<string> nucleotideStack;
+  vector<string> nucleotideStack {"A", "C", "G", "T"};
   vector<int> bestCase;
   double cutoff = 0.0;
 
@@ -67,6 +67,7 @@ void Enumerate_kmer(Dataset &data){
       data.kmerHash.erase(pair.first);
     }
   }
+  // data.kmerHash is now ready for use
 }
 
 // EFFECTS: finds maximum mapped value
@@ -155,13 +156,8 @@ static double get_cutoff(const Dataset &data){
 
 static void parse_pwm(const Dataset &data,
                       map<pair<int, string>, int, hash_comp> &pwmHash,
-                      vector<string> &nucleotideStack,
+                      const vector<string> &nucleotideStack,
                       vector<int> &bestCase){
-
-  nucleotideStack.push_back("A");
-  nucleotideStack.push_back("C");
-  nucleotideStack.push_back("G");
-  nucleotideStack.push_back("T");
 
   // modifiedFields is indexed from 1 in original implementation
   // in original implementation, fields[0] contains number of row
@@ -175,7 +171,9 @@ static void parse_pwm(const Dataset &data,
       sum += data.PWM_data.matrix_arr[i][j];
       modifiedFields[j+1] = log2((static_cast<double>(data.PWM_data.matrix_arr[i][j]) + 0.25) / (sum + 1)) - log2(0.25);
     }
+    #ifdef DEBUG
     size_t sz = modifiedFields.size();
+    #endif
     // TEST ME!!!
     // TEST ME!!!
     // TEST ME!!!
@@ -183,10 +181,12 @@ static void parse_pwm(const Dataset &data,
     for(int k = 1; k < Dataset::PWM::NUM_COLUMNS + 1; k++){
       pwmHash[{data.PWM_data.matrix_arr[i][0] + 1, nucleotideStack[k - 1]}] = modifiedFields[k];
     }
+    #ifdef DEBUG
     if(sz != modifiedFields.size()){
       cerr << "modifiedFields has changed in size!!\n\tEXITING\n";
       exit(1);
     }
+    #endif
   }
 
 }

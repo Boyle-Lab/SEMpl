@@ -16,6 +16,7 @@
 #include <cstdlib>
 #include <map>
 #include <fstream>
+#include <getopt.h>
 using namespace std;
 
 /*
@@ -24,7 +25,7 @@ using namespace std;
  -merge_file examples/wgEncodeOpenChromDnaseHepg2Pk.narrowPeak
  -big_wig examples/wgEncodeHaibTfbsHepg2Hnf4asc8987V0416101RawRep1.bigWig
  -TF_name HNF4A -output examples/HNF4A/"
- */
+*/
 
 void generateSNPEffectMatrix(Dataset &data);
 
@@ -41,39 +42,62 @@ int main(int argc, char **argv){
 
 	cout << "Running Iterative SEM building..\n";
 
-	string parse = "";
-
-	for(int iteration = 0; iteration < argc; iteration++){
-		cout << argv[iteration] << ' ';
-
-		data.command += argv[iteration];
-		data.command += " ";
-
-		parse = argv[iteration];
-
-		if(parse == "-PWM"){
-			data.PWM_file = pwm = argv[iteration+1];
-		}
-		else if(parse == "-merge_file"){
-			data.DNase_file = dnase = argv[iteration+1];
-		}
-		else if(parse == "-big_wig"){
-			chip = argv[iteration+1];
-		}
-		else if(parse == "-TF_name"){
-			data.TF_name = tf = argv[iteration+1];
-		}
-		else if(parse == "-output"){
-			data.output_dir = argv[iteration+1];
-		}
-		else if(parse == "-readcache"){
-			data.cachefile = argv[iteration+1];
-		}
-
-
-
-	}
-	cout << endl;
+    int index = -1;
+    const option long_opts[] = {
+        {"PWM", required_argument, NULL, 'p'},
+        {"merge_file", required_argument, NULL, 'm'},
+        {"big_wig", required_argument, NULL, 'b'},
+        {"TF_name", required_argument, NULL, 't'},
+        {"output", required_argument, NULL, 'o'},
+        {"readcache", optional_argument, NULL,  'c'},
+        {0, 0, 0, 0}
+    };
+    char c = '\0';
+    c = static_cast<char>(getopt_long_only(argc, argv, "p:m:b:t:o:c::", long_opts, &index));
+    do {
+        switch (c) {
+            case 'p':
+                data.PWM_file = optarg;
+#ifdef DEBUG
+                cout << "\tPWM!" << endl;
+#endif
+                break;
+            case 'm':
+                data.DNase_file = optarg;
+#ifdef DEBUG
+                cout << "\tmerge_file!" << endl;
+#endif
+                break;
+            case 'b':
+                data.bigwig_file = optarg;
+#ifdef DEBUG
+                cout << "\tbigwig!" << endl;
+#endif
+                break;
+            case 't':
+                data.TF_name = optarg;
+#ifdef DEBUG
+                cout << "\tTF_name!" << endl;
+#endif
+                break;
+            case 'o':
+                data.output_dir = optarg;
+#ifdef DEBUG
+                cout << "\t output!" << endl;
+#endif
+                break;
+            case 'c':
+            if(optarg)
+                data.cachefile = optarg;
+#ifdef DEBUG
+                cout << "\tcachefile!" << endl;
+#endif
+                break;
+            default:
+                break;
+        }
+        c = static_cast<char>(getopt_long_only(argc, argv, "p:m:b:t:o:c::", long_opts, &index));
+    } while(c != -1);
 
 	if(pwm.empty()){
 		cout << "No PWM file given" << endl;
