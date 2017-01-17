@@ -31,21 +31,26 @@ void alignToGenomeWrapper(Dataset &data, int iteration, string genome = "hg19") 
 
 // INFILE FROM ORIGINAL ALGORITHM IS ENUMERATED_KMER
 static void align_SNPs(Dataset &data, int length, const vector<string> &nucleotideStack){
+
+  vector<string> cache_output(nucleotideStack.size());
+
   for(int position  = 0; position  < length; position++){
     for(int j = 0; j < static_cast<int>(nucleotideStack.size()); j++){
-      string name =  "fa/" + nucleotideStack[j] + "_pos" + to_string(position);
+
+      //string name =  "fa/" + nucleotideStack[j] + "_pos" + to_string(position);
 
       vector<string> new_kmer;
       bool zero_file_size = false;
                                   // nucleotide
       changeBase(data, position, nucleotideStack[j], new_kmer);
-      checkCache(data);
+      checkCache(data, cache_output);
       // pass in a sequence column, which is from output of checkCache
-      zero_file_size = seq_col_to_fa(data, 0);
+      zero_file_size = seq_col_to_fa(cache_output);
       zero_file_size = !zero_file_size;
       if(!zero_file_size){
         bowtie_genome_map(data, length);
       }
+      cache_output.clear();
     }
   }
 }

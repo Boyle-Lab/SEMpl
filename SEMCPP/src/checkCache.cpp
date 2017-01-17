@@ -28,7 +28,7 @@ static void prepareStmt(sqlite3 *db, string stmt, sqlite3_stmt *query);
 static void checkDone(const int &message, const string &s);
 
 
-void checkCache(const Dataset &data, string outfile){
+void checkCache(const Dataset &data, vector<string> &vec){
   vector<int> output;
 
   bool newcache = fileExists(data.cachefile);
@@ -48,11 +48,11 @@ void checkCache(const Dataset &data, string outfile){
   //const char* tail_msg;
 
   if(newcache){
-    ofstream OUTF(outfile);
-    if(!OUTF){
-      cerr << "There is a problem with " << data.cachefile << "\n\tEXITING\n";
-      exit(1);
-    }
+    // ofstream OUTF(outfile);
+    // if(!OUTF){
+    //   cerr << "There is a problem with " << data.cachefile << "\n\tEXITING\n";
+    //   exit(1);
+    // }
 
     sqlite3_stmt* seen_query = nullptr;
     prepareStmt(cacheDB, msg, seen_query);
@@ -137,8 +137,8 @@ void checkCache(const Dataset &data, string outfile){
           message = sqlite3_bind_int(staged_query, 2, data.settings.iteration);
           problemEncountered(message, "bind_int for staged_query");
 
-          // MAKE CHANGES HERE
-          // Update: don't need to print out anything
+          // return by reference
+          vec.push_back(kmer_pair.first);
 
           message = sqlite3_step(staged_query);
           checkDone(message, "staged query execution line 142");
@@ -151,19 +151,19 @@ void checkCache(const Dataset &data, string outfile){
           cerr << "Statement is not done!\n\tEXITING" << endl;
           exit(1);
         }
-        OUTF << kmer_pair.first << '\n';
+        //OUTF << kmer_pair.first << '\n';
       }
       sqlite3_reset(seen_query);
       sqlite3_clear_bindings(seen_query);
       sqlite3_reset(data_query);
       sqlite3_clear_bindings(data_query);
     }
-    OUTF.close();
-    OUTF.open(data.cachefile);
-    for(auto el : output){
-      OUTF << el << '\n';
-    }
-    OUTF.close();
+    //OUTF.close();
+    //OUTF.open(data.cachefile);
+    //for(auto el : output){
+    //  OUTF << el << '\n';
+    // }
+    // OUTF.close();
   }
   else{
     if(data.settings.verbose){

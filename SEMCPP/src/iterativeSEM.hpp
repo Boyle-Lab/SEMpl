@@ -117,7 +117,7 @@ void accumSummary_scale(Dataset &data);
 void alignToGenomeWrapper(Dataset &data);
 void bowtie_genome_map(Dataset &data);
 void changeBase(Dataset &data);
-void checkCache(Dataset &data, std::string outfile = "none");
+void checkCache(Dataset &data, std::vector<std::string> &cache_output);
 void combineBedFiles(Dataset &data);
 void common(Dataset &data);
 void Enumerate_kmer(Dataset &data);
@@ -133,7 +133,7 @@ double get_threshold(Dataset &data);
 void pwm_to_tfm(Dataset &data);
 void quality_control(Dataset &data);
 void scramble_kmer(Dataset &data);
-bool seq_col_to_fa(Dataset &data, int col);
+bool seq_col_to_fa(const std::vector<std::string> &column);
 void writeCache(Dataset &data);
 
 #endif /* iterativeSEM_hpp */
