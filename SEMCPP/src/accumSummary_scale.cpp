@@ -19,7 +19,7 @@ void split(string str, string splitBy, vector<string>& tokens);
 
 //Extra parameters should be passed in the struct Dataset
 
-void accumSummary_scale(Dataset &data, string hfile, string cfile, int scale){
+void accumSummary_scale(Dataset &data, const string &hfile, const string &cfile, int scale){
 
 	// open file using library, below code is necessary
 	// because of C++ type system regarding const

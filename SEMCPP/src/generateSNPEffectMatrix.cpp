@@ -151,7 +151,7 @@ void find_signal(Dataset &data){ //This function call needs to be checked or alt
         if(file == "/pos/"){
             targetDir += file + "/";
             filteredBedfile = targetDir + file + "_filtered.bed";
-            accumSummary_scale(data);
+            //accumSummary_scale(data);
             if(data.settings.writecache){
                 writeCache(data);
             }
@@ -202,10 +202,10 @@ void create_baselines(Dataset &data, int length){
     system(cmd.c_str());
 
     if(!data.settings.fastrun){
-        scramble_kmer(data);
-        checkCache(data);
-        seq_col_to_fa(data, 0);
-        bowtie_genome_map(data);
+        //scramble_kmer(data);
+        //checkCache(data);
+        //seq_col_to_fa(data, 0);
+        //bowtie_genome_map(data);
         cmd = "./bin/bedtools intersect -a " + data.output_dir + "/BASELINE/Scrambled_kmer.bed -b " + data.DNase_file + " -wa -u > "+ data.output_dir + "/BASELINE/Scrambled_kmer_filtered.bed";
         system(cmd.c_str());
         //accumSummary_scale(data, data.output_dir + "/BASELINE/Scrambled_kmer_filtered.bed", )

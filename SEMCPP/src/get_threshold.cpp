@@ -11,7 +11,6 @@ const string TEMPFILE = "output/temp.txt";
 //EFFECTS: returns score threshold
 //NOTE: I believe pval == 0.0009765625, also the original version takes a file address I believe
 
-//The struct should be made to contain pval instead of passing as parameter
 double get_threshold(Dataset & data, double pval){
 
 	pwm_to_tfm(data);

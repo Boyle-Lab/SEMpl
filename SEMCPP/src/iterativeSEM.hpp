@@ -113,13 +113,14 @@ struct Dataset {
 void generateSNPEffectMatrix(Dataset &data);
 
 //src files
-void accumSummary_scale(Dataset &data);
-void alignToGenomeWrapper(Dataset &data);
-void bowtie_genome_map(Dataset &data);
-void changeBase(Dataset &data);
+void accumSummary_scale(Dataset &data, const std::string &hfile, const std::string &cfile, int scale);
+void alignToGenomeWrapper(Dataset &data, int iteration, std::string genome = "hg19");
+void bowtie_genome_map(Dataset &data, int length, const std::string& genome);
+void changeBase(Dataset &data, int position, std::string nucleotide,
+                                             std::vector<std::string> &new_kmer_vec,
+                                              std::string const &genome);
 void checkCache(Dataset &data, std::vector<std::string> &cache_output);
 void combineBedFiles(Dataset &data);
-void common(Dataset &data);
 void Enumerate_kmer(Dataset &data);
 void filterDNaseWrapper(Dataset &data);
 void findMaximumAverageSignalWrapper(Dataset &data);
@@ -129,7 +130,8 @@ void generateRplot(Dataset &data);
 void generateSelfInfo(Dataset &data);
 void generateSEM(Dataset &data);
 void generateSignalMethylTable(Dataset &data);
-double get_threshold(Dataset &data);
+//                                      as noted in original implementation
+double get_threshold(Dataset &data, double pval = 0.0009765625);
 void pwm_to_tfm(Dataset &data);
 void quality_control(Dataset &data);
 void scramble_kmer(Dataset &data);

@@ -1,7 +1,7 @@
 #include "iterativeSEM.hpp"
 using namespace std;
 
-bool seq_col_to_fa(const vector<string> &column){
+bool seq_col_to_fa(const vector<string> &column/*, const string &name*/){
 
   // takes input from checkCache, made a mark in checkCache at line 150
   // UPDATE: made changes
@@ -12,9 +12,11 @@ bool seq_col_to_fa(const vector<string> &column){
   // writes to a file sucessfully
   if(column.empty()) return false;
 
-  for(auto val : column){
-
-  }
+  // ofstream OUTF(name + ".fa");
+  //
+  // for(auto val : column){
+  //   OUTF << ' ' << val << "\n>" << val << '\n';
+  // }
 
   // how to proceed?
 

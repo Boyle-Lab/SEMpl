@@ -32,10 +32,7 @@ obj/%.o : lib/sqlite3/%.c
 		gcc $(DEBUG_OR_OPTIMIZE) -c $< -o $@
 
 clean:
-		rm *.o
-		rm src/*.o
-		rm $(EXECUTABLE)
-objclean:
-	rm obj/*.o
+		rm -f obj/*.o
+		rm -f $(EXECUTABLE)
 
 .PHONY: all
