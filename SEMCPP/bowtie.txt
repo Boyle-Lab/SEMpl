@@ -1,0 +1,31 @@
+how to work with bowtie?
+
+main just processes the arguments, within main_bowtie.cpp
+there is a "driver" function in ebwt_search.cpp, start there.
+driver function takes six arguments, const char * type,
+				     const string& ebwtFileBase,
+				     const string& query,
+				     const vector<string>& queries,
+				     const vector<string>& qualities,
+				     const string& outfile.
+"type" is seemingly not used within driver
+"ebwtFileBase" is some sort of name for a file
+
+main seems to just set up bowtie, but ebwt_search.cpp actually
+processes data and outputs whatever output
+
+driver within ebwt_search.cpp is the "driver."
+driver expects filenames.
+part of driver is just processing the files
+
+TODO: determine at what point the driver just performs computation,
+      and pass directly before that
+
+NOTE: there are variables mates1, mates2, mates12, and are global.
+      these variables are seemingly important in some way to the driver.
+
+      investigate line 2539 within ebwt_search.cpp, as to the meaning.
+
+will interact with ebwt_search.cpp
+
+readSequenceFile function is within sequence_io.h
