@@ -1,0 +1,31 @@
+bedtools will be used for the intersect function which will be comparing the 
+	read and mergefile to identify .
+	
+	e.g. - "./bin/bedtools intersect -a $readfile -b $mergefile -wa -u | sort | uniq > $bedfile"
+	
+The -a option used in declaring the first bed file to be compared just as -b
+	denotes that there will be a second file to compare with.
+
+-wa will tell bedtools to write the original entry in the readfile for each 
+	overlap.
+	
+The -u option tells bedtools to only write the original in A once for each 
+	found overlap.
+	
+Identifies chromosones based upon chromosone name and final position, so if the 
+	first and third elements of a line match it will print the specific chromosone 
+	data.
+	
+Bed format has at a minimum three fields of chromosone name, starting position, 
+	and end position but can have nine additional fields.
+	
+May be able to run or sorting algorithm that identifies the unique chromosones 
+	based on the fields of matching string of chromosone name and end position 
+	and if true print the first instance from the readfile.
+	
+Prints out unique chromosones which in our case would have to save them as part 
+	of the struct but also be numerically/alphabetically sorted and checks again 
+	repeats of lines.(Vector of strings most likely)
+	
+Actual sorting algorithm found in the intersectfile.cpp and the initialization of
+	flags can be found in ContextIntersect.cpp file.

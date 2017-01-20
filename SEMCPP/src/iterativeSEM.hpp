@@ -114,7 +114,7 @@ void generateSNPEffectMatrix(Dataset &data);
 
 //src files
 void accumSummary_scale(Dataset &data, const std::string &hfile, const std::string &cfile, int scale);
-void alignToGenomeWrapper(Dataset &data, int iteration, std::string genome = "hg19");
+void alignToGenomeWrapper(Dataset &data, int iteration, std::string genome = "hg19");       //If we are using structs for all functions shouldn't we pass these additional arguments in the struct
 void bowtie_genome_map(Dataset &data, int length, const std::string& genome);
 void changeBase(Dataset &data, int position, std::string nucleotide,
                                              std::vector<std::string> &new_kmer_vec,
