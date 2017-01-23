@@ -24,8 +24,25 @@ TODO: determine at what point the driver just performs computation,
 NOTE: there are variables mates1, mates2, mates12, and are global.
       these variables are seemingly important in some way to the driver.
 
-      investigate line 2539 within ebwt_search.cpp, as to the meaning.
+      investigate line 2522 within ebwt_search.cpp, as to the meaning.
 
 will interact with ebwt_search.cpp
 
 readSequenceFile function is within sequence_io.h
+
+my $command = "./bin/bowtie --quiet -a -v 0 $GENOME -f $DNA_FA_FILE";
+                      print results only, report all alignments per read,
+                      report end-to-end hits with less than 0 mismatches.
+                      what are genome and dna_fa_file?
+
+
+questions
+  what does adjustedEbwtFileBase(args) do?
+    I think it just finds a correct filename to open
+  what does readSequenceString(args) do?
+    parses a comma-delimited list of strings of type T
+    into a vector
+  what does tokenize(args) do?
+    according to description, just splits string given by argument
+    according to given delimiter
+    is too similar to readSequenceString, could be a typo for readSequenceString
