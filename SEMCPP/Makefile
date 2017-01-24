@@ -4,7 +4,8 @@ C++FLAGS=-Wall -Werror -pedantic --std=c++11
 
 DEBUG_OR_OPTIMIZE = -DDEBUG -g
 
-C++SOURCES=src/iterativeSEM.cpp src/pwm_to_tfm.cpp src/get_threshold.cpp src/accumSummary_scale.cpp src/generatePWMfromSEM.cpp src/generateSNPEffectMatrix.cpp src/Enumerate_kmer.cpp src/common.cpp src/alignToGenomeWrapper.cpp src/checkCache.cpp
+#C++SOURCES=src/iterativeSEM.cpp src/pwm_to_tfm.cpp src/get_threshold.cpp src/accumSummary_scale.cpp src/generatePWMfromSEM.cpp src/generateSNPEffectMatrix.cpp src/Enumerate_kmer.cpp src/common.cpp src/alignToGenomeWrapper.cpp src/checkCache.cpp
+C++SOURCES=$(wildcard src/*.cpp)
 
 C++OBJ=$(subst src/,obj/,$(C++SOURCES))
 C++OBJ:=$(C++OBJ:.cpp=.o)
