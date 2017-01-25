@@ -19,13 +19,21 @@ Identifies chromosones based upon chromosone name and final position, so if the
 Bed format has at a minimum three fields of chromosone name, starting position, 
 	and end position but can have nine additional fields.
 	
-May be able to run or sorting algorithm that identifies the unique chromosones 
-	based on the fields of matching string of chromosone name and end position 
-	and if true print the first instance from the readfile.
-	
 Prints out unique chromosones which in our case would have to save them as part 
 	of the struct but also be numerically/alphabetically sorted and checks again 
 	repeats of lines.(Vector of strings most likely)
 	
 Actual sorting algorithm found in the intersectfile.cpp and the initialization of
 	flags can be found in ContextIntersect.cpp file.
+	
+Change the arguments to variables or possibly a struct dedicated to running bedtools
+	that are passed to the function bedtools (going to change bedtools into a 
+	function format.
+
+Must bypass FileRecordTypeChecker since it will be passed as a struct and for the function 
+	to be used it must be a valid struct.
+
+Will need to apply the same methods of isBedFormat in FileRecordTypeChecker to verify the 
+	formatting is valid for Bed format.
+
+*Continue investigating how to substitute in structs for file types.
