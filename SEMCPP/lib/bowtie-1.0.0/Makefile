@@ -88,7 +88,7 @@ SEARCH_CPPS = qual.cpp pat.cpp ebwt_search_util.cpp ref_aligner.cpp \
 SEARCH_CPPS_MAIN = $(SEARCH_CPPS) bowtie_main.cpp
 
 BUILD_CPPS =
-BUILD_CPPS_MAIN = $(BUILD_CPPS) bowtie_build_main.cpp
+BUILD_CPPS_MAIN = $(BUILD_CPPS) #bowtie_build_main.cpp
 
 SEARCH_FRAGMENTS = $(wildcard search_*_phase*.c)
 VERSION = $(shell cat VERSION)
@@ -164,6 +164,8 @@ SRC_PKG_LIST = $(wildcard *.h) \
 
 BIN_PKG_LIST = $(GENERAL_LIST)
 
+library: libbowtie.so
+
 all: $(BIN_LIST)
 
 allall: $(BIN_LIST) $(BIN_LIST_AUX)
@@ -215,9 +217,9 @@ bowtie-build-debug: ebwt_build.cpp $(OTHER_CPPS) $(HEADERS)
 # bowtie targets
 #
 
-bowtie: ebwt_search.cpp $(SEARCH_CPPS) $(OTHER_CPPS) $(HEADERS) $(SEARCH_FRAGMENTS)
+libbowtie.so: ebwt_search.cpp $(SEARCH_CPPS) $(OTHER_CPPS) $(HEADERS) $(SEARCH_FRAGMENTS)
 	$(CXX) $(RELEASE_FLAGS) $(RELEASE_DEFS) $(ALL_FLAGS) \
-		$(DEFS) $(NOASSERT_FLAGS) -Wall \
+		$(DEFS) $(NOASSERT_FLAGS) -Wall -fPIC -shared \
 		$(INC) \
 		-o $@ $< \
 		$(OTHER_CPPS) $(SEARCH_CPPS_MAIN) \
@@ -308,5 +310,5 @@ clean:
 	rm -f $(BIN_LIST) $(BIN_LIST_AUX) \
 	bowtie_prof \
 	$(addsuffix .exe,$(BIN_LIST) $(BIN_LIST_AUX) bowtie_prof) \
-	bowtie-src.zip bowtie-bin.zip
+	bowtie-src.zip bowtie-bin.zip bowtie.so
 	rm -f core.*

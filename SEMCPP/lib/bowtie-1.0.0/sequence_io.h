@@ -46,7 +46,7 @@ static void readSequenceFile(const std::string& infile,
 			// Fill the new empty string with the next sequence from
 			// the file.  SeqAn allocates just enough mem for it (at
 			// the expense of lots of file seeks, which can add up)
-			seqan::read(in, ss.back(), TFile()); 
+			seqan::read(in, ss.back(), TFile());
 			if(seqan::empty(ss.back())) {
 				ss.pop_back();
 				break;
@@ -117,7 +117,7 @@ static void readSequenceFiles(const std::vector<std::string>& infiles,
 }
 
 /**
- * Parse a comma-delimited list of strings of type T into a vector. 
+ * Parse a comma-delimited list of strings of type T into a vector.
  */
 template <typename T>
 void readSequenceString(const std::string& s,
@@ -158,7 +158,7 @@ void readSequenceString(const std::string& s,
 }
 
 /**
- * Parse a comma-delimited list of strings of type T into a vector. 
+ * Parse a comma-delimited list of strings of type T into a vector.
  * Doesn't require callee to supply a baseCutoff.
  */
 template <typename T>
@@ -167,7 +167,7 @@ void readSequenceString(const std::string& s,
                         int seqCutoff = -1,
                         bool reverse = false)
 {
-	int64_t i = 0xffffffffll;
+	int64_t i = 0xffffffffll; // maximum possible value
 	readSequenceString(s, ss, i, seqCutoff, reverse);
 }
 

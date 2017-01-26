@@ -323,7 +323,7 @@ public:
 	{
 		_outs.push_back(out);
                 vector<MUTEX_T*>::iterator it;
-                
+
                 _locks.push_back(new MUTEX_T);
 		initDumps();
 	}
@@ -1703,4 +1703,3 @@ public:
 };
 
 #endif /*HIT_H_*/
-

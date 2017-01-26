@@ -18,10 +18,17 @@ driver within ebwt_search.cpp is the "driver."
 driver expects filenames.
 part of driver is just processing the files
 
-TODO: determine at what point the driver just performs computation,
-      and pass directly before that
+TODO: will "redesign" int bowtie(int, const char**)
 
-NOTE: there are variables mates1, mates2, mates12, and are global.
+NOTE: stateful mode is off, I believe
+
+      when running make, on current Makefile, there is a failed compilation
+      as there is a similarly named library within the clang library on macOS
+
+      this problem does not occur when compiling on Linux, as I compiled
+      successfully within CAEN
+
+      there are variables mates1, mates2, mates12, and are global.
       these variables are seemingly important in some way to the driver.
 
       investigate line 2522 within ebwt_search.cpp, as to the meaning.

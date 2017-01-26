@@ -1331,7 +1331,7 @@ static void exactSearch(PairedPatternSource& _patsrc,
 			}
 		}
 
-		for(int i = 0; i < nthreads; i++) 
+		for(int i = 0; i < nthreads; i++)
                     threads[i]->join();
 
 	}
@@ -1545,7 +1545,7 @@ static void mismatchSearchFull(PairedPatternSource& _patsrc,
                                 threads[i] = new tthread::thread(mismatchSearchWorkerFull, (void*)&tids[i]);
 		}
 
-		for(int i = 0; i < nthreads; i++) 
+		for(int i = 0; i < nthreads; i++)
                     threads[i]->join();
 
     }
@@ -1875,7 +1875,7 @@ static void twoOrThreeMismatchSearchFull(
                             threads[i] = new tthread::thread(twoOrThreeMismatchSearchWorkerFull, (void *)&tids[i]);
 		}
 
-		for(int i = 0; i < nthreads; i++) 
+		for(int i = 0; i < nthreads; i++)
                     threads[i]->join();
     }
 	if(refs != NULL) delete refs;
@@ -2262,7 +2262,7 @@ static void seededQualCutoffSearchFull(
                                 threads[i] = new tthread::thread(seededQualSearchWorkerFull, (void*)&tids[i]);
 		}
 
-		for(int i = 0; i < nthreads; i++) 
+		for(int i = 0; i < nthreads; i++)
                     threads[i]->join();
 
 	}
@@ -2366,13 +2366,16 @@ static void driver(const char * type,
 			vector<string> origFiles;
 			tokenize(origString, ",", origFiles);
 			readSequenceFiles<String<Dna5>, Fasta>(origFiles, os);
+                                                  // fills os
 		} else {
 			// Read sequence
 			readSequenceString(origString, os);
+                                  // fills os
 		}
 	}
 	// Adjust
 	adjustedEbwtFileBase = adjustEbwtBase(argv0, ebwtFileBase, verbose);
+                            // finds ebwt file
 
 	vector<PatternSource*> patsrcs_a;
 	vector<PatternSource*> patsrcs_b;

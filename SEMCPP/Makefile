@@ -12,6 +12,8 @@ C++OBJ:=$(C++OBJ:.cpp=.o)
 
 BIGWIGLIBRARY=-lBigWig
 BIGWIGLIBRARYLOC=-Llib/libBigWig-master
+BOWTIELIBRARY=-lbowtie
+BOWTIELIBRARYLOC=-Llib/bowtie-1.0.0
 CSOURCES=bw{Read,Stats,Values,Write}.c
 TFMHEADER=lib/TFM-Pvalue/{Matrix,ParseException,ArgumentException,FileException}.cpp
 SQLITESOURCE=lib/sqlite3/sqlite3.c
