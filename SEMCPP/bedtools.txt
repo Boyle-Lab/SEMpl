@@ -34,6 +34,51 @@ Must bypass FileRecordTypeChecker since it will be passed as a struct and for th
 	to be used it must be a valid struct.
 
 Will need to apply the same methods of isBedFormat in FileRecordTypeChecker to verify the 
-	formatting is valid for Bed format.
+	formatting is valid for Bed format. (line 253)
 
-*Continue investigating how to substitute in structs for file types.
+Will need to check the number of fields in the bed file to denote which method to use 
+	(i.e. passesBed5 line 443 FileRecordTypeChecker)
+
+Will bypass FileRecordManager checks unless a step to check for the struct is implemented 
+	or if file is otherwise manipulated.
+
+Files dealt with as a class in bedtools the class is Bed + (number of elements in bedfile) + 
+	Interval.
+
+The class described extends Bed3Interval which extends Record. In turn these are the files which
+	disect the input bed file.
+
+The disection of the files occurs in the SingleLineDelimTextFileReader and utilizes the get 
+	field function. (e.g. in Bed#Interval.cpp line 26)
+
+File Record Manager calls on the function to initialize and therefore get the values from the file.
+
+The values seem to be stored in a class called Quickstring which also contains a function 
+	for assigning values or more so pointers to be used to reference the values for each distinct 
+	column element.
+
+	-Quickstring has a private pointer called buffer
+	-Buffer is a pointer which can be used as an array to access the variables in memory
+	 through defference as well as be resized similar to a vector when additional fields 
+	 are found or implemented such as when the initialization of elements in the bed formatting
+	 are entered and additional fields are added due to the new traits of the inherited class.
+	-In appending buffer the memcpy function of string is used and in this case is fed the destination
+	 of buffer + an offset amount called currSize, the input values, as well as the input length of 
+	 the data
+
+*Learn more about pointers in order to fully understand how the value is being stored.
+
+*What is sline and why is it being added to the start pos
+	-sLine seems to be used in data retrieval from the files where it is a variable used to 
+	 hold full lines when disecting the input file
+	-Appears to be there to append the elements to _buffer with a length of endpos-startpos
+
+Program path:
+	bedtools.cpp ->  bedtoolsdriver.cpp -> gets context -> contextIntersect.cpp-> bedtoolsdriver.cpp ->
+	-> gets tool -> tool directs to context file -> initialize IntersectFile.cpp -> bedtoolsdriver.cpp ->
+	-> initialize RecordOutputManager.cpp -> IntersectFile.cpp findNext of hits -> processHits -> 
+	-> cleanupHits -> finalizeCalculations -> giveFinalReport? -> bedtools.cpp -> return 0
+
+*Investigate hits and RecordKeyVector
+
+*Future tasks look into the output of bedtools and change to adding it to the struct in a type of vector
