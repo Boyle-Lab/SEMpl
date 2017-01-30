@@ -2346,12 +2346,16 @@ static void driver(const char * type,
                    const vector<string>& qualities,
                    const string& outfile)
 {
+  // passes genome, the actual query, which contains all queries, but there is only one
+  // there should be no qualities, I believe, and no outfile
 	if(verbose || startVerbose)  {
 		cerr << "Entered driver(): "; logTime(cerr, true);
 	}
 	// Vector of the reference sequences; used for sanity-checking
 	vector<String<Dna5> > os;
 	// Read reference sequences from the command-line or from a FASTA file
+
+  // will be false, by Cody
 	if(!origString.empty()) {
 		// Determine if it's a file by looking at whether it has a FASTA-like
 		// extension
@@ -2385,6 +2389,7 @@ static void driver(const char * type,
 	// stateful mode
 	bool paired = mates1.size() > 0 || mates12.size() > 0;
 	if(paired) stateful = true;
+    // stateful should still be false, by Cody
 
 	// Create list of pattern sources for paired reads appearing
 	// interleaved in a single file
@@ -2864,6 +2869,8 @@ int bowtie(int argc, const char **argv) {
 				cout << "Press key to continue..." << endl;
 				getchar();
 			}
+      // passes genome, the actual query, which contains all queries, but there is only one
+      // there should be no qualities, I believe, and no outfile
 			driver<String<Dna, Alloc<> > >("DNA", ebwtFile, query, queries, qualities, outfile);
 			CHUD_STOP();
 		}

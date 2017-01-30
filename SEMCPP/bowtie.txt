@@ -31,7 +31,7 @@ NOTE: stateful mode is off, I believe
       there are variables mates1, mates2, mates12, and are global.
       these variables are seemingly important in some way to the driver.
 
-      investigate line 2522 within ebwt_search.cpp, as to the meaning.
+      investigate line 2462 within ebwt_search.cpp, as to the meaning.
 
 will interact with ebwt_search.cpp
 
@@ -39,8 +39,15 @@ readSequenceFile function is within sequence_io.h
 
 my $command = "./bin/bowtie --quiet -a -v 0 $GENOME -f $DNA_FA_FILE";
                       print results only, report all alignments per read,
-                      report end-to-end hits with less than 0 mismatches.
-                      what are genome and dna_fa_file?
+                      report end-to-end hits with less than or
+                      equal to 0 mismatches.
+
+                      ebwtfile is $GENOME, i believe, while $DNA_FA_FILE is
+                      the query file
+
+I believe '1' or '2' or ARG_ONETWO are not used, despite global presence of
+the corresponding variables
+
 
 
 questions
