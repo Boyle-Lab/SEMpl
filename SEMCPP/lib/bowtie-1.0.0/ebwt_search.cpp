@@ -63,7 +63,7 @@ static char *patDumpfile; // filename to dump patterns to
 static bool solexaQuals;  // quality strings are solexa quals, not phred, and subtract 64 (not 33)
 static bool phred64Quals; // quality chars are phred, but must subtract 64 (not 33)
 static bool integerQuals; // quality strings are space-separated strings of integers, not ASCII
-static int maqLike;       // do maq-like searching
+static int maqLike /* true */;       // do maq-like searching
 static int seedLen;       // seed length (changed in Maq 0.6.4 from 24)
 static int seedMms;       // # mismatches allowed in seed (maq's -n)
 static int qualThresh;    // max qual-weighted hamming dist (maq's -e)
@@ -174,7 +174,7 @@ static void resetOptions() {
 	solexaQuals				= false; // quality strings are solexa quals, not phred, and subtract 64 (not 33)
 	phred64Quals			= false; // quality chars are phred, but must subtract 64 (not 33)
 	integerQuals			= false; // quality strings are space-separated strings of integers, not ASCII
-	maqLike					= 1;   // do maq-like searching
+	maqLike /* true */					= 1;   // do maq-like searching
 	seedLen					= 28;  // seed length (changed in Maq 0.6.4 from 24)
 	seedMms					= 2;   // # mismatches allowed in seed (maq's -n)
 	qualThresh				= 70;  // max qual-weighted hamming dist (maq's -e)
@@ -783,7 +783,7 @@ static void parseOptions(int argc, const char **argv) {
 				fileParallel = true;
 				break;
 			case 'v':
-				maqLike = 0;
+				maqLike /* true */ = 0;
 				mismatches = parseInt(0, 3, "-v arg must be at least 0 and at most 3");
 				break;
 			case '3': trim3 = parseInt(0, "-3/--trim3 arg must be at least 0"); break;
@@ -791,7 +791,7 @@ static void parseOptions(int argc, const char **argv) {
 			case 'o': offRate = parseInt(1, "-o/--offrate arg must be at least 1"); break;
 			case ARG_ISARATE: isaRate = parseInt(0, "--isarate arg must be at least 0"); break;
 			case 'e': qualThresh = parseInt(1, "-e/--err arg must be at least 1"); break;
-			case 'n': seedMms = parseInt(0, 3, "-n/--seedmms arg must be at least 0 and at most 3"); maqLike = 1; break;
+			case 'n': seedMms = parseInt(0, 3, "-n/--seedmms arg must be at least 0 and at most 3"); maqLike /* true */ = 1; break;
 			case 'l': seedLen = parseInt(5, "-l/--seedlen arg must be at least 5"); break;
 			case 'h': printUsage(cout); throw 0; break;
 			case ARG_USAGE: printUsage(cout); throw 0; break;
@@ -859,7 +859,7 @@ static void parseOptions(int argc, const char **argv) {
 		// ranges).
 		offRate = 32;
 	}
-	if(!maqLike && mismatches == 3) {
+	if(!maqLike /* true */ && mismatches == 3) {
 		// Much faster than normal 3-mismatch mode
 		stateful = true;
 	}
@@ -2339,7 +2339,7 @@ patsrcFromStrings(int format,
 static string argstr;
 
 template<typename TStr>
-static void driver(const char * type,
+static void driver(const char * type, // "DNA", by Cody
                    const string& ebwtFileBase,
                    const string& query,
                    const vector<string>& queries,
@@ -2347,7 +2347,7 @@ static void driver(const char * type,
                    const string& outfile)
 {
   // passes genome, the actual query, which contains all queries, but there is only one
-  // there should be no qualities, I believe, and no outfile
+  // there should be no qualities, I believe, and no outfile, by Cody
 	if(verbose || startVerbose)  {
 		cerr << "Entered driver(): "; logTime(cerr, true);
 	}
@@ -2452,6 +2452,7 @@ static void driver(const char * type,
 			break;
 		}
 	}
+
 	// All mates/mate files must be paired
 	assert_eq(patsrcs_a.size(), patsrcs_b.size());
 
@@ -2459,13 +2460,13 @@ static void driver(const char * type,
 	if(verbose || startVerbose) {
 		cerr << "Creating single-end patsrcs: "; logTime(cerr, true);
 	}
-	for(size_t i = 0; i < queries.size(); i++) {
+	for(size_t i = 0; i < queries.size(); i++) { // queries.size() should be 1
 		const vector<string>* qs = &queries;
 		const vector<string>* quals = &qualities;
 		PatternSource* patsrc = NULL;
 		vector<string> tmpSeq;
 		vector<string> tmpQual;
-		if(fileParallel) {
+		if(fileParallel) { // should be false
 			// Feed query files one to each PatternSource
 			qs = &tmpSeq;
 			tmpSeq.push_back(queries[i]);
@@ -2482,7 +2483,8 @@ static void driver(const char * type,
 			break;
 		}
 	}
-
+  // patsrcs_a contains fasta pattern source with the arguments from textfile
+  // patsrcs_b contains NULL in first position
 	if(verbose || startVerbose) {
 		cerr << "Creating PatternSource: "; logTime(cerr, true);
 	}
@@ -2499,7 +2501,7 @@ static void driver(const char * type,
 	}
 	OutFileBuf *fout;
 	if(!outfile.empty()) {
-		if(refOut) {
+		if(refOut) { // should be false
 			fout = NULL;
 			if(!quiet) {
 				cerr << "Warning: ignoring alignment output file " << outfile << " because --refout was specified" << endl;
@@ -2547,7 +2549,7 @@ static void driver(const char * type,
 	                sanityCheck);
 	Ebwt<TStr>* ebwtBw = NULL;
 	// We need the mirror index if mismatches are allowed
-	if(mismatches > 0 || maqLike) {
+	if(mismatches > 0 || maqLike /* true */) { // should be true, maqLike /* true */ is true
 		if(verbose || startVerbose) {
 			cerr << "About to initialize rev Ebwt: "; logTime(cerr, true);
 		}
@@ -2587,7 +2589,7 @@ static void driver(const char * type,
 			}
 		}
 	}
-	if(sanityCheck && !os.empty()) {
+	if(sanityCheck && !os.empty()) { // false, by Cody
 		// Sanity check number of patterns and pattern lengths in Ebwt
 		// against original strings
 		assert_eq(os.size(), ebwt.nPat());
@@ -2613,9 +2615,9 @@ static void driver(const char * type,
 		}
 		vector<string>* refnames = &ebwt.refnames();
 		if(noRefNames) refnames = NULL;
-		switch(outType) {
+		switch(outType) { // should be OUTPUT_FULL, by Cody
 			case OUTPUT_FULL:
-				if(refOut) {
+				if(refOut) { // should be false, by Cody
 					sink = new VerboseHitSink(
 							ebwt.nPat(), offBase,
 							colorSeq, colorQual, printCost,
@@ -2627,7 +2629,7 @@ static void driver(const char * type,
 					sink = new VerboseHitSink(
 							fout, offBase,
 							colorSeq, colorQual, printCost,
-							suppressOuts, rmap, amap,
+							suppressOuts, rmap, amap, // why not STL bitset? By Cody
 							fullRef, PASS_DUMP_FILES,
 							format == TAB_MATE, sampleMax,
 							table, refnames, partitionSz);
@@ -2684,7 +2686,7 @@ static void driver(const char * type,
 		if(verbose || startVerbose) {
 			cerr << "Dispatching to search driver: "; logTime(cerr, true);
 		}
-		if(maqLike) {
+		if(maqLike /* true */) {
 			seededQualCutoffSearchFull(seedLen,
 									   qualThresh,
 									   seedMms,

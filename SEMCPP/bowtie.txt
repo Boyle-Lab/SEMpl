@@ -18,12 +18,16 @@ driver within ebwt_search.cpp is the "driver."
 driver expects filenames.
 part of driver is just processing the files
 
-TODO: will "redesign" int bowtie(int, const char**)
+TODO: will "redesign" driver
+
+      may pass a string vector in by reference, for the output
 
 NOTE: stateful mode is off, I believe
 
       when running make, on current Makefile, there is a failed compilation
       as there is a similarly named library within the clang library on macOS
+
+      adjusted Makefile
 
       this problem does not occur when compiling on Linux, as I compiled
       successfully within CAEN
@@ -31,11 +35,8 @@ NOTE: stateful mode is off, I believe
       there are variables mates1, mates2, mates12, and are global.
       these variables are seemingly important in some way to the driver.
 
-      investigate line 2462 within ebwt_search.cpp, as to the meaning.
+      investigate line 2503 within ebwt_search.cpp, as to the meaning.
 
-will interact with ebwt_search.cpp
-
-readSequenceFile function is within sequence_io.h
 
 my $command = "./bin/bowtie --quiet -a -v 0 $GENOME -f $DNA_FA_FILE";
                       print results only, report all alignments per read,
@@ -48,15 +49,25 @@ my $command = "./bin/bowtie --quiet -a -v 0 $GENOME -f $DNA_FA_FILE";
 I believe '1' or '2' or ARG_ONETWO are not used, despite global presence of
 the corresponding variables
 
+2287
+FastaPatternSource(seed, reads, quals, color, randomizeQuals,
+                  patDumpfile, verbose, trim3, trim5, solexaQuals,
+                  phred64Quals, integerQuals, skipReads)
+                  [seed is just 0, reads is queries, quals is NULL, !color, randomizeQuals == false.
+                  patDumpfile is NULL, !verbose, trim3 == 0, trim5 == 0, !solexaQuals,
+                  !phred64Quals, !integerQuals, skipReads == 0]
 
-
-questions
-  what does adjustedEbwtFileBase(args) do?
-    I think it just finds a correct filename to open
-  what does readSequenceString(args) do?
-    parses a comma-delimited list of strings of type T
-    into a vector
-  what does tokenize(args) do?
-    according to description, just splits string given by argument
-    according to given delimiter
-    is too similar to readSequenceString, could be a typo for readSequenceString
+ 2629
+VerboseHitSink(
+    fout, offBase,
+    colorSeq, colorQual, printCost,
+    suppressOuts, rmap, amap,
+    fullRef, PASS_DUMP_FILES,
+    format == TAB_MATE, sampleMax,
+    table, refnames, partitionSz)
+    [
+      fout is output stream thing, of a custom type, offBase is 0,
+      colorSeq is false, !colorQual, !printCost,
+      suppressOuts is a bitset initialized to 0, rmap == amap == NULL,
+      !fullRef, 
+    ]
