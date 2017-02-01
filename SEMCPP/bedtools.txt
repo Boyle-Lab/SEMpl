@@ -80,5 +80,18 @@ Program path:
 	-> cleanupHits -> finalizeCalculations -> giveFinalReport? -> bedtools.cpp -> return 0
 
 *Investigate hits and RecordKeyVector
+	-hits is a vector variable in nature containing the matching chromosones and is found using the next
+	 function found in RecordKeyVector
+	-RecordKeyVector first looks at the chromosones to test whether they are sorted and then calls the 
+	 masterscan function which contains the comparison algorithm for chromosones
+	-masterscan test to see if the database and cache are null for that index or if chromChange is 
+	 true and if so it continues past i
+	-else it scans the database for hits, skips if it hits the end of the database and advances until its 
+	 ahead of the query and updates hits and cache as necessary
 
 *Future tasks look into the output of bedtools and change to adding it to the struct in a type of vector
+	-the giveFinalOutput function of intersectFile will remain as a virtual abstraction
+	-outputs the data directly to the terminal as standard output to allow for unix style commands
+	 to be used
+	-will need to change all or the outputs from couts and prints to adding to the struct in the form of a 
+	 2d vector of strings and name it intersections or bedtoolsOutput
