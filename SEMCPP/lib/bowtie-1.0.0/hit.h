@@ -1587,8 +1587,8 @@ public:
 	               bool fullRef,
 	               DECL_HIT_DUMPS2,
 				   int partition = 0) :
-	HitSink(out, PASS_HIT_DUMPS2),
-	partition_(partition),
+	HitSink(out, PASS_HIT_DUMPS2),  // there is a macro used here,
+	partition_(partition),          // which just directly pastes into ctor
 	offBase_(offBase),
 	colorSeq_(colorSeq),
 	colorQual_(colorQual),

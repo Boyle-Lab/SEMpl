@@ -1,5 +1,10 @@
 how to work with bowtie?
 
+investigate line 1590 hit.h, line 298 hit.h, line 2632 ebwt_search.cpp
+
+I realized that the author uses compiler macro's to effectively
+copy and paste function arguments. I haven't seen that before.
+
 main just processes the arguments, within main_bowtie.cpp
 there is a "driver" function in ebwt_search.cpp, start there.
 driver function takes six arguments, const char * type,
@@ -35,7 +40,7 @@ NOTE: stateful mode is off, I believe
       there are variables mates1, mates2, mates12, and are global.
       these variables are seemingly important in some way to the driver.
 
-      investigate line 2503 within ebwt_search.cpp, as to the meaning.
+      investigate VerboseHitSink ctor, by investigating HitSink ctor
 
 
 my $command = "./bin/bowtie --quiet -a -v 0 $GENOME -f $DNA_FA_FILE";
@@ -53,9 +58,12 @@ the corresponding variables
 FastaPatternSource(seed, reads, quals, color, randomizeQuals,
                   patDumpfile, verbose, trim3, trim5, solexaQuals,
                   phred64Quals, integerQuals, skipReads)
-                  [seed is just 0, reads is queries, quals is NULL, !color, randomizeQuals == false.
-                  patDumpfile is NULL, !verbose, trim3 == 0, trim5 == 0, !solexaQuals,
-                  !phred64Quals, !integerQuals, skipReads == 0]
+
+                  [
+                    seed is just 0, reads is queries, quals is NULL, !color, randomizeQuals == false.
+                    patDumpfile is NULL, !verbose, trim3 == 0, trim5 == 0, !solexaQuals,
+                    !phred64Quals, !integerQuals, skipReads == 0
+                  ]
 
  2629
 VerboseHitSink(
@@ -69,5 +77,5 @@ VerboseHitSink(
       fout is output stream thing, of a custom type, offBase is 0,
       colorSeq is false, !colorQual, !printCost,
       suppressOuts is a bitset initialized to 0, rmap == amap == NULL,
-      !fullRef, 
+      !fullRef,
     ]

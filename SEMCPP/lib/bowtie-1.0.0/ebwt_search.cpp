@@ -2411,6 +2411,16 @@ static void driver(const char * type, // "DNA", by Cody
 		}
 	}
 
+/*
+all mates* files should be empty
+all mates* files should be empty
+all mates* files should be empty
+all mates* files should be empty
+all mates* files should be empty
+*/
+
+
+
 	// Create list of pattern sources for paired reads
 	for(size_t i = 0; i < mates1.size(); i++) {
 		const vector<string>* qs = &mates1;
@@ -2474,12 +2484,12 @@ static void driver(const char * type, // "DNA", by Cody
 			tmpQual.push_back(qualities[i]);
 			assert_eq(1, tmpSeq.size());
 		}
-		if(quals->empty()) quals = NULL;
+		if(quals->empty()) quals = NULL; // true
 		patsrc = patsrcFromStrings(format, *qs, quals);
 		assert(patsrc != NULL);
 		patsrcs_a.push_back(patsrc);
 		patsrcs_b.push_back(NULL);
-		if(!fileParallel) {
+		if(!fileParallel) { // true
 			break;
 		}
 	}
@@ -2500,8 +2510,8 @@ static void driver(const char * type, // "DNA", by Cody
 		cerr << "Opening hit output file: "; logTime(cerr, true);
 	}
 	OutFileBuf *fout;
-	if(!outfile.empty()) {
-		if(refOut) { // should be false
+	if(!outfile.empty()) { // should be false
+		if(refOut) { // should be false, by Cody
 			fout = NULL;
 			if(!quiet) {
 				cerr << "Warning: ignoring alignment output file " << outfile << " because --refout was specified" << endl;
@@ -2513,7 +2523,7 @@ static void driver(const char * type, // "DNA", by Cody
 		fout = new OutFileBuf();
 	}
 	ReferenceMap* rmap = NULL;
-	if(refMapFile != NULL) {
+	if(refMapFile != NULL) { // should be false, by Cody
 		if(verbose || startVerbose) {
 			cerr << "About to load in a reference map file with name "
 			     << refMapFile << ": "; logTime(cerr, true);
@@ -2522,7 +2532,7 @@ static void driver(const char * type, // "DNA", by Cody
 	}
 	AnnotationMap* amap = NULL;
 	if(annotMapFile != NULL) {
-		if(verbose || startVerbose) {
+		if(verbose || startVerbose) { // should be false, by Cody
 			cerr << "About to load in an annotation map file with name "
 			     << annotMapFile << ": "; logTime(cerr, true);
 		}
@@ -2549,7 +2559,7 @@ static void driver(const char * type, // "DNA", by Cody
 	                sanityCheck);
 	Ebwt<TStr>* ebwtBw = NULL;
 	// We need the mirror index if mismatches are allowed
-	if(mismatches > 0 || maqLike /* true */) { // should be true, maqLike /* true */ is true
+	if(mismatches > 0 || maqLike /* true */) { // should be true, maqLike is true
 		if(verbose || startVerbose) {
 			cerr << "About to initialize rev Ebwt: "; logTime(cerr, true);
 		}
@@ -2570,6 +2580,7 @@ static void driver(const char * type, // "DNA", by Cody
 			false /*passMemExc*/,
 			sanityCheck);
 	}
+  // should be empty
 	if(!os.empty()) {
 		for(size_t i = 0; i < os.size(); i++) {
 			size_t olen = seqan::length(os[i]);
@@ -2615,8 +2626,8 @@ static void driver(const char * type, // "DNA", by Cody
 		}
 		vector<string>* refnames = &ebwt.refnames();
 		if(noRefNames) refnames = NULL;
-		switch(outType) { // should be OUTPUT_FULL, by Cody
-			case OUTPUT_FULL:
+		switch(outType) {
+			case OUTPUT_FULL: // should be OUTPUT_FULL, by Cody
 				if(refOut) { // should be false, by Cody
 					sink = new VerboseHitSink(
 							ebwt.nPat(), offBase,
@@ -2695,6 +2706,7 @@ static void driver(const char * type, // "DNA", by Cody
 									   ebwt,    // forward index
 									   *ebwtBw, // mirror index (not optional)
 									   os);     // references, if available
+                     // os should be empty, by cody
 		}
 		else if(mismatches > 0) {
 			if(mismatches == 1) {
@@ -2766,6 +2778,7 @@ int bowtie(int argc, const char **argv) {
 		string query;   // read query string(s) from this file
 		vector<string> queries;
 		string outfile; // write query results to this file
+    // is empty string, by Cody
 		if(startVerbose) { cerr << "Entered main(): "; logTime(cerr, true); }
 		parseOptions(argc, argv);
 		argv0 = argv[0];
@@ -2872,7 +2885,7 @@ int bowtie(int argc, const char **argv) {
 				getchar();
 			}
       // passes genome, the actual query, which contains all queries, but there is only one
-      // there should be no qualities, I believe, and no outfile
+      // there should be no qualities, I believe, and outfile should be ""
 			driver<String<Dna, Alloc<> > >("DNA", ebwtFile, query, queries, qualities, outfile);
 			CHUD_STOP();
 		}

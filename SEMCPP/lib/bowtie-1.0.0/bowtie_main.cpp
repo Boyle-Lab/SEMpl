@@ -28,7 +28,7 @@ extern "C" {
  * bowtie.
  */
 int main(int argc, const char **argv) {
-	if(argc > 2 && strcmp(argv[1], "-A") == 0) {
+	if(argc > 2 && strcmp(argv[1], "-A") == 0) { // should be false
 		const char *file = argv[2];
 		ifstream in;
 		in.open(file);
