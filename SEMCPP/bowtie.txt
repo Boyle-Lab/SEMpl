@@ -1,6 +1,7 @@
 how to work with bowtie?
 
 investigate line 1590 hit.h, line 298 hit.h, line 2632 ebwt_search.cpp
+also line 906 hit.h for initDumps(), which is called by ctor of HitSink
 
 I realized that the author uses compiler macro's to effectively
 copy and paste function arguments. I haven't seen that before.
