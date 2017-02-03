@@ -95,3 +95,31 @@ Program path:
 	 to be used
 	-will need to change all or the outputs from couts and prints to adding to the struct in the form of a 
 	 2d vector of strings and name it intersections or bedtoolsOutput
+
+*Find where final output is sent to the terminal
+	-seems to use a function within quickstring.cpp called append, which adds the character value to outbuf
+	-outbuf gets written out to stream through a function called flush which pushes the output held in outbuf 
+	 to the terminal using fwrite
+	-may change the flush function to define a variable within the struct with the values in which outbuf 
+	 points to, minimizing the load of doing overhauls on calculations performed and other functions that 
+	 currently use outbuf to send output to a file or stream (our case is stdout)
+	-processhits ->printRecord(Record) ->printRecord(RecordKeyVector)->printRecord(RecordKeyVector, 
+	 RecordKeyVector(which is null))
+	-First time writing to stream occurs when the header gets outputted and calls the function flush()
+	 at the very end which may be the only time if the "needsFlush" variable reads true
+	-cleanup hits and finalize calculations appears to just be to close out variable and files from 
+	 unnecessarily using memory
+
+Plan on Implementation:
+	-create a vector of string vectors in which contain the correct formatting of the output with "\t"
+	 characters representing moving to the next element and newline characters representing a different
+	 vector of strings (will be held in the struct)
+	-Change the bedtools file to being a function which can be passed the struct
+	-add the context variable and set it to intersect as well as a variable to tell the parsing method 
+	 that it contains a struct and and to parse the elements accordingly
+		-most likely will be a manipulated version of the bed file parsing function in order to 
+		 trick the system into thinking it is a regular bed file 
+	-change the flush function to be passed the struct and feed  the data pointed to by outbuf into the
+	 vector contained in the struct to recieve the data
+
+	*will need to change the testCmdArgs to either be bypassed or use to test that the vectors get defined

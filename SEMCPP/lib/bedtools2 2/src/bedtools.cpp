@@ -1,8 +1,8 @@
 /*****************************************************************************
   bedtools.cpp
 
-  bedtools command line interface.  
-  Thanks to Heng Li, as this interface is inspired and 
+  bedtools command line interface.
+  Thanks to Heng Li, as this interface is inspired and
   based upon his samtools interface.
 
   (c) 2009-2011 - Aaron Quinlan
@@ -11,7 +11,7 @@
   Center for Public Health genomics
   University of Virginia
   aaronquinlan@gmail.com
-  
+
   Licenced under the GNU General Public License 2.0 license.
 ******************************************************************************/
 #include <iostream>
@@ -25,7 +25,7 @@ using namespace std;
 // define our program name
 #define PROGRAM_NAME "bedtools"
 
-// colors for the term's menu 
+// colors for the term's menu
 #define RESET "\033[m"
 #define GREEN "\033[1;32m"
 #define BLUE "\033[1;34m"
@@ -86,23 +86,28 @@ int bedtools_help(void);
 int bedtools_faq(void);
 
 
-
-int main(int argc, char *argv[])
+// changed the library to being a function to be handled within our program
+void bedtools(Dataset &data)
 {
     // make sure the user at least entered a sub_command
-    if (argc < 2) return bedtools_help();
+    // checks in the struct, must change subcommand to false if not yet supported
+    if (data.bedtoolsSettings.subcommand) return bedtools_help();
 
-    QuickString subCmd(argv[1]);
+    // defines subcmd as the context name set within the struct
+    QuickString subCmd(data.bedtoolsSettings.context);
     BedtoolsDriver btDriver;
     if (btDriver.supports(subCmd)) {
 
-		if (btDriver.subMain(argc, argv)) {
+        //btdriver must be changed to support structs
+		if (btDriver.subMain(data))) {
 			return 0;
 		} else if (btDriver.hadError()) {
 			showHelp(subCmd);
 			return 1;
 		}
 	}
+
+	// the below tools in the next 8 blocks of code will not work unless otherwise implemented later
 
     // genome arithmetic tools
     else if (subCmd == "window")      return window_main(argc-1, argv+1);
@@ -194,12 +199,12 @@ int bedtools_help(void)
     cout << "usage:    bedtools <subcommand> [options]" << endl << endl;
 
     cout  << "The bedtools sub-commands include:" << endl;
-    
+
     cout  << endl;
     cout  << "[ Genome arithmetic ]" << endl;
     cout  << "    intersect     "  << "Find overlapping intervals in various ways.\n";
     cout  << "    window        "  << "Find overlapping intervals within a window around an interval.\n";
-    cout  << "    closest       "  << "Find the closest, potentially non-overlapping interval.\n";    
+    cout  << "    closest       "  << "Find the closest, potentially non-overlapping interval.\n";
     cout  << "    coverage      "  << "Compute the coverage over defined intervals.\n";
     cout  << "    map           "  << "Apply a function to a column for each overlapping interval.\n";
     cout  << "    genomecov     "  << "Compute the coverage over an entire genome.\n";
@@ -213,10 +218,10 @@ int bedtools_help(void)
     cout  << "    sort          "  << "Order the intervals in a file.\n";
     cout  << "    random        "  << "Generate random intervals in a genome.\n";
     cout  << "    shuffle       "  << "Randomly redistrubute intervals in a genome.\n";
-    cout  << "    sample        "  << "Sample random records from file using reservoir sampling.\n";   
-    cout  << "    spacing       "  << "Report the gap lengths between intervals in a file.\n";     
+    cout  << "    sample        "  << "Sample random records from file using reservoir sampling.\n";
+    cout  << "    spacing       "  << "Report the gap lengths between intervals in a file.\n";
     cout  << "    annotate      "  << "Annotate coverage of features from multiple files.\n";
-    
+
     cout  << endl;
     cout  << "[ Multi-way file comparisons ]" << endl;
     cout  << "    multiinter    "  << "Identifies common intervals among multiple interval files.\n";
@@ -232,7 +237,7 @@ int bedtools_help(void)
     cout  << "    bamtobed      "  << "Convert BAM alignments to BED (& other) formats.\n";
     cout  << "    bedtobam      "  << "Convert intervals to BAM records.\n";
     cout  << "    bamtofastq    "  << "Convert BAM records to FASTQ records.\n";
-    cout  << "    bedpetobam    "  << "Convert BEDPE intervals to BAM records.\n";    
+    cout  << "    bedpetobam    "  << "Convert BEDPE intervals to BAM records.\n";
     cout  << "    bed12tobed6   "  << "Breaks BED12 intervals into discrete BED6 intervals.\n";
 
     cout  << endl;
@@ -254,13 +259,13 @@ int bedtools_help(void)
 
     cout  << endl;
     cout  << "[ Miscellaneous tools ]" << endl;
-    cout  << "    overlap       "  << "Computes the amount of overlap from two intervals.\n"; 
+    cout  << "    overlap       "  << "Computes the amount of overlap from two intervals.\n";
     cout  << "    igv           "  << "Create an IGV snapshot batch script.\n";
     cout  << "    links         "  << "Create a HTML page of links to UCSC locations.\n";
     cout  << "    makewindows   "  << "Make interval \"windows\" across a genome.\n";
     cout  << "    groupby       "  << "Group by common cols. & summarize oth. cols. (~ SQL \"groupBy\")\n";
     cout  << "    expand        "  << "Replicate lines based on lists of values in columns.\n";
-    cout  << "    split         "  << "Split a file into multiple files with equal records or base pairs.\n"; 
+    cout  << "    split         "  << "Split a file into multiple files with equal records or base pairs.\n";
 
     cout  << endl;
     cout  << "[ General help ]" << endl;

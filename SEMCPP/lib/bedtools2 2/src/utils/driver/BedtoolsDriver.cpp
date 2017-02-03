@@ -48,6 +48,7 @@ bool BedtoolsDriver::supports(const QuickString &tool) {
 	return (iter != _supported.end());
 }
 
+// Working on implementation of converting Bedtools driver to utilize structs and be a function instead of a main
 bool BedtoolsDriver::subMain(int argc, char **argv) {
 	_subCmd = argv[1];
 	ContextBase *context = getContext();

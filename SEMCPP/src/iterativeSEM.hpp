@@ -83,7 +83,12 @@ struct Dataset {
 		double threshold = 0.0;
     bool debug = false;
 	};
-
+    struct bedtoolsSettings{
+        std::vector<std::vector<std::string> > bed_Array;
+        std::string context = "intersect";
+        std::string file_type = "bed";
+        bool subcommand = 1;
+    };
 
 	DNase DNase_data;
 	PWM PWM_data;
@@ -140,5 +145,7 @@ void quality_control(Dataset &data);
 void scramble_kmer(Dataset &data);
 bool seq_col_to_fa(const std::vector<std::string> &column);
 void writeCache(Dataset &data);
+//Library converted function
+void bedtools(Dataset &data);
 
 #endif /* iterativeSEM_hpp */
