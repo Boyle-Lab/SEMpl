@@ -2580,7 +2580,7 @@ all mates* files should be empty
 			false /*passMemExc*/,
 			sanityCheck);
 	}
-  // should be empty
+  // should be empty, by Cody
 	if(!os.empty()) {
 		for(size_t i = 0; i < os.size(); i++) {
 			size_t olen = seqan::length(os[i]);

@@ -1144,8 +1144,8 @@ public:
 	bool       _verbose;
 	bool       _passMemExc;
 	bool       _sanity;
-	bool       _fw;     // true iff this is a forward index
-	MM_FILE  _in1;    // input fd for primary index file
+	bool       _fw;     // true iff this is a forward index // is an integer
+	MM_FILE  _in1;    // input fd for primary index file // is an integer
 	MM_FILE  _in2;    // input fd for secondary index file
 	string     _in1Str; // filename for primary index file
 	string     _in2Str; // filename for secondary index file
