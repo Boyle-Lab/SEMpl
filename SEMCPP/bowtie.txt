@@ -3,14 +3,16 @@ PLAN: directly pass data into the corresponding data structure,
 
       BOWTIE_MM should be defined
 
-2920 ebwt.h (_in1 != -1)
-365 ebwt.h
-18 mm.h
-14 mm.h
+readIntoMemory 2901 ebwt.h
+Ebwt ctor 365 ebwt.h
+definition of relevant macros 18 mm.h
 look in class Ebwt for the ctor with first argument as string, and
-readIntoMemory
+
+order of file opening calls from driver -> Ebwt ctor(string, ...) -> readIntoMemory(args)
 
 close is used by linux, check linux manual
+
+MM_FILE is int, thus _in1 and _in2 are int
 
 
 how to work with bowtie?

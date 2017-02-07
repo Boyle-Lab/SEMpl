@@ -328,8 +328,8 @@ public:
 	    _passMemExc(passMemExc), \
 	    _sanity(sanityCheck), \
 	    _fw(__fw), \
-	    _in1(MM_FILE_INIT), \
-	    _in2(MM_FILE_INIT), \
+	    _in1(MM_FILE_INIT), \ // -1
+	    _in2(MM_FILE_INIT), \ // -1
 	    _zOff(0xffffffff), \
 	    _zEbwtByteOff(0xffffffff), \
 	    _zEbwtBpOff(-1), \
@@ -2922,6 +2922,7 @@ void Ebwt<TStr>::readIntoMemory(
 		if(_verbose || startVerbose) {
 			cerr << "Opening \"" << _in1Str << "\"" << endl;
 		}
+        // _in1 receives either 0 or 1, this is confusing
 		if((_in1 = open(_in1Str.c_str(), O_RDONLY)) < 0) {
 			cerr << "Could not open index file " << _in1Str << endl;
 		}
