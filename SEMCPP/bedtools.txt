@@ -122,4 +122,7 @@ Plan on Implementation:
 	-change the flush function to be passed the struct and feed  the data pointed to by outbuf into the
 	 vector contained in the struct to recieve the data
 
+Btdriver work-
 	*will need to change the testCmdArgs to either be bypassed or use to test that the vectors get defined
+	*will need to change getContext to utilize the context variable given in the struct or directly define 
+	 context in the btdriver as the struct variable
