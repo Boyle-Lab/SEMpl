@@ -88,6 +88,8 @@ struct Dataset {
         std::string context = "intersect";
         std::string file_type = "bed";
         bool subcommand = 1;
+        bool noname =1;
+        std::string options = "";
     };
 
 	DNase DNase_data;
@@ -95,6 +97,7 @@ struct Dataset {
 	TFMdata TFM_data;
 	accumSummaryData accumSummary_data;
 	SettingsForSNPEffectMatrix settings;
+	bedtoolsSettings bedtoolsSettings;
 
   // name of original command passed in
 	std::string command = "";

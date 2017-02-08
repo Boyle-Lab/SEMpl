@@ -119,7 +119,7 @@ ContextBase::~ContextBase()
 bool ContextBase::errorEncountered() {
 	if (_argc == 1) {    // just a subcommand was given with no options.
 		return true;
-	} 
+	}
 	return !_errorMsg.empty() || getShowHelp();
 }
 
@@ -159,15 +159,13 @@ void ContextBase::openGenomeFile(const BamTools::RefVector &refVector)
 	_genomeFile = new NewGenomeFile(refVector);
 }
 
-bool ContextBase::testCmdArgs(int argc, char **argv) {
-	_argc = argc;
-	_argv = argv;
-	_skipFirstArgs = 1;
+bool ContextBase::testCmdArgs(Dataset &data) {
+
 	_origProgramName = argv[0];
 	setProgram(_programNames[_origProgramName]);
 	_argsProcessed.resize(_argc - _skipFirstArgs, false);
 
-	if (!parseCmdArgs(argc, argv, 1) || getShowHelp() || !isValidState()) {
+	if (!parseCmdArgs(Dataset &data) || getShowHelp() || !isValidState()) {
 		if (!_errorMsg.empty()) {
 			cerr <<_errorMsg << endl;
 		}
@@ -176,72 +174,68 @@ bool ContextBase::testCmdArgs(int argc, char **argv) {
 	return true;
 }
 
-bool ContextBase::parseCmdArgs(int argc, char **argv, int skipFirstArgs) {
+bool ContextBase::parseCmdArgs(Dataset &data) {
 
+    size_t _found;
 
-	for (_i=_skipFirstArgs; _i < argc; _i++) {
-		if (isUsed(_i - _skipFirstArgs)) {
-			continue;
-		}
-
-		if (strcmp(_argv[_i], "-i") == 0) {
+		if (_found = data.bedtoolsSettings.options.find("-i") == string.npos) {
 			if (!handle_i()) return false;
 		}
-		else if (strcmp(_argv[_i], "-g") == 0) {
+		if (_found = data.bedtoolsSettings.options.find("-g") == string.npos) {
 			if (!handle_g()) return false;
 		}
-		else if ((strcmp(_argv[_i], "-h") == 0) || (strcmp(_argv[_i], "--help") == 0)) {
+		if ((_found = data.bedtoolsSettings.options.find("-h") == string.npos)  || (_found = data.bedtoolsSettings.options.find("--help") != string.npos) ) {
 			if (!handle_h()) return false;
 		}
-		else if (strcmp(_argv[_i], "-split") == 0) {
+		if (_found = data.bedtoolsSettings.options.find("-split") == string.npos)  {
 			if (!handle_split()) return false;
 		}
-        else if (strcmp(_argv[_i], "-bed") == 0) {
+        if (_found = data.bedtoolsSettings.options.find("-bed") == string.npos)  {
 			if (!handle_bed()) return false;
        }
-        else if (strcmp(_argv[_i], "-ubam") == 0) {
+        if (_found = data.bedtoolsSettings.options.find("-ubam") == string.npos)  {
 			if (!handle_ubam()) return false;
         }
-        else if (strcmp(_argv[_i], "-fbam") == 0) {
+        if (_found = data.bedtoolsSettings.options.find("-fbam") == string.npos)  {
 			if (!handle_fbam()) return false;
         }
-        else if(strcmp(_argv[_i], "-sorted") == 0) {
+        if(_found = data.bedtoolsSettings.options.find("-sorted") == string.npos){
 			if (!handle_sorted()) return false;
         }
-        else if (strcmp(_argv[_i], "-nobuf") == 0) {
+        if (_found = data.bedtoolsSettings.options.find("-nobuf") == string.npos) {
 			if (!handle_nobuf()) return false;
         }
-        else if (strcmp(_argv[_i], "-iobuf") == 0) {
+        if (_found = data.bedtoolsSettings.options.find("-iobuf") == string.npos) {
 			if (!handle_iobuf()) return false;
         }
-        else if (strcmp(_argv[_i], "-prec") == 0) {
+        if (_found = data.bedtoolsSettings.options.find("-prec") == string.npos) {
 			if (!handle_prec()) return false;
         }
-        else if (strcmp(_argv[_i], "-header") == 0) {
+        if (_found = data.bedtoolsSettings.options.find("-header") == string.npos) {
 			if (!handle_header()) return false;
         }
-        else if (strcmp(_argv[_i], "-n") == 0) {
+        if (_found = data.bedtoolsSettings.options.find("-n") == string.npos) {
 			if (!handle_n()) return false;
         }
-        else if (strcmp(_argv[_i], "-seed") == 0) {
+        if (_found = data.bedtoolsSettings.options.find("-seed") == string.npos) {
 			if (!handle_seed()) return false;
         }
-        else if ((strcmp(_argv[_i], "-o") == 0) || (strcmp(_argv[_i], "-ops") == 0)) {
+        if ((_found = data.bedtoolsSettings.options.find("-o") == string.npos) || (_found = data.bedtoolsSettings.options.find("-ops") == string.npos)) {
 			if (!handle_o()) return false;
         }
-        else if ((strcmp(_argv[_i], "-c") == 0) || (strcmp(_argv[_i], "-opCols") == 0)) {
+        if ((_found = data.bedtoolsSettings.options.find("-c") == string.npos) || (_found = data.bedtoolsSettings.options.find("-opCols") == string.npos)) {
 			if (!handle_c()) return false;
         }
-        else if (strcmp(_argv[_i], "-null") == 0) {
+        if (_found = data.bedtoolsSettings.options.find("-null") == string.npos) {
 			if (!handle_null()) return false;
         }
-        else if (strcmp(_argv[_i], "-delim") == 0) {
+        if (_found = data.bedtoolsSettings.options.find("-delim") == string.npos) {
 			if (!handle_delim()) return false;
         }
-        else if (strcmp(_argv[_i], "-sortout") == 0) {
+        if (_found = data.bedtoolsSettings.options.find("-sortout") == string.npos) {
 			if (!handle_sortout()) return false;
         }
-        else if (strcmp(_argv[_i], "-nonamecheck") == 0) {
+        if (_found = data.bedtoolsSettings.options.find("-nonamecheck") == string.npos) {
 			if (!handle_nonamecheck()) return false;
         }
 

@@ -19,6 +19,7 @@
 #include <stdlib.h>
 #include "version.h"
 #include "BedtoolsDriver.h"
+#include "iterativeSEM.hpp"
 
 using namespace std;
 
@@ -99,7 +100,7 @@ void bedtools(Dataset &data)
     if (btDriver.supports(subCmd)) {
 
         //btdriver must be changed to support structs
-		if (btDriver.subMain(data))) {
+		if (btDriver.subroutine(data))) {
 			return 0;
 		} else if (btDriver.hadError()) {
 			showHelp(subCmd);

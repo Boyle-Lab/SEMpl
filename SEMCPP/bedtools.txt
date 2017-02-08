@@ -126,3 +126,5 @@ Btdriver work-
 	*will need to change the testCmdArgs to either be bypassed or use to test that the vectors get defined
 	*will need to change getContext to utilize the context variable given in the struct or directly define 
 	 context in the btdriver as the struct variable
+
+	*Will need to start with setProgram investigation and continue the conversion

@@ -1,6 +1,7 @@
 #include "BedtoolsDriver.h"
 #include <iostream>
 #include "RecordOutputMgr.h"
+#include "iterativeSEM.hpp"
 //contexts
 #include "ContextIntersect.h"
 #include "ContextMerge.h"
@@ -49,13 +50,13 @@ bool BedtoolsDriver::supports(const QuickString &tool) {
 }
 
 // Working on implementation of converting Bedtools driver to utilize structs and be a function instead of a main
-bool BedtoolsDriver::subMain(int argc, char **argv) {
-	_subCmd = argv[1];
+bool BedtoolsDriver::subroutine(Dataset &data) {
+	_subCmd = data.bedtoolsSettings.context;
 	ContextBase *context = getContext();
 
 	//process all command line arguments, check for valid usage,
 	//show help and error messages if needed.
-	if (!context->testCmdArgs(argc - 1, argv + 1)) {
+	if (!context->testCmdArgs(data)) {
 		_hadError = context->errorEncountered();
 		delete context;
 		return false;
