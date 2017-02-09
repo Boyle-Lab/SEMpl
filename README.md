@@ -4,6 +4,10 @@ C++ implementation of the SEM algorithm
 #Compilation
 Copy entire repository to computer, then cd into lib/libBigWig-master/ and run "make".
 
+SeqAn library will need to be installed on the computer
+
+cd into directory where bowtie's makefile is present, and run "make"
+
 cd back into directory where makefile is present, or from the previous location "cd .." twice.
 
 Run "make" again.

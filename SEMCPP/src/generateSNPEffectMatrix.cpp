@@ -42,12 +42,6 @@ void generate_output(Dataset &data);
 int generate_kmers(Dataset &data);
 void Enumerate_kmer(Dataset &data);
 
-// definition in another file
-void alignToGenomeWrapper(Dataset &data);
-
-// definition in another file
-void align_to_genome(Dataset &data);
-
 // helper function
 string revCompDNA(string);
 
@@ -134,7 +128,7 @@ int generate_kmers(Dataset &data){
 void align_to_genome(Dataset &data){
   if(data.settings.verbose) cout << "Aligning SNPs in kmers to the genome\n";
   // align all to genome
-  alignToGenomeWrapper(data);
+  void alignToGenomeWrapper(Dataset &data, data.SettingsForSNPEffectMatrix.iteration);
 }
 
 void find_signal(Dataset &data){ //This function call needs to be checked or altered
@@ -146,7 +140,7 @@ void find_signal(Dataset &data){ //This function call needs to be checked or alt
     string targetDir = data.output_dir + "/ALIGNMENT/";
     string filteredBedfile = "";
     ifstream directory(targetDir);
-    string file;
+    string file = "";
     while (directory >> file ){
         if(file == "/pos/"){
             targetDir += file + "/";

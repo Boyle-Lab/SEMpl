@@ -48,7 +48,7 @@ static void align_SNPs(Dataset &data, int length, const vector<string> &nucleoti
       // pass in a sequence column, which is from output of checkCache
       non_zero_file_size = seq_col_to_fa(cache_output);
       if(non_zero_file_size){
-        bowtie_genome_map(data, length, name + ".fa");
+        bowtie_genome_map(data, length);
       }
       cache_output.clear();
     }
