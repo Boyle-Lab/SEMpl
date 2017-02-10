@@ -35,7 +35,7 @@ IntersectFile::~IntersectFile(void) {
 }
 
 bool IntersectFile::init() {
-
+    //Need to figure out where _file is defined for values
 	_queryFRM = upCast(_context)->getFile(upCast(_context)->getQueryFileIdx());
 
 	 if (upCast(_context)->getSortedInput()) {
@@ -54,7 +54,7 @@ bool IntersectFile::findNext(RecordKeyVector &hits)
 	 bool retVal = false;
 	 if (upCast(_context)->getSortedInput()) {
 		retVal = nextSortedFind(hits);
-	 } 
+	 }
 	 else {
 		retVal = nextUnsortedFind(hits);
 	 }
@@ -78,7 +78,7 @@ void IntersectFile::cleanupHits(RecordKeyVector &hits)
 
 bool IntersectFile::finalizeCalculations()
 {
-    if (upCast(_context)->getSortedInput() && !upCast(_context)->hasGenomeFile()) 
+    if (upCast(_context)->getSortedInput() && !upCast(_context)->hasGenomeFile())
     {
         if (_context->getNameCheckDisabled())
             _sweep->closeOut(false);
@@ -124,7 +124,7 @@ void IntersectFile::checkSplits(RecordKeyVector &hitSet)
 		RecordKeyVector resultSet(hitSet.getKey());
 		RecordKeyVector overlapSet(hitSet.getKey());
 		upCast(_context)->getSplitBlockInfo()->findBlockedOverlaps(keySet, hitSet, resultSet, overlapSet);
-		
+
 		// when using coverage, we need a list of the sub-intervals of coverage
 		// so that per-base depth can be properly calculated when obeying splits
 		if (_context->getProgram() == ContextBase::COVERAGE)

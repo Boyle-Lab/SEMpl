@@ -128,3 +128,23 @@ Btdriver work-
 	 context in the btdriver as the struct variable
 
 	*Will need to start with setProgram investigation and continue the conversion
+
+Misc. notes-
+	*Program_type refers to an enumerated variable that points to the actual name of the program
+	*setProgram simply defines Program_type in a map
+	*upcast is a function that  uses static casting to convert context to the contextIntersect
+	*filenames are added within context intersect and must be adjusted to somehow include the data held within
+	 the struct
+	
+	May need to develop bowtie_genome_map before altering the section that takes in filenames. This file is used
+	as the read file for bedtools alongside the Dnase file for intersection. The part needed will have to pertain 
+	to its location within the struct. I believe this is the bowtie output section but need to further investigate 
+	how this vector is written.
+	
+	*the vector appears to be for the bed6+4, not sure on the output of bowtie though. Need to know the output of 
+	 bowtie in order to know which file conversion functions to change
+
+	*Need to fix issues with parsing as well as finding how to properly check for errors and compiling the functions 
+	 without it searching for the included files or properly including them to allow for compilation.
+
+	*to fix add "../(file directory)/

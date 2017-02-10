@@ -18,70 +18,70 @@ ContextIntersect::~ContextIntersect()
 }
 
 
-bool ContextIntersect::parseCmdArgs(int argc, char **argv, int skipFirstArgs) {
-	for (_i=_skipFirstArgs; _i < argc; _i++) {
-		if (isUsed(_i - _skipFirstArgs)) {
-			continue;
-		}
-		if (strcmp(_argv[_i], "-a") == 0) {
+bool ContextIntersect::parseCmdArgs(Dataset &data) {
+
+    //Needs to be revised
+
+    size_t _found;
+
+		if ((_found = data.bedtoolsSettings.options.find("-a")) == string.npos) {
 			if (!handle_a()) return false;
 		}
-        else if (strcmp(_argv[_i], "-abam") == 0) {
+        if ((_found = data.bedtoolsSettings.options.find("-abam")) == string.npos) {
 			if (!handle_abam()) return false;
         }
-        else if (strcmp(_argv[_i], "-b") == 0) {
+        if ((_found = data.bedtoolsSettings.options.find("-b")) == string.npos) {
 			if (!handle_b()) return false;
 		}
-        else if (strcmp(_argv[_i], "-names") == 0) {
+        if ((_found = data.bedtoolsSettings.options.find("-names")) == string.npos) {
 			if (!handle_names()) return false;
 		}
-        else if (strcmp(_argv[_i], "-filenames") == 0) {
+        if ((_found = data.bedtoolsSettings.options.find("-filenames")) == string.npos) {
 			if (!handle_filenames()) return false;
 		}
-        else if (strcmp(_argv[_i], "-u") == 0) {
+        if ((_found = data.bedtoolsSettings.options.find("-u")) == string.npos) {
 			if (!handle_u()) return false;
         }
-        else if (strcmp(_argv[_i], "-f") == 0) {
+        if ((_found = data.bedtoolsSettings.options.find("-f")) == string.npos) {
 			if (!handle_f()) return false;
         }
-        else if (strcmp(_argv[_i], "-F") == 0) {
+        if ((_found = data.bedtoolsSettings.options.find("-F")) == string.npos) {
 			if (!handle_F()) return false;
         }
-        else if (strcmp(_argv[_i], "-wa") == 0) {
+        if ((_found = data.bedtoolsSettings.options.find("-wa")) == string.npos) {
 			if (!handle_wa()) return false;
         }
-        else if (strcmp(_argv[_i], "-wao") == 0) {
+        if ((_found = data.bedtoolsSettings.options.find("-wao")) == string.npos) {
 			if (!handle_wao()) return false;
         }
-        else if (strcmp(_argv[_i], "-wb") == 0) {
+        if ((_found = data.bedtoolsSettings.options.find("-wb")) == string.npos) {
 			if (!handle_wb()) return false;
         }
-        else if (strcmp(_argv[_i], "-wo") == 0) {
+        if ((_found = data.bedtoolsSettings.options.find("-wo")) == string.npos) {
 			if (!handle_wo()) return false;
         }
-        else if (strcmp(_argv[_i], "-c") == 0) {
+        if ((_found = data.bedtoolsSettings.options.find("-c")) == string.npos) {
 			if (!handle_c()) return false;
         }
-        else if(strcmp(_argv[_i], "-r") == 0) {
+        if((_found = data.bedtoolsSettings.options.find("-r")) == string.npos) {
 			if (!handle_r()) return false;
         }
-        else if(strcmp(_argv[_i], "-e") == 0) {
+        if((_found = data.bedtoolsSettings.options.find("-e")) == string.npos) {
 			if (!handle_e()) return false;
         }
-        else if (strcmp(_argv[_i], "-v") == 0) {
+        if ((_found = data.bedtoolsSettings.options.find("-v")) == string.npos) {
 			if (!handle_v()) return false;
         }
-        else if (strcmp(_argv[_i], "-s") == 0) {
+        if ((_found = data.bedtoolsSettings.options.find("-s")) == string.npos) {
 			if (!handle_s()) return false;
         }
-        else if (strcmp(_argv[_i], "-S") == 0) {
+        if ((_found = data.bedtoolsSettings.options.find("-S")) == string.npos) {
 			if (!handle_S()) return false;
         }
-        else if (strcmp(_argv[_i], "-loj") == 0) {
+        if ((_found = data.bedtoolsSettings.options.find("-loj")) == string.npos) {
 			if (!handle_loj()) return false;
         }
-	}
-	return ContextBase::parseCmdArgs(argc, argv, _skipFirstArgs);
+	return ContextBase::parseCmdArgs(data);
 }
 
 
@@ -188,7 +188,7 @@ bool ContextIntersect::isValidState()
 		setPrintable(false);
 	}
 
-	if (getNoHit() || getWriteCount() || getWriteOverlap() 
+	if (getNoHit() || getWriteCount() || getWriteOverlap()
 		|| getWriteAllOverlap() || getLeftJoin())
 	{
 		setRunToQueryEnd(true);
@@ -226,12 +226,12 @@ bool ContextIntersect::determineOutputType() {
 
 bool ContextIntersect::handle_a()
 {
-	if (_argc <= _i+1) {
+	if (data.bowtie_output == 0) {
 		_errorMsg = "\n***** ERROR: -a option given, but no query file specified. *****";
 		return false;
 	}
 
-	addInputFile(_argv[_i+1]);
+	addInputFile("data.bowtie_output");
 	_queryFileIdx = getNumInputFiles() -1;
 	markUsed(_i - _skipFirstArgs);
 	_i++;
@@ -255,7 +255,7 @@ bool ContextIntersect::handle_abam()
 
 bool ContextIntersect::handle_b()
 {
-	if (_argc <= _i+1) {
+	if (data.Dnase.chromosone.size() == 0 ||) {
 		_errorMsg = "\n***** ERROR: -b option given, but no database file specified. *****";
 		return false;
 	}

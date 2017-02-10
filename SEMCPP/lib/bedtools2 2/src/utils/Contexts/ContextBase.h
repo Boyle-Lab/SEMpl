@@ -17,7 +17,7 @@
 // run options, output format, etc.
 
 #include <cstdlib>
-#include "version.h"
+#include "../version/version.h"
 #include "BedtoolsTypes.h"
 #include "FileRecordTypeChecker.h"
 #include "FileRecordMergeMgr.h"
@@ -25,6 +25,7 @@
 #include "api/BamReader.h"
 #include "api/BamAux.h"
 #include "KeyListOps.h"
+#include "iterativeSEM.hpp"
 
 
 class ContextBase {

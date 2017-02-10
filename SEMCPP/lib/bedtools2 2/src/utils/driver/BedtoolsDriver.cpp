@@ -57,7 +57,7 @@ bool BedtoolsDriver::subroutine(Dataset &data) {
 	//process all command line arguments, check for valid usage,
 	//show help and error messages if needed.
 	if (!context->testCmdArgs(data)) {
-		_hadError = context->errorEncountered();
+		_hadError = context->errorEncountered(data);
 		delete context;
 		return false;
 	}
