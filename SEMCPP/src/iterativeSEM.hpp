@@ -115,6 +115,8 @@ struct Dataset {
     std::map<std::string, int> kmerHash;
 
     std::vector<std::array<std::string, 5> > bowtie_output;
+
+    std::vector<std::string> filterDNaseWrapper_output;
 };
 
 //Declare functions in header to be used by other functions

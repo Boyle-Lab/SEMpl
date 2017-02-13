@@ -59,64 +59,64 @@ int main(int argc, char **argv){
             case 'p':
                 data.PWM_file = optarg;
 #ifdef DEBUG
-                cout << "\tPWM!" << endl;
+                cout << "\tPWM: " << optarg << '\n';
 #endif
                 break;
             case 'm':
                 data.DNase_file = optarg;
 #ifdef DEBUG
-                cout << "\tmerge_file!" << endl;
+                cout << "\tmerge_file: " << optarg << '\n';
 #endif
                 break;
             case 'b':
                 data.bigwig_file = optarg;
 #ifdef DEBUG
-                cout << "\tbigwig!" << endl;
+                cout << "\tbigwig: " << optarg << '\n';
 #endif
                 break;
             case 't':
                 data.TF_name = optarg;
 #ifdef DEBUG
-                cout << "\tTF_name!" << endl;
+                cout << "\tTF_name: " << optarg << '\n';
 #endif
                 break;
             case 'o':
                 data.output_dir = optarg;
 #ifdef DEBUG
-                cout << "\t output!" << endl;
+                cout << "\t output: " << optarg << '\n';
 #endif
                 break;
             case 'c':
             if(optarg)
                 data.cachefile = optarg;
 #ifdef DEBUG
-                cout << "\tcachefile!" << endl;
+                cout << "\tcachefile: " << optarg << '\n';
 #endif
                 break;
             default:
+                cout "unknown option!" << c << '\n';
                 break;
         }
         c = static_cast<char>(getopt_long_only(argc, argv, "p:m:b:t:o:c::", long_opts, &index));
     } while(c != -1);
 
 	if(pwm.empty()){
-		cout << "No PWM file given" << endl;
+		cout << "No PWM file given" << '\n';
 		exit(1);
 	}
 
 	if(data.output_dir.empty()){
-		cout << "No output file given" << endl;
+		cout << "No output file given" << '\n';
 		exit(1);
 	}
 
 // data.cachefile.empty() checks if the string is empty, not the actual file
-	if(data.cachefile.empty())  data.cachefile = data.output_dir+ "/CACHE.DB";
+	if(data.cachefile.empty())  data.cachefile = data.output_dir + "/CACHE.DB";
 
     vector<double> pvals(total_iterations + 1);
-    pvals.push_back( pow(4, -5));
-    double minPval= pow(4,-5.5);
-    for(int iteration = pvals.size(); iteration <= total_iterations; iteration++){
-        pvals.push_back(minPval);
+    pvals.push_back(0.0009765625);
+    for(int iteration = pvals.size(); iteration <= total_iterations; ++iteration){
+        pvals.push_back(0.0004882812);
     }
 
     pvals.erase(pvals.begin());
@@ -126,12 +126,12 @@ int main(int argc, char **argv){
 //  threshstream << "./get_threshold " << pwm << " " << pVal;
 //  string threshCmd = threshstream.str();
     data.settings.threshold = get_threshold(data);
-    if (data.settings.threshold < 0){				      // as opposed to system(string) calls?
+    if (data.settings.threshold < 0){
         data.settings.threshold = 0;
     }
 
     int iterID = rand() % 16777216 ;
-    cout << "--- Iteration 0 ---" << endl;
+    cout << "--- Iteration 0 ---" << '\n';
 
     data.settings.iteration = 0;
     generateSNPEffectMatrix(data);
@@ -179,35 +179,35 @@ int main(int argc, char **argv){
             string EkmerFile = Ekmerstream.str();
             ifstream Ekmer(EkmerFile);
             if (!Ekmer){
-                cerr << "Problem opening " << EkmerFile << endl;
+                cerr << "Problem opening " << EkmerFile << '\n';
                 exit(1);
             }
             while (Ekmer){
                 for (string temp; getline(Ekmer, temp, '\n'); line_2.push_back(temp));
                 kmers_2[line_2[1]] = 1;
-                total_1++;
+                ++total_1;
                 if (kmers_2.find(line_2[1]) != kmers_2.end()){
-                    same++;
+                    ++same;
                 }
                 else{
-                    diff++;
+                    ++diff;
                 }
             }
 
             if (diff == 0){
-                converge++;
+                ++converge;
             }
             else{
                 converge = 0;
             }
             kmers.clear();
-            kmers.insert(kmers_2.begin(),kmers_2.end());
+            kmers.insert(kmers_2.begin(), kmers_2.end());
             kmers_2.clear();
         }
 
         if(converge < 10){
             outFile << iteration << "\t" << converge << "\t" << same << "\t" << diff << "\n";
-            cout << "---Iteration " << iteration << "---"<< endl;
+            cout << "---Iteration " << iteration << "---"<< '\n';
             ostringstream newOutput;
             newOutput <<data.output_dir<< "/" << "it" << iteration << "/";
             if (converge == 9){
@@ -227,7 +227,7 @@ int main(int argc, char **argv){
 
             pvals.erase(pvals.begin());
             pVal = pvals.front();
-//            newPwm = data.output_dir+ "/" + tf + ".pwm";
+            // newPwm = data.output_dir+ "/" + tf + ".pwm";
             data.settings.threshold = get_threshold(data);
             if(data.settings.threshold < 0){
                 data.settings.threshold = 0;
@@ -246,9 +246,9 @@ int main(int argc, char **argv){
             time_t endTime;
             time(&endTime);
             diff_t = difftime(endTime, timer);
-            cout << "**************************" << endl;
+            cout << "**************************" << '\n';
             printf( "Job took %f seconds", diff_t );
-            cout << "**************************\n" << endl;
+            cout << "**************************\n" << '\n';
             break;
         }
     }

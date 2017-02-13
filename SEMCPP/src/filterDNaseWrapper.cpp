@@ -14,8 +14,8 @@ void filterDNaseWrapper(Dataset &data){
 
     //bedtools(Dataset &data);
 
-    //See bedtools.txt for notes on how it works and an alternative for using the file in order to work with struct data
-
+    //See bedtools.txt for notes on how it works and an alternative for using the
+    //file in order to work with struct data
 
 
 }

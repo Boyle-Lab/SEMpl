@@ -1,24 +1,25 @@
 #include "iterativeSEM.hpp"
 using namespace std;
 
-bool seq_col_to_fa(const vector<string> &column/*, const string &name*/){
+bool seq_col_to_fa(const vector<string> &column){
 
-  // takes input from checkCache, made a mark in checkCache at line 150
-  // UPDATE: made changes
+    // takes input from checkCache, made a mark in checkCache at line 150
+    // UPDATE: made changes
 
-  // will need to discuss the "intersect" function, or the bed tools function
-  // and adding them onto the program with speed and time in mind
+    // will need to discuss the "intersect" function, or the bed tools function
+    // and adding them onto the program with speed and time in mind
 
-  // writes to a file sucessfully
-  if(column.empty()) return false;
+    // writes to a file sucessfully
 
-  // ofstream OUTF(name + ".fa");
-  //
-  // for(auto val : column){
-  //   OUTF << ' ' << val << "\n>" << val << '\n';
-  // }
+    if(column.empty()) return false;
 
-  // how to proceed?
+    ofstream OUTF("temp.dat");
 
-  return true;
+    for(auto val : column){
+      OUTF << '>' << val << '\n' << val << '\n';
+    }
+
+    // how to proceed?
+
+    return true;
 }

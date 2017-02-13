@@ -76,20 +76,20 @@ void generateSNPEffectMatrix(Dataset &data){
 	}
 
 	//Step 1: Generate Enumerated k-mers
-	cout << "Creating enumerated kmers from PWM file" << endl;
+	cout << "Creating enumerated kmers from PWM file" << '\n';
 
     int length = generate_kmers(data);
     // data.kmerHash is now filled in!!!!
 
 	//Step 2: Change one base at each location in k-mers and align to genome
     if(data.settings.verbose){
-        cout << "Aligning SNPs in kmers to the genome" << endl;
+        cout << "Aligning SNPs in kmers to the genome" << '\n';
     }
     align_to_genome(data);
 
     //Step 3: Filter using DNase data and finding the signal at each location
     if(data.settings.verbose){
-        cout << "Filtering using DNase data and finding the signal" << endl;
+        cout << "Filtering using DNase data and finding the signal" << '\n';
     }
     filterDNaseWrapper(data);
 
@@ -103,7 +103,7 @@ void generateSNPEffectMatrix(Dataset &data){
     generate_output(data);
 
     if(data.settings.verbose){
-        cout << "The SNP Effect Matrix has been completed  for " << data.TF_name << endl;
+        cout << "The SNP Effect Matrix has been completed  for " << data.TF_name << '\n';
     }
 
 }
@@ -131,57 +131,66 @@ void align_to_genome(Dataset &data){
   void alignToGenomeWrapper(Dataset &data, data.SettingsForSNPEffectMatrix.iteration);
 }
 
+// assumes filterDNaseWrapper_output is filled from previous function
+// assumes filterDNaseWrapper_output is filled from previous function
+// assumes filterDNaseWrapper_output is filled from previous function
 void find_signal(Dataset &data){ //This function call needs to be checked or altered
     if(data.settings.verbose){
-        cout << "Finding the average signal" << endl;
+        cout << "Finding the average signal" << '\n';
     }
+
+    // determine if ordering of output matters in some way, 
+
+
 
     //Processes bigwig
-    string targetDir = data.output_dir + "/ALIGNMENT/";
-    string filteredBedfile = "";
-    ifstream directory(targetDir);
-    string file = "";
-    while (directory >> file ){
-        if(file == "/pos/"){
-            targetDir += file + "/";
-            filteredBedfile = targetDir + file + "_filtered.bed";
-            //accumSummary_scale(data);
-            if(data.settings.writecache){
-                writeCache(data);
-            }
-            // Not sure on the implementation of the following line currently
-        }
-        string cachefile = targetDir + file + "signal.cache";
-
-    }
-    directory.close();
-
-    if (data.settings.verbose){
-        cout << "Creating directory SIGNAL " << endl;
-    }
-    string cmd = "rm -rf " + data.output_dir + "/SIGNAL";
-
-
-    system(cmd.c_str());
-    cmd = "mkdir " + data.output_dir + "/SIGNAL";
-
-    system(cmd.c_str());
-    cmd = "cp " + data.output_dir + "/ALIGNMENT/*/*/signal " + data.output_dir + "/SIGNAL/";
-
-    system(cmd.c_str());
-
-
-    //build signal summary
-    findMaximumAverageSignalWrapper(data);
-
-    // cmd = "rm " + data.output_dir + "/SIGNAL/*.signal";
+    // string targetDir = data.output_dir + "/ALIGNMENT/";
+    // string filteredBedfile = "";
+    // // I don't think this can be done, I think you need to list the files, then
+    // // open each individually
+    // ifstream directory(targetDir);
+    // string file = "";
+    // while (directory >> file ){
+    //     if(file == "/pos/"){
+    //         targetDir += file + "/";
+    //         filteredBedfile = targetDir + file + "_filtered.bed";
+    //         //accumSummary_scale(data);
+    //         if(data.settings.writecache){
+    //             writeCache(data);
+    //         }
+    //         // Not sure on the implementation of the following line currently
+    //     }
+    //     string cachefile = targetDir + file + "signal.cache";
+    //
+    // }
+    // directory.close();
+    //
+    // if (data.settings.verbose){
+    //     cout << "Creating directory SIGNAL " << '\n';
+    // }
+    // string cmd = "rm -rf " + data.output_dir + "/SIGNAL";
+    //
     //
     // system(cmd.c_str());
+    // cmd = "mkdir " + data.output_dir + "/SIGNAL";
+    //
+    // system(cmd.c_str());
+    // cmd = "cp " + data.output_dir + "/ALIGNMENT/*/*/signal " + data.output_dir + "/SIGNAL/";
+    //
+    // system(cmd.c_str());
+    //
+    //
+    // //build signal summary
+    // findMaximumAverageSignalWrapper(data);
+    //
+    // // cmd = "rm " + data.output_dir + "/SIGNAL/*.signal";
+    // //
+    // // system(cmd.c_str());
 }
 
 void create_baselines(Dataset &data, int length){
     if (data.settings.verbose){
-        cout << "Creating directory BASELINE" << endl;
+        cout << "Creating directory BASELINE" << '\n';
     }
     string cmd = "rm -rf " + data.output_dir + "/BASELINE";
 
@@ -253,7 +262,7 @@ void create_baselines(Dataset &data, int length){
 
 void generate_output(Dataset &data){
     if (data.settings.verbose){
-        cout << "Generating Output" << endl;
+        cout << "Generating Output" << '\n';
     }
 
     generateSEM(data);

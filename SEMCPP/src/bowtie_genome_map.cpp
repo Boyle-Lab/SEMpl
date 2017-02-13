@@ -18,7 +18,7 @@ string revCompDNA(string dna);
 // genome is "./data/hg19", DNA_FA_FILE  is the file that contains .fa
 void bowtie_genome_map(Dataset &data, int length, const string& genome){
     char *argvs[9];
-    
+
     argvs[0] = "./bin/bowtie\0";
     argvs[1] = "--quiet\0";
     argvs[2] = "-a\0";
@@ -65,7 +65,11 @@ void bowtie_genome_map(Dataset &data, int length, const string& genome){
         }
         // bowtie_output is a vector of arrays, each array has 5 string spots
         //                                            convert to int, perform addition, convert back to string
-        data.bowtie_output.push_back({dat[2], dat[3], to_string(atoi(dat[3].c_str() +  length) ), DNA, dat[1]});
+        data.bowtie_output.push_back({dat[2],
+                                      dat[3],
+                                      to_string(atoi(dat[3].c_str() +  length) ),
+                                      DNA,
+                                      dat[1]});
     }
     IN.close();
 }

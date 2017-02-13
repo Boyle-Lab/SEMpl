@@ -26,7 +26,7 @@ double get_threshold(Dataset & data, double pval){
 		for(int j = 0; j < static_cast<int>(data.TFM_data.letter_array[i].size()); j++){
 			temp_out << data.TFM_data.letter_array[i][j] << ' ';
 		}
-		temp_out << endl;
+		temp_out << '\n';
 	}
 
 	temp_out.close();
