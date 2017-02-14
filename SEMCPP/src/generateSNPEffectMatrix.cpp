@@ -134,12 +134,31 @@ void align_to_genome(Dataset &data){
 // assumes filterDNaseWrapper_output is filled from previous function
 // assumes filterDNaseWrapper_output is filled from previous function
 // assumes filterDNaseWrapper_output is filled from previous function
+// and that the output is sorted, and contains only unique string values
+// and that the output is sorted, and contains only unique string values
+// and that the output is sorted, and contains only unique string values
 void find_signal(Dataset &data){ //This function call needs to be checked or altered
     if(data.settings.verbose){
         cout << "Finding the average signal" << '\n';
     }
+    // ./bin/bedtools intersect -a $readfile -b $mergefile -wa -u | sort | uniq > $bedfile
+    // -wa writes whatever a was to output, -u write a if any overlaps found
+    // determine if ordering of output matters in some way,
+    // ANSWER: I believe ordering of output does not matter
 
-    // determine if ordering of output matters in some way, 
+    // perl passes variables to subroutines by alias
+    // chip is the file corresponding to the -big_wig argument
+    // chip is a bigwig file
+    // Signal is chip
+    // first argument to accumSummary_scale is signal, then filteredBedfile, then length
+    //                                  bigwig file,    output of filterDNaseWrapper,  length
+    //                                      hfile,          cfile,              scale
+
+    for(auto val : data.filterDNaseWrapper_output){
+        //accumSummary_scale(data, const std::string &hfile, const std::string &cfile, int scale);
+        // will have to see how Colten implements bedtools, then make a decision about this
+        // and accumSummary_scale
+    }
 
 
 

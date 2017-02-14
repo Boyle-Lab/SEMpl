@@ -8,7 +8,7 @@
 extern "C"{
   #include "../lib/sqlite3/sqlite3.h"
 }
-#include <sys/stat.h>
+#include "common.h"
 #include <iostream>
 using namespace std;
 
@@ -21,7 +21,7 @@ using namespace std;
 
 // EFFECTS: returns true if file already exists in current directory,
 //          false otherwise
-static bool fileExists(const string &filename);
+bool fileExists(const string &filename);
 static void problemEncountered(const int &message, const string &what);
 static void isRowReady(const int &message);
 static void prepareStmt(sqlite3 *db, string stmt, sqlite3_stmt *query);
@@ -229,11 +229,12 @@ static void prepareStmt(sqlite3 *db, string stmt, sqlite3_stmt *query){
 
 // taken from internet
 // returns true if file exists
-static bool fileExists(const string &filename){
-  struct stat buffer;
-  return (stat (filename.c_str(), &buffer) == 0);
-}
-
+/*
+* bool fileExists(const string &filename){
+*   struct stat buffer;
+*   return (stat (filename.c_str(), &buffer) == 0);
+* }
+*/
 static void problemEncountered(const int &message, const string &what){
   if(message != SQLITE_OK){
     cerr << "Problem encountered with " << what << "!\n\tEXITING\n";

@@ -1,5 +1,4 @@
-#include <string>
-#include <regex>
+#include "common.h"
 using namespace std;
 
 string revCompDNA(string dna){
@@ -9,6 +8,11 @@ string revCompDNA(string dna){
   }
   rev = regex_replace(dna, regex("ACGTacgt"), "TGCAtgca");
   return rev;
+}
+
+bool fileExists(const string &filename){
+  struct stat buffer;
+  return (stat (filename.c_str(), &buffer) == 0);
 }
 
 // int parse_wc{

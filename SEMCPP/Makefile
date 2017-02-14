@@ -1,8 +1,8 @@
-CC=g++
+CXX=g++
 
 C++FLAGS=-Wall -Werror -pedantic --std=c++11
 
-DEBUG_OR_OPTIMIZE = -DDEBUG -g
+DEBUG_OR_OPTIMIZE = -DDEBUG -g3
 
 #C++SOURCES=src/iterativeSEM.cpp src/pwm_to_tfm.cpp src/get_threshold.cpp src/accumSummary_scale.cpp src/generatePWMfromSEM.cpp src/generateSNPEffectMatrix.cpp src/Enumerate_kmer.cpp src/common.cpp src/alignToGenomeWrapper.cpp src/checkCache.cpp
 C++SOURCES=$(wildcard src/*.cpp)
@@ -27,10 +27,10 @@ EXECUTABLE=iterativeSEM.exe
 all: $(EXECUTABLE)
 
 iterativeSEM.exe: $(C++OBJ) $(SQLITEOBJ)
-		$(CC) $(C++FLAGS) $(BIGWIGLIBRARYLOC) $(BIGWIGLIBRARY) $(TFMHEADER) -o $(EXECUTABLE) $(C++OBJ) $(SQLITEOBJ)
+		$(CXX) $(C++FLAGS) $(BIGWIGLIBRARYLOC) $(BIGWIGLIBRARY) $(TFMHEADER) -o $(EXECUTABLE) $(C++OBJ) $(SQLITEOBJ)
 
 obj/%.o : src/%.cpp												#pre-requisite   #target
-		$(CC) $(C++FLAGS) $(DEBUG_OR_OPTIMIZE) -c $< -o $@
+		$(CXX) $(C++FLAGS) $(DEBUG_OR_OPTIMIZE) -c $< -o $@
 obj/%.o : lib/sqlite3/%.c
 		gcc $(DEBUG_OR_OPTIMIZE) -c $< -o $@
 

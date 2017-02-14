@@ -7,7 +7,12 @@
 using namespace std;
 
 void filterDNaseWrapper(Dataset &data){
-
+   /*
+    * I have added a member variable for the output of this function
+    * The type is std::vector<std::pair<std::string, std::string > >
+    * and the name of the variable is filterDNaseWrapper_output
+    *
+    */
 
 
     //Working on the implementation of the bedtools library
