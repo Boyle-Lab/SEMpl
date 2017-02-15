@@ -17,7 +17,7 @@
 // run options, output format, etc.
 
 #include <cstdlib>
-#include "../version/version.h"
+#include "version.h"
 #include "BedtoolsTypes.h"
 #include "FileRecordTypeChecker.h"
 #include "FileRecordMergeMgr.h"

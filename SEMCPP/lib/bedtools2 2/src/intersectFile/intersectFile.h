@@ -12,8 +12,8 @@
 #ifndef INTERSECTFILE_H
 #define INTERSECTFILE_H
 
-#include "../utils/Toolbase/ToolBase.h" //Can fix the issue of compiling errors but will
-#include "ContextIntersect.h" //          have to be repeated
+#include "ToolBase.h"
+#include "ContextIntersect.h"
 #include "NewChromsweep.h"
 
 

@@ -165,7 +165,7 @@ bool ContextBase::testCmdArgs(Dataset &data) {
 	setProgram(_programNames[_origProgramName]);
 	//_argsProcessed.resize(_argc - _skipFirstArgs, false);
 
-	if (!parseCmdArgs(Dataset &data) || getShowHelp() || !isValidState()) {
+	if (!parseCmdArgs(Dataset &data) || getShowHelp() ) {
 		if (!_errorMsg.empty()) {
 			cerr <<_errorMsg << endl;
 		}
@@ -176,66 +176,65 @@ bool ContextBase::testCmdArgs(Dataset &data) {
 
 bool ContextBase::parseCmdArgs(Dataset &data) {
 
-    size_t _found;
 
-		if ((_found = data.bedtoolsSettings.options.find("-i") )== string.npos) {
+		if ((data.bedtoolsSettings.options.find("-i") )== string.npos) {
 			if (!handle_i()) return false;
 		}
-		if ((_found = data.bedtoolsSettings.options.find("-g")) == string.npos) {
+		if (( data.bedtoolsSettings.options.find("-g")) == string.npos) {
 			if (!handle_g()) return false;
 		}
-		if (((_found = data.bedtoolsSettings.options.find("-h")) == string.npos)  || ((_found = data.bedtoolsSettings.options.find("--help")) != string.npos) ) {
+		if (((data.bedtoolsSettings.options.find("-h")) == string.npos)  || ((data.bedtoolsSettings.options.find("--help")) != string.npos) ) {
 			if (!handle_h()) return false;
 		}
-		if ((_found = data.bedtoolsSettings.options.find("-split")) == string.npos)  {
+		if ((_data.bedtoolsSettings.options.find("-split")) == string.npos)  {
 			if (!handle_split()) return false;
 		}
-        if ((_found = data.bedtoolsSettings.options.find("-bed")) == string.npos)  {
+        if ((_data.bedtoolsSettings.options.find("-bed")) == string.npos)  {
 			if (!handle_bed()) return false;
        }
-        if ((_found = data.bedtoolsSettings.options.find("-ubam")) == string.npos)  {
+        if (( data.bedtoolsSettings.options.find("-ubam")) == string.npos)  {
 			if (!handle_ubam()) return false;
         }
-        if ((_found = data.bedtoolsSettings.options.find("-fbam")) == string.npos)  {
+        if ((data.bedtoolsSettings.options.find("-fbam")) == string.npos)  {
 			if (!handle_fbam()) return false;
         }
-        if((_found = data.bedtoolsSettings.options.find("-sorted")) == string.npos){
+        if((data.bedtoolsSettings.options.find("-sorted")) == string.npos){
 			if (!handle_sorted()) return false;
         }
-        if ((_found = data.bedtoolsSettings.options.find("-nobuf")) == string.npos) {
+        if ((data.bedtoolsSettings.options.find("-nobuf")) == string.npos) {
 			if (!handle_nobuf()) return false;
         }
-        if ((_found = data.bedtoolsSettings.options.find("-iobuf")) == string.npos) {
+        if ((data.bedtoolsSettings.options.find("-iobuf")) == string.npos) {
 			if (!handle_iobuf()) return false;
         }
-        if ((_found = data.bedtoolsSettings.options.find("-prec")) == string.npos) {
+        if ((data.bedtoolsSettings.options.find("-prec")) == string.npos) {
 			if (!handle_prec()) return false;
         }
-        if ((_found = data.bedtoolsSettings.options.find("-header")) == string.npos) {
+        if ((data.bedtoolsSettings.options.find("-header")) == string.npos) {
 			if (!handle_header()) return false;
         }
-        if ((_found = data.bedtoolsSettings.options.find("-n")) == string.npos)) {
+        if ((data.bedtoolsSettings.options.find("-n")) == string.npos)) {
 			if (!handle_n()) return false;
         }
-        if ((_found = data.bedtoolsSettings.options.find("-seed")) == string.npos) {
+        if (( data.bedtoolsSettings.options.find("-seed")) == string.npos) {
 			if (!handle_seed()) return false;
         }
-        if (((_found = data.bedtoolsSettings.options.find("-o")) == string.npos) || ((_found = data.bedtoolsSettings.options.find("-ops")) == string.npos)) {
+        if (((data.bedtoolsSettings.options.find("-o")) == string.npos) || ((data.bedtoolsSettings.options.find("-ops")) == string.npos)) {
 			if (!handle_o()) return false;
         }
-        if (((_found = data.bedtoolsSettings.options.find("-c")) == string.npos) || ((_found = data.bedtoolsSettings.options.find("-opCols")) == string.npos)) {
+        if (((data.bedtoolsSettings.options.find("-c")) == string.npos) || ((data.bedtoolsSettings.options.find("-opCols")) == string.npos)) {
 			if (!handle_c()) return false;
         }
-        if ((_found = data.bedtoolsSettings.options.find("-null")) == string.npos) {
+        if ((data.bedtoolsSettings.options.find("-null")) == string.npos) {
 			if (!handle_null()) return false;
         }
-        if ((_found = data.bedtoolsSettings.options.find("-delim")) == string.npos) {
+        if ((data.bedtoolsSettings.options.find("-delim")) == string.npos) {
 			if (!handle_delim()) return false;
         }
-        if ((_found = data.bedtoolsSettings.options.find("-sortout")) == string.npos) {
+        if ((data.bedtoolsSettings.options.find("-sortout")) == string.npos) {
 			if (!handle_sortout()) return false;
         }
-        if ((_found = data.bedtoolsSettings.options.find("-nonamecheck")) == string.npos) {
+        if ((data.bedtoolsSettings.options.find("-nonamecheck")) == string.npos) {
 			if (!handle_nonamecheck()) return false;
         }
 

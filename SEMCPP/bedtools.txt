@@ -148,3 +148,5 @@ Misc. notes-
 	 without it searching for the included files or properly including them to allow for compilation.
 
 	*to fix add "../(file directory)/
+
+*Need to trace all variable in handle_b and address a replacement for them as well as change functionallity where needed

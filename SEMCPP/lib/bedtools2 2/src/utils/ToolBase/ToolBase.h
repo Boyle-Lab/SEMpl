@@ -8,7 +8,7 @@
 #ifndef TOOLBASE_H_
 #define TOOLBASE_H_
 
-#include "../FileRecordTools/Records/RecordKeyVector.h"
+#include "RecordKeyVector.h"
 #include "RecordOutputMgr.h"
 
 using namespace std;
