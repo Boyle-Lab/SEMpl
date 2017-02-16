@@ -1,5 +1,6 @@
 #include "../lib/libBigWig-master/BigWig.h"
 #include "iterativeSEM.hpp"
+#include "common.h"
 #include <fstream>
 #include <string>
 #include <iostream>
@@ -9,8 +10,6 @@
 using namespace std;
 
 
-// taken from internet
-void split(string str, string splitBy, vector<string>& tokens);
 
 			// contains all data, contains bigwig filename, region file, scale
 //REQUIRES: data is valid Dataset, receives bigwig file, file containing regions to center, and scale size

@@ -55,3 +55,23 @@ void split(std::string str, std::string splitBy, std::vector<std::string>& token
         tokens.push_back(frag.substr(splitAt+splitLen, frag.size()-(splitAt+splitLen)));
     }
 }
+
+// REQUIRES: index is within str
+string grab_string_at_index(const string &str, size_t index){
+    auto ptr = str.c_str();
+    size_t val = 0;
+    while(val < index){
+            while(*ptr != ' ' && *ptr){
+                ++ptr;
+            }
+            ++ptr;
+            ++val;
+    }
+    
+    auto index_ptr = ptr;   
+    while(*index_ptr != ' ' && *index_ptr){
+        ++index_ptr;
+    }
+    return string(ptr, static_cast<size_t>(index_ptr - ptr));
+    
+}
