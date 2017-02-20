@@ -2,7 +2,7 @@
 #define EBWT_SEARCH_BACKTRACK_H_
 
 #include <stdexcept>
-#include <seqan/sequence.h>
+#include "lib/bowtie-1.0.0/SeqAn-1.1/seqan/sequence.h"
 #include "pat.h"
 #include "qual.h"
 #include "ebwt_search_util.h"

@@ -7,8 +7,8 @@
 #include <sstream>
 #include <stdexcept>
 #include <vector>
-#include <seqan/sequence.h>
-#include <seqan/index.h>
+#include "lib/bowtie-1.0.0/SeqAn-1.1/seqan/sequence.h"
+#include "lib/bowtie-1.0.0/SeqAn-1.1/seqan/index.h"
 #include "assert_helpers.h"
 #include "diff_sample.h"
 #include "multikey_qsort.h"

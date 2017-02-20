@@ -3,7 +3,7 @@
 #include <iostream>
 #include <getopt.h>
 #include <stdexcept>
-#include <seqan/find.h>
+#include "lib/bowtie-1.0.0/SeqAn-1.1/seqan/find.h"
 
 #include "assert_helpers.h"
 #include "endian_swap.h"

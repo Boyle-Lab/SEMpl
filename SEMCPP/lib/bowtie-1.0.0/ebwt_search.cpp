@@ -5,7 +5,7 @@
 #include <algorithm>
 #include <cassert>
 #include <stdexcept>
-#include <seqan/find.h>
+#include "lib/bowtie-1.0.0/SeqAn-1.1/seqan/find.h"
 #include <getopt.h>
 #include <vector>
 #include "alphabet.h"

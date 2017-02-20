@@ -24,7 +24,7 @@
 //____________________________________________________________________________
 // prerequisites
 
-#include <seqan/platform.h>
+#include "lib/bowtie-1.0.0/SeqAn-1.1/seqan/platform.h"
 
 //#include <cstring>
 #ifdef PLATFORM_WINDOWS
@@ -43,73 +43,73 @@
 
 //____________________________________________________________________________
 
-#include <seqan/basic/basic_forwards.h>
+#include "lib/bowtie-1.0.0/SeqAn-1.1/seqan/basic/basic_forwards.h"
 #ifdef SEQAN_SWITCH_USE_FORWARDS
-#include <seqan/basic/basic_generated_forwards.h>
+#include "lib/bowtie-1.0.0/SeqAn-1.1/seqan/basic/basic_generated_forwards.h"
 #endif
 
-#include <seqan/basic/basic_debug.h>
-#include <seqan/basic/basic_profile.h>
-#include <seqan/basic/basic_definition.h>
-#include <seqan/basic/basic_metaprogramming.h>
-#include <seqan/basic/basic_type.h>
-#include <seqan/basic/basic_tag.h>
+#include "lib/bowtie-1.0.0/SeqAn-1.1/seqan/basic/basic_debug.h"
+#include "lib/bowtie-1.0.0/SeqAn-1.1/seqan/basic/basic_profile.h"
+#include "lib/bowtie-1.0.0/SeqAn-1.1/seqan/basic/basic_definition.h"
+#include "lib/bowtie-1.0.0/SeqAn-1.1/seqan/basic/basic_metaprogramming.h"
+#include "lib/bowtie-1.0.0/SeqAn-1.1/seqan/basic/basic_type.h"
+#include "lib/bowtie-1.0.0/SeqAn-1.1/seqan/basic/basic_tag.h"
 
 //____________________________________________________________________________
 // allocators
 
-#include <seqan/basic/basic_allocator_interface.h>
-#include <seqan/basic/basic_allocator_to_std.h>
+#include "lib/bowtie-1.0.0/SeqAn-1.1/seqan/basic/basic_allocator_interface.h"
+#include "lib/bowtie-1.0.0/SeqAn-1.1/seqan/basic/basic_allocator_to_std.h"
 
-#include <seqan/basic/basic_holder.h>
+#include "lib/bowtie-1.0.0/SeqAn-1.1/seqan/basic/basic_holder.h"
 
-#include <seqan/basic/basic_allocator_simple.h>
-#include <seqan/basic/basic_allocator_singlepool.h>
-#include <seqan/basic/basic_allocator_multipool.h>
-//#include <seqan/basic/basic_allocator_chunkpool.h>
+#include "lib/bowtie-1.0.0/SeqAn-1.1/seqan/basic/basic_allocator_simple.h"
+#include "lib/bowtie-1.0.0/SeqAn-1.1/seqan/basic/basic_allocator_singlepool.h"
+#include "lib/bowtie-1.0.0/SeqAn-1.1/seqan/basic/basic_allocator_multipool.h"
+//#include "lib/bowtie-1.0.0/SeqAn-1.1/seqan/basic/basic_allocator_chunkpool.h"
 
 //____________________________________________________________________________
 
-#include <seqan/basic/basic_converter.h>
-#include <seqan/basic/basic_compare.h>
-#include <seqan/basic/basic_operator.h>
+#include "lib/bowtie-1.0.0/SeqAn-1.1/seqan/basic/basic_converter.h"
+#include "lib/bowtie-1.0.0/SeqAn-1.1/seqan/basic/basic_compare.h"
+#include "lib/bowtie-1.0.0/SeqAn-1.1/seqan/basic/basic_operator.h"
 
-#include <seqan/basic/basic_host.h>
+#include "lib/bowtie-1.0.0/SeqAn-1.1/seqan/basic/basic_host.h"
 
 //____________________________________________________________________________
 // iterators
 
-#include <seqan/basic/basic_iterator.h>
-#include <seqan/basic/basic_iterator_base.h>
+#include "lib/bowtie-1.0.0/SeqAn-1.1/seqan/basic/basic_iterator.h"
+#include "lib/bowtie-1.0.0/SeqAn-1.1/seqan/basic/basic_iterator_base.h"
 
-#include <seqan/basic/basic_transport.h>
+#include "lib/bowtie-1.0.0/SeqAn-1.1/seqan/basic/basic_transport.h"
 
-#include <seqan/basic/basic_iterator_simple.h>
-#include <seqan/basic/basic_iterator_adaptor.h>
-#include <seqan/basic/basic_iterator_position.h>
-#include <seqan/basic/basic_iterator_adapt_std.h>
-//#include <seqan/basic_identifier.h>
+#include "lib/bowtie-1.0.0/SeqAn-1.1/seqan/basic/basic_iterator_simple.h"
+#include "lib/bowtie-1.0.0/SeqAn-1.1/seqan/basic/basic_iterator_adaptor.h"
+#include "lib/bowtie-1.0.0/SeqAn-1.1/seqan/basic/basic_iterator_position.h"
+#include "lib/bowtie-1.0.0/SeqAn-1.1/seqan/basic/basic_iterator_adapt_std.h"
+//#include "lib/bowtie-1.0.0/SeqAn-1.1/seqan/basic_identifier.h"
 
-#include <seqan/basic/basic_proxy.h>
+#include "lib/bowtie-1.0.0/SeqAn-1.1/seqan/basic/basic_proxy.h"
 
-#include <seqan/basic/basic_pointer.h>
+#include "lib/bowtie-1.0.0/SeqAn-1.1/seqan/basic/basic_pointer.h"
 
 //____________________________________________________________________________
 // alphabets
 
-#include <seqan/basic/basic_alphabet_interface.h>
-#include <seqan/basic/basic_alphabet_trait_basic.h>
+#include "lib/bowtie-1.0.0/SeqAn-1.1/seqan/basic/basic_alphabet_interface.h"
+#include "lib/bowtie-1.0.0/SeqAn-1.1/seqan/basic/basic_alphabet_trait_basic.h"
 
-#include <seqan/basic/basic_alphabet_interface2.h>
+#include "lib/bowtie-1.0.0/SeqAn-1.1/seqan/basic/basic_alphabet_interface2.h"
 
-#include <seqan/basic/basic_alphabet_simple_tabs.h>
-#include <seqan/basic/basic_alphabet_simple.h>
+#include "lib/bowtie-1.0.0/SeqAn-1.1/seqan/basic/basic_alphabet_simple_tabs.h"
+#include "lib/bowtie-1.0.0/SeqAn-1.1/seqan/basic/basic_alphabet_simple.h"
 
 //____________________________________________________________________________
 
-//#include <seqan/basic/basic_counted_ptr>
-#include <seqan/basic/basic_volatile_ptr.h>
+//#include "lib/bowtie-1.0.0/SeqAn-1.1/seqan/basic/basic_counted_ptr"
+#include "lib/bowtie-1.0.0/SeqAn-1.1/seqan/basic/basic_volatile_ptr.h"
 
-#include <seqan/basic/basic_aggregates.h>
+#include "lib/bowtie-1.0.0/SeqAn-1.1/seqan/basic/basic_aggregates.h"
 
 #endif //#ifndef SEQAN_HEADER_...

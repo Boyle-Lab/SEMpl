@@ -1,6 +1,6 @@
 CXX=g++
 
-C++FLAGS=-Wall -Werror -pedantic --std=c++11
+C++FLAGS=-Wall -Werror -pedantic --std=c++11 -I.
 
 DEBUG_OR_OPTIMIZE = -DDEBUG -g3
 

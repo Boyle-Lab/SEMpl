@@ -8,7 +8,7 @@
 #ifndef HIT_SET_H_
 #define HIT_SET_H_
 
-#include <seqan/sequence.h>
+#include "lib/bowtie-1.0.0/SeqAn-1.1/seqan/sequence.h"
 #include <vector>
 #include <algorithm>
 #include "assert_helpers.h"

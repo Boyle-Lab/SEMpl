@@ -2,9 +2,9 @@
 #include <fstream>
 #include <string>
 #include <cassert>
-#include <seqan/index.h>
-#include <seqan/sequence.h>
-#include <seqan/file.h>
+#include "lib/bowtie-1.0.0/SeqAn-1.1/seqan/index.h"
+#include "lib/bowtie-1.0.0/SeqAn-1.1/seqan/sequence.h"
+#include "lib/bowtie-1.0.0/SeqAn-1.1/seqan/file.h"
 #include <getopt.h>
 #include "assert_helpers.h"
 #include "endian_swap.h"

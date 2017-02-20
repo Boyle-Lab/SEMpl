@@ -32,56 +32,56 @@
 #include <map>
 #include <cmath>
 
-#include <seqan/sequence.h>
+#include "lib/bowtie-1.0.0/SeqAn-1.1/seqan/sequence.h"
 
 
 //____________________________________________________________________________
 
-#include <seqan/file/file_forwards.h>
+#include "lib/bowtie-1.0.0/SeqAn-1.1/seqan/file/file_forwards.h"
 
 #ifdef SEQAN_SWITCH_USE_FORWARDS
-#include <seqan/file/file_generated_forwards.h>
+#include "lib/bowtie-1.0.0/SeqAn-1.1/seqan/file/file_generated_forwards.h"
 #endif
 
-#include <seqan/file/cstream.h>
-#include <seqan/file/stream.h>
+#include "lib/bowtie-1.0.0/SeqAn-1.1/seqan/file/cstream.h"
+#include "lib/bowtie-1.0.0/SeqAn-1.1/seqan/file/stream.h"
 
-#include <seqan/file/chunk_collector.h>
-#include <seqan/file/meta.h>
+#include "lib/bowtie-1.0.0/SeqAn-1.1/seqan/file/chunk_collector.h"
+#include "lib/bowtie-1.0.0/SeqAn-1.1/seqan/file/meta.h"
 
 //____________________________________________________________________________
 // file formats
 
-#include <seqan/file/file_format.h>
+#include "lib/bowtie-1.0.0/SeqAn-1.1/seqan/file/file_format.h"
 
-#include <seqan/file/stream_algorithms.h>
+#include "lib/bowtie-1.0.0/SeqAn-1.1/seqan/file/stream_algorithms.h"
 
 //file formats for sequences
-#include <seqan/file/file_format_raw.h>
-#include <seqan/file/file_format_fasta.h>
-//#include <seqan/file/file_format_embl.h>
-//#include <seqan/file/file_format_genbank.h>
+#include "lib/bowtie-1.0.0/SeqAn-1.1/seqan/file/file_format_raw.h"
+#include "lib/bowtie-1.0.0/SeqAn-1.1/seqan/file/file_format_fasta.h"
+//#include "lib/bowtie-1.0.0/SeqAn-1.1/seqan/file/file_format_embl.h"
+//#include "lib/bowtie-1.0.0/SeqAn-1.1/seqan/file/file_format_genbank.h"
 
 //file formats for alignments
-#include <seqan/file/file_format_fasta_align.h>
+#include "lib/bowtie-1.0.0/SeqAn-1.1/seqan/file/file_format_fasta_align.h"
 
 //others
-#include <seqan/file/file_format_cgviz.h>
+#include "lib/bowtie-1.0.0/SeqAn-1.1/seqan/file/file_format_cgviz.h"
 
 //____________________________________________________________________________
 
-//#include <seqan/file/file_format_guess.h>
+//#include "lib/bowtie-1.0.0/SeqAn-1.1/seqan/file/file_format_guess.h"
 
 //____________________________________________________________________________
 // files
 
-#include <seqan/file/file_base.h>
-#include <seqan/file/file_array.h>
+#include "lib/bowtie-1.0.0/SeqAn-1.1/seqan/file/file_base.h"
+#include "lib/bowtie-1.0.0/SeqAn-1.1/seqan/file/file_array.h"
 
-//#include <seqan/system.h>	// async file (default file type of File<>)
-/*#include <seqan/system/file_sync.h>
-#include <seqan/system/system_event.h>
-#include <seqan/system/file_async.h>
+//#include "lib/bowtie-1.0.0/SeqAn-1.1/seqan/system.h>	// async file (default file type of File<")
+/*#include "lib/bowtie-1.0.0/SeqAn-1.1/seqan/system/file_sync.h"
+#include "lib/bowtie-1.0.0/SeqAn-1.1/seqan/system/system_event.h"
+#include "lib/bowtie-1.0.0/SeqAn-1.1/seqan/system/file_async.h"
 */
 //____________________________________________________________________________
 // external string

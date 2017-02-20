@@ -7,7 +7,7 @@
 
 #include <iostream>
 #include <vector>
-#include <seqan/sequence.h>
+#include "lib/bowtie-1.0.0/SeqAn-1.1/seqan/sequence.h"
 #include "alphabet.h"
 #include "hit_set.h"
 

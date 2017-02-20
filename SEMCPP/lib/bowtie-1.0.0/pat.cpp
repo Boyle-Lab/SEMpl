@@ -2,8 +2,8 @@
 #include <iostream>
 #include <string>
 #include <stdexcept>
-#include <seqan/sequence.h>
-#include <seqan/file.h>
+#include "lib/bowtie-1.0.0/SeqAn-1.1/seqan/sequence.h"
+#include "lib/bowtie-1.0.0/SeqAn-1.1/seqan/file.h"
 
 #include "pat.h"
 #include "filebuf.h"

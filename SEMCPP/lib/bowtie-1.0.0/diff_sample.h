@@ -2,8 +2,8 @@
 #define DIFF_SAMPLE_H_
 
 #include <stdint.h>
-#include <seqan/sequence.h>
-#include <seqan/index.h> // for LarssonSadakane
+#include "lib/bowtie-1.0.0/SeqAn-1.1/seqan/sequence.h"
+#include "lib/bowtie-1.0.0/SeqAn-1.1/seqan/index.h" // for LarssonSadakane
 #include "assert_helpers.h"
 #include "multikey_qsort.h"
 #include "timer.h"

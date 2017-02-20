@@ -28,51 +28,51 @@
 
 #include <deque>
 
-#include <seqan/sequence.h>
-//#include <seqan/score.h>
-//#include <seqan/graph_types.h>
-//#include <seqan/graph_algorithms.h>
-//#include <seqan/map.h>
+#include "lib/bowtie-1.0.0/SeqAn-1.1/seqan/sequence.h"
+//#include "lib/bowtie-1.0.0/SeqAn-1.1/seqan/score.h"
+//#include "lib/bowtie-1.0.0/SeqAn-1.1/seqan/graph_types.h"
+//#include "lib/bowtie-1.0.0/SeqAn-1.1/seqan/graph_algorithms.h"
+//#include "lib/bowtie-1.0.0/SeqAn-1.1/seqan/map.h"
 
 //____________________________________________________________________________
 
 #ifdef SEQAN_SWITCH_USE_FORWARDS
-#include <seqan/find/find_generated_forwards.h>
+#include "lib/bowtie-1.0.0/SeqAn-1.1/seqan/find/find_generated_forwards.h"
 #endif
 
-#include <seqan/find/find_base.h>
+#include "lib/bowtie-1.0.0/SeqAn-1.1/seqan/find/find_base.h"
 
 //____________________________________________________________________________
 // exact pattern matching
 
-#include <seqan/find/find_horspool.h>
-//#include <seqan/find/find_shiftand.h>
-//#include <seqan/find/find_shiftor.h>
-//#include <seqan/find/find_bndm.h>
-//#include <seqan/find/find_quasar.h>
+#include "lib/bowtie-1.0.0/SeqAn-1.1/seqan/find/find_horspool.h"
+//#include "lib/bowtie-1.0.0/SeqAn-1.1/seqan/find/find_shiftand.h"
+//#include "lib/bowtie-1.0.0/SeqAn-1.1/seqan/find/find_shiftor.h"
+//#include "lib/bowtie-1.0.0/SeqAn-1.1/seqan/find/find_bndm.h"
+//#include "lib/bowtie-1.0.0/SeqAn-1.1/seqan/find/find_quasar.h"
 
 //____________________________________________________________________________
 // exact pattern matching
-//#include <seqan/find/find_wild_shiftand.h>
+//#include "lib/bowtie-1.0.0/SeqAn-1.1/seqan/find/find_wild_shiftand.h"
 
 //____________________________________________________________________________
 //multiple pattern search
 
-//#include <seqan/find/find_ahocorasick.h>
-#include <seqan/find/find_multiple_shiftand.h>
-//#include <seqan/find/find_set_horspool.h>
+//#include "lib/bowtie-1.0.0/SeqAn-1.1/seqan/find/find_ahocorasick.h"
+#include "lib/bowtie-1.0.0/SeqAn-1.1/seqan/find/find_multiple_shiftand.h"
+//#include "lib/bowtie-1.0.0/SeqAn-1.1/seqan/find/find_set_horspool.h"
 
-//#include <seqan/find/find_multi.h> //wegwerfen
-//#include <seqan/find/find_wumanber.h> //todo
+//#include "lib/bowtie-1.0.0/SeqAn-1.1/seqan/find/find_multi.h" //wegwerfen
+//#include "lib/bowtie-1.0.0/SeqAn-1.1/seqan/find/find_wumanber.h" //todo
 
 //____________________________________________________________________________
 // approximate pattern matching
 
-#include <seqan/find/find_score.h>
-//#include <seqan/find/find_myers_ukkonen.h>
-//#include <seqan/find/find_abndm.h>
-//#include <seqan/find/find_pex.h>
+#include "lib/bowtie-1.0.0/SeqAn-1.1/seqan/find/find_score.h"
+//#include "lib/bowtie-1.0.0/SeqAn-1.1/seqan/find/find_myers_ukkonen.h"
+//#include "lib/bowtie-1.0.0/SeqAn-1.1/seqan/find/find_abndm.h"
+//#include "lib/bowtie-1.0.0/SeqAn-1.1/seqan/find/find_pex.h"
 
-//#include <seqan/find/find_bom.h>
+//#include "lib/bowtie-1.0.0/SeqAn-1.1/seqan/find/find_bom.h"
 
 #endif //#ifndef SEQAN_HEADER_...

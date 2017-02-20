@@ -5,7 +5,7 @@
 #include <vector>
 #include <map>
 #include <stdint.h>
-#include <seqan/sequence.h>
+#include "lib/bowtie-1.0.0/SeqAn-1.1/seqan/sequence.h"
 #include "hit.h"
 #include "qual.h"
 

@@ -24,12 +24,12 @@
 //____________________________________________________________________________
 // prerequisites
 
-#include <seqan/sequence.h>
-//#include <seqan/pipe.h>
-//#include <seqan/modifier.h>
+#include "lib/bowtie-1.0.0/SeqAn-1.1/seqan/sequence.h"
+//#include "lib/bowtie-1.0.0/SeqAn-1.1/seqan/pipe.h"
+//#include "lib/bowtie-1.0.0/SeqAn-1.1/seqan/modifier.h"
 
-#include <seqan/find/find_base.h>
-//#include <seqan/misc/misc_set.h>
+#include "lib/bowtie-1.0.0/SeqAn-1.1/seqan/find/find_base.h"
+//#include "lib/bowtie-1.0.0/SeqAn-1.1/seqan/misc/misc_set.h"
 
 #include <climits>
 #include <functional>
@@ -48,50 +48,50 @@
 
 
 #ifdef SEQAN_SWITCH_USE_FORWARDS
-#include <seqan/index/index_manual_forwards.h>
-#include <seqan/index/index_generated_forwards.h>
+#include "lib/bowtie-1.0.0/SeqAn-1.1/seqan/index/index_manual_forwards.h"
+#include "lib/bowtie-1.0.0/SeqAn-1.1/seqan/index/index_generated_forwards.h"
 #endif
 
-#include <seqan/index/index_base.h>
+#include "lib/bowtie-1.0.0/SeqAn-1.1/seqan/index/index_base.h"
 
 //____________________________________________________________________________
 // suffix array creators
 
-//#include <seqan/index/radix.h>
-//#include <seqan/index/index_sa_btree.h>
-#include <seqan/index/index_sa_lss.h>
-//#include <seqan/index/index_sa_mm.h>
-//#include <seqan/index/index_sa_qsort.h>
+//#include "lib/bowtie-1.0.0/SeqAn-1.1/seqan/index/radix.h"
+//#include "lib/bowtie-1.0.0/SeqAn-1.1/seqan/index/index_sa_btree.h"
+#include "lib/bowtie-1.0.0/SeqAn-1.1/seqan/index/index_sa_lss.h"
+//#include "lib/bowtie-1.0.0/SeqAn-1.1/seqan/index/index_sa_mm.h"
+//#include "lib/bowtie-1.0.0/SeqAn-1.1/seqan/index/index_sa_qsort.h"
 //
-//#include <seqan/index/pump_extender3.h>
-//#include <seqan/index/pipe_merger3.h>
+//#include "lib/bowtie-1.0.0/SeqAn-1.1/seqan/index/pump_extender3.h"
+//#include "lib/bowtie-1.0.0/SeqAn-1.1/seqan/index/pipe_merger3.h"
 //
-//#include <seqan/index/pump_extender7.h>
-//#include <seqan/index/pipe_merger7.h>
+//#include "lib/bowtie-1.0.0/SeqAn-1.1/seqan/index/pump_extender7.h"
+//#include "lib/bowtie-1.0.0/SeqAn-1.1/seqan/index/pipe_merger7.h"
 
-//#include <seqan/index/pump_separator7.h>
+//#include "lib/bowtie-1.0.0/SeqAn-1.1/seqan/index/pump_separator7.h"
 
 //____________________________________________________________________________
 // enhanced table creators
 
-//#include <seqan/index/pump_lcp_core.h>
+//#include "lib/bowtie-1.0.0/SeqAn-1.1/seqan/index/pump_lcp_core.h"
 
 //____________________________________________________________________________
 // q-gram index creator
 
-#include <seqan/index/shape_base.h>
-#include <seqan/index/shape_gapped.h>
-#include <seqan/index/shape_predefined.h>
-//#include <seqan/index/index_qgram.h>
-//#include <seqan/index/index_qgram_nested.h>
+#include "lib/bowtie-1.0.0/SeqAn-1.1/seqan/index/shape_base.h"
+#include "lib/bowtie-1.0.0/SeqAn-1.1/seqan/index/shape_gapped.h"
+#include "lib/bowtie-1.0.0/SeqAn-1.1/seqan/index/shape_predefined.h"
+//#include "lib/bowtie-1.0.0/SeqAn-1.1/seqan/index/index_qgram.h"
+//#include "lib/bowtie-1.0.0/SeqAn-1.1/seqan/index/index_qgram_nested.h"
 
 
 //////////////////////////////////////////////////////////////////////////////
 // INDEX USAGE
 //////////////////////////////////////////////////////////////////////////////
 
-#include <seqan/index/index_qgram_find.h>
-#include <seqan/index/index_find.h>
+#include "lib/bowtie-1.0.0/SeqAn-1.1/seqan/index/index_qgram_find.h"
+#include "lib/bowtie-1.0.0/SeqAn-1.1/seqan/index/index_find.h"
 
 //____________________________________________________________________________
 // (virtual) suffix trees
@@ -102,12 +102,12 @@
 //____________________________________________________________________________
 // Pizza & Chili interface (compressed indices)
 
-//#include <seqan/index/index_pizzachili.h>
-//#include <seqan/index/index_pizzachili_find.h>
+//#include "lib/bowtie-1.0.0/SeqAn-1.1/seqan/index/index_pizzachili.h"
+//#include "lib/bowtie-1.0.0/SeqAn-1.1/seqan/index/index_pizzachili_find.h"
 
 //____________________________________________________________________________
 // Shawarma interface (suffix array creators)
 
-//#include <seqan/index/index_shawarma.h>
+//#include "lib/bowtie-1.0.0/SeqAn-1.1/seqan/index/index_shawarma.h"
 
 #endif //#ifndef SEQAN_HEADER_...
