@@ -6,7 +6,7 @@
 #define ROW_CHASER_H_
 
 #include <iostream>
-#include "lib/bowtie-1.0.0/seqan/sequence.h"
+#include "lib/bowtie-1.0.0/SeqAn-1.1/seqan/sequence.h"
 #include "ebwt.h"
 #include "aligner_metrics.h"
 

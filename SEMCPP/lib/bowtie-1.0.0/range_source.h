@@ -7,7 +7,7 @@
 
 #include <stdint.h>
 #include <vector>
-#include "lib/bowtie-1.0.0/seqan/sequence.h"
+#include "lib/bowtie-1.0.0/SeqAn-1.1/seqan/sequence.h"
 #include "ebwt.h"
 #include "range.h"
 #include "pool.h"
