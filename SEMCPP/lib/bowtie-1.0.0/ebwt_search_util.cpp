@@ -1,5 +1,5 @@
 #include "ebwt_search_util.h"
-#include "seqan/file.h"
+#include "lib/bowtie-1.0.0/seqan/file.h"
 
 using namespace std;
 using namespace seqan;

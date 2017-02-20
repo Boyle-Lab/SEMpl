@@ -9,7 +9,7 @@
 #include <iostream>
 #include <vector>
 #include <stdexcept>
-#include "seqan/sequence.h"
+#include "lib/bowtie-1.0.0/seqan/sequence.h"
 #include "alphabet.h"
 #include "range.h"
 #include "reference.h"
