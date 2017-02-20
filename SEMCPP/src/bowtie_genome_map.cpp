@@ -16,9 +16,13 @@ string revCompDNA(string dna);
 // at the end of the command                              // intermediate.dat, as
 //                                                        // defined in iterativeSEM.hpp
 // genome is "./data/hg19", DNA_FA_FILE  is the file that contains .fa
-void bowtie_genome_map(Dataset &data, int length, const string& genome){
-    char *argvs[9];
 
+int bowtie(int argc, const char **argv);
+
+
+void bowtie_genome_map(Dataset &data, int length, const string& genome){
+    const char *argvs[9] = {"./bin/bowtie", "--quiet", "-a", "-v", genome.c_str(), "-f", "../data/hg19", "temp.dat" };
+/*
     argvs[0] = "./bin/bowtie\0";
     argvs[1] = "--quiet\0";
     argvs[2] = "-a\0";
@@ -28,7 +32,7 @@ void bowtie_genome_map(Dataset &data, int length, const string& genome){
     argvs[6] = "-f\0";
     argvs[7] = "../data/hg19\0";
     argvs[8] = "temp.dat\0";
-
+*/
     try{
         // bowtie throws exceptions, I believe
         bowtie(9, argvs);
@@ -50,7 +54,7 @@ void bowtie_genome_map(Dataset &data, int length, const string& genome){
     string map_line = "";
     vector<string> dat;
     string DNA = "";
-    while(getline(IN, map)){
+    while(getline(IN, map_line)){
         split(map_line, "\t", dat);
         if(dat[1] == "+"){
             DNA = dat[4];

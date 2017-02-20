@@ -94,7 +94,7 @@ int main(int argc, char **argv){
 #endif
                 break;
             default:
-                cout "unknown option!" << c << '\n';
+                cout << "unknown option!" << c << '\n';
                 break;
         }
         c = static_cast<char>(getopt_long_only(argc, argv, "p:m:b:t:o:c::", long_opts, &index));
@@ -130,7 +130,7 @@ int main(int argc, char **argv){
         data.settings.threshold = 0;
     }
 
-    int iterID = rand() % 16777216 ;
+    int iterID = 0;
     cout << "--- Iteration 0 ---" << '\n';
 
     data.settings.iteration = 0;
