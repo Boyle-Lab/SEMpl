@@ -319,7 +319,7 @@ template <typename TStr>
 class Ebwt {
 public:
 	typedef typename Value<TStr>::Type TAlphabet;
-
+ // _in1 and _in2 are -1 
 	#define Ebwt_INITS \
 	    _toBigEndian(currentlyBigEndian()), \
 	    _overrideOffRate(__overrideOffRate), \
@@ -328,8 +328,8 @@ public:
 	    _passMemExc(passMemExc), \
 	    _sanity(sanityCheck), \
 	    _fw(__fw), \
-	    _in1(MM_FILE_INIT), \ // -1
-	    _in2(MM_FILE_INIT), \ // -1
+	    _in1(MM_FILE_INIT), \
+	    _in2(MM_FILE_INIT), \
 	    _zOff(0xffffffff), \
 	    _zEbwtByteOff(0xffffffff), \
 	    _zEbwtBpOff(-1), \
