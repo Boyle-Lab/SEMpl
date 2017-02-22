@@ -150,3 +150,15 @@ Misc. notes-
 	*to fix add "../(file directory)/
 
 *Need to trace all variable in handle_b and address a replacement for them as well as change functionallity where needed
+	-(contextIntersect line 263)
+	-addInputFiles pushes back filenames which is unnecessary given the struct we utilize
+	-adds the location of the file within filenames and places that number in the file indexes
+	-it then records the position of the file index within the dbFileIdxs vectors and defines that to fileIdsToDbIdxs
+	 position of the file index
+	-then it marks the argument as being used and continues until the next subcommand is given
+	-since we are only comparing one set of data to the original there is no need to include multiple files but may 
+	 need to be changed in the future if multiple genomic sets need to be compared.
+*check into the wa option, may be where to write it into the struct
+	-the variable needed to be found is _writeA
+	-returned by function getWriteA
+	-aforementioned function is used in RecordOutputMgr in function called reportOOverlapDetail line 351

@@ -89,7 +89,7 @@ struct Dataset {
         std::string file_type = "bed";
         bool subcommand = 1;
         bool noname =1;
-        std::string options = "";
+        std::string options = "-a -b -wa -u";
     };
 
 	DNase DNase_data;

@@ -255,7 +255,7 @@ bool ContextIntersect::handle_abam(Dataset &data)
 bool ContextIntersect::handle_b(Dataset &data)
 {
 	if (!data.Dnase.chromosone.empty() ) {
-		_errorMsg = "\n***** ERROR: -b option given, but no database file specified. *****";
+		_errorMsg = "\n***** ERROR: -b option given, but Dnase data not given. *****";
 		return false;
 	}
 
