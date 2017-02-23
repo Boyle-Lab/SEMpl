@@ -1,4 +1,4 @@
-#include "../lib/libBigWig-master/BigWig.h"
+#include "lib/libBigWig-master/bigWig.h"
 #include "iterativeSEM.hpp"
 #include "common.h"
 #include <fstream>
@@ -49,7 +49,8 @@ void accumSummary_scale(Dataset &data, const string &hfile, const string &cfile,
 	char *chrom = nullptr;
 	string line = "", seqid = "", direction = "";
 	vector<string> temp, signal_array(total_size);
-	int start = 0, end = 0, counter = 0, upstart = 0, upend = 0;
+	int start = 0, end = 0, counter = 0; 
+    int upstart = 0, upend = 0;
 	// pointer to hold double values from library function;
 	double *values = nullptr;
 	bwStatsType type = mean;
@@ -63,13 +64,19 @@ void accumSummary_scale(Dataset &data, const string &hfile, const string &cfile,
 		chrom = nullptr;
 		split(line, splitBy, temp);
 		seqid = temp[0];
+        upstart = 0, upend = 0;
 
 		// if lines begins with chr
 		if(temp[0][0] == 'c'){
 			if(temp[0][1] == 'h')
-				if(temp[0][2] == 'r')
+				if(temp[0][2] == 'r'){
 					seqid = temp[0];
+#ifdef DEBUG
+                    cout << "temp[0] begins with chr: " << temp[0] << '\n';
+#endif
+                }
 		}
+        
 		// if line doesn't begin with chr
 		else{
 			seqid = "chr" + temp[0];

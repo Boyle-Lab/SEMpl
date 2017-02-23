@@ -71,7 +71,7 @@ void generatePWMfromSEM(Dataset & data){
     }
 
     double alpha = 0.5;
-    for (int i = 0; i < A.size(); i++){
+    for (int i = 0; i < static_cast<int>(A.size()); i++){
         int rowsum = A[i] + C[i] + G[i] + T[i];
         data.PWM_data.sem_arr[1][i] = ((A[i] * alpha) + (data.PWM_data.matrix_arr[1][i] * rowsum * (1-alpha)) + .5);
         data.PWM_data.sem_arr[2][i] = ((A[i] * alpha) + (data.PWM_data.matrix_arr[2][i] * rowsum * (1-alpha)) + .5);

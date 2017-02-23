@@ -6,7 +6,7 @@ using namespace std;
 
 bool fileExists(const string &filename);
 static void problemEncountered(const int &message, const string &what);
-static void isRowReady(const int &message);
+//static void isRowReady(const int &message);
 static void prepareStmt(sqlite3 *db, string stmt, sqlite3_stmt *query);
 static void checkDone(const int &message, const string &s);
 
@@ -22,7 +22,7 @@ void writeCache(const Dataset &data, const string &cache){
     for(string line : data.accumSummary_data.accum_lines){
 #ifdef DEBUG
         cout << "string at index 3 of string: " << line
-            << "\nis: " grab_string_at_index(line, 3) << '\n';
+            << "\nis: " << grab_string_at_index(line, 3) << '\n';
         assert(line.find(grab_string_at_index(line, 3)) != string::npos);
 #endif
         kmers[grab_string_at_index(line, 3)] = line;
@@ -35,7 +35,7 @@ void writeCache(const Dataset &data, const string &cache){
     }
 
     sqlite3 *cacheDB;
-    int message;
+    int message = 0;
     string msg;
     message = sqlite3_open(data.cachefile.c_str(), &cacheDB);
     problemEncountered(message, "open");
@@ -80,13 +80,13 @@ void writeCache(const Dataset &data, const string &cache){
 
 
     //stringstream ss;
-    for(val1 : kmers){
+    for(auto val1 : kmers){
         /*
         *   I believe the current C++ design does not
         *   necessitate an equivalent join, as line 72 writeCache.pl
         */
 
-        messsage = sqlite3_bind_text(staged_query, 1, val1.first.c_str(), static_cast<int>(val1.first.size()), nullptr);
+        message = sqlite3_bind_text(staged_query, 1, val1.first.c_str(), static_cast<int>(val1.first.size()), nullptr);
         problemEncountered(message, "bind text 1 for staged_query, writeCache");
         message = sqlite3_bind_text(staged_query, 2, val1.second.c_str(), static_cast<int>(val1.second.size()), nullptr);
         problemEncountered(message, "bind text 2 for staged_query, writeCache");
@@ -124,10 +124,11 @@ static void checkDone(const int &message, const string &s){
         exit(1);
     }
 }
-
+/*
 static void isRowReady(const int &message){
     if(message != SQLITE_ROW){
         cerr << "Row isn't ready!!\n\tEXITING\n";
         exit(1);
     }
 }
+*/

@@ -120,7 +120,7 @@ int main(int argc, char **argv){
     }
 
     pvals.erase(pvals.begin());
-    double pVal = pvals.front();
+//    double pVal = pvals.front();
 
 //  ostringstream threshstream;
 //  threshstream << "./get_threshold " << pwm << " " << pVal;
@@ -130,7 +130,6 @@ int main(int argc, char **argv){
         data.settings.threshold = 0;
     }
 
-    int iterID = 0;
     cout << "--- Iteration 0 ---" << '\n';
 
     data.settings.iteration = 0;
@@ -142,7 +141,7 @@ int main(int argc, char **argv){
 */
 
     pvals.erase(pvals.begin());
-    pVal = pvals.front();
+//    pVal = pvals.front();
 //    string newPwm = data.output_dir + "/" + tf + ".pwm";
 //    threshstream.str("");
 //    threshstream << "src/get_threshold.cpp " << newPwm << " " << pVal;
@@ -164,12 +163,13 @@ int main(int argc, char **argv){
     int total_diff = 0;
     string final_run = "";
     string line = "";
+//    int iterID = 0;
 
     map <string, int> kmers, kmers_2;
 
     for (int iteration = 1; iteration < total_iterations; iteration++){
 	      data.settings.fastrun = false;
-        iterID = rand() % 16777216;
+//        iterID = rand() % 16777216;
         ofstream outFile(data.output_dir + "/kmer_similarity.out");
         if(iteration > 1 && converge < 10){
             int j = iteration - 1;
@@ -226,7 +226,7 @@ int main(int argc, char **argv){
             generatePWMfromSEM(data);
 
             pvals.erase(pvals.begin());
-            pVal = pvals.front();
+//          pVal = pvals.front();
             // newPwm = data.output_dir+ "/" + tf + ".pwm";
             data.settings.threshold = get_threshold(data);
             if(data.settings.threshold < 0){
