@@ -34,16 +34,15 @@ my $iteration = -1;
 #include <cstdlib>
 #include <string>
 #include <cstring>
+#include "common.h"
 using namespace std;
 
 void find_signal(Dataset &data);
 void create_baselines(Dataset &data, int length);
+void align_to_genome(Dataset &data);
 void generate_output(Dataset &data);
 int generate_kmers(Dataset &data);
 void Enumerate_kmer(Dataset &data);
-
-// helper function
-string revCompDNA(string);
 
 
 void generateSNPEffectMatrix(Dataset &data){
@@ -126,9 +125,9 @@ int generate_kmers(Dataset &data){
 }
 
 void align_to_genome(Dataset &data){
-  if(data.settings.verbose) cout << "Aligning SNPs in kmers to the genome\n";
-  // align all to genome
-  void alignToGenomeWrapper(Dataset &data, data.SettingsForSNPEffectMatrix.iteration);
+        if(data.settings.verbose) cout << "Aligning SNPs in kmers to the genome\n";
+        // align all to genome
+        alignToGenomeWrapper(data, data.settings.iteration);
 }
 
 // assumes filterDNaseWrapper_output is filled from previous function

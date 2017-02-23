@@ -4,7 +4,6 @@ C++FLAGS=-Wall -Werror -pedantic --std=c++11 -I.
 
 DEBUG_OR_OPTIMIZE = -DDEBUG -g3 -Wno-variadic-macros -Wno-unused-local-typedefs -Wno-enum-compare
 
-#C++SOURCES=src/iterativeSEM.cpp src/pwm_to_tfm.cpp src/get_threshold.cpp src/accumSummary_scale.cpp src/generatePWMfromSEM.cpp src/generateSNPEffectMatrix.cpp src/Enumerate_kmer.cpp src/common.cpp src/alignToGenomeWrapper.cpp src/checkCache.cpp
 C++SOURCES=$(wildcard src/*.cpp)
 
 C++OBJ=$(subst src/,obj/,$(C++SOURCES))
@@ -12,23 +11,29 @@ C++OBJ:=$(C++OBJ:.cpp=.o)
 
 BIGWIGLIBRARY=-lBigWig
 BIGWIGLIBRARYLOC=-Llib/libBigWig-master
+
 BOWTIELIBRARY=-lbowtie
 BOWTIELIBRARYLOC=-Llib/bowtie-1.0.0
+
 CSOURCES=bw{Read,Stats,Values,Write}.c
-TFMHEADER=lib/TFM-Pvalue/{Matrix,ParseException,ArgumentException,FileException}.cpp
+
+TFMHEADER=$(wildcard lib/TFM-Pvalue/*.cpp)
+TFMOBJ=$(subst lib/TFM-Pvalue/,obj/,$(TFMHEADER))
+TFMOBJ:=$(TFMOBJ:.cpp=.o)
+
 SQLITESOURCE=lib/sqlite3/sqlite3.c
 SQLITEOBJ=obj/sqlite3.o
 
-
-#C++OBJ=obj/iterativeSEM.o obj/pwm_to_tfm.o obj/get_threshold.o obj/accumSummary_scale.o obj/generatePWMfromSEM.o obj/generateSNPEffectMatrix.o obj/Enumerate_kmer.o obj/common.o obj/alignToGenomeWrapper.o obj/checkCache.o
 
 EXECUTABLE=iterativeSEM.exe
 
 all: $(EXECUTABLE)
 
-iterativeSEM.exe: $(C++OBJ) $(SQLITEOBJ)
-		$(CXX) $(C++FLAGS) $(BIGWIGLIBRARYLOC) $(BIGWIGLIBRARY) $(TFMHEADER) -o $(EXECUTABLE) $(C++OBJ) $(SQLITEOBJ)
+$(EXECUTABLE): $(C++OBJ) $(SQLITEOBJ) $(TFMOBJ)
+		$(CXX) $(C++FLAGS) $(BIGWIGLIBRARYLOC) $(BIGWIGLIBRARY) -o $(EXECUTABLE) $(C++OBJ) $(SQLITEOBJ) $(TFMOBJ)
 
+obj/%.o : lib/TFM-Pvalue/%.cpp
+		$(CXX) $(C++FLAGS) $(DEBUG_OR_OPTIMIZE) -c $< -o $@
 obj/%.o : src/%.cpp												#pre-requisite   #target
 		$(CXX) $(C++FLAGS) $(DEBUG_OR_OPTIMIZE) -c $< -o $@
 obj/%.o : lib/sqlite3/%.c

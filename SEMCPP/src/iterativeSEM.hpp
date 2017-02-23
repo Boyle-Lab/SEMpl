@@ -26,6 +26,12 @@
 // data members made public for ease of access, otherwise wouldn't given more time
 
 struct Dataset {
+private:
+    Dataset(const Dataset &other) {}
+    Dataset& operator=(const Dataset &other) { return *this; }
+
+public:
+    Dataset(){ }
 	// overview
 	// a struct to contain and manage the PWM data as given in the example file
 	struct PWM{
@@ -79,9 +85,8 @@ struct Dataset {
 	struct SettingsForSNPEffectMatrix{
 		bool delSNPList = true, delAlignmentBed = true, delFilteredBed = true;
 		bool delSignalFile = false, writecache = false, fastrun = false, verbose = false;
-    int iteration = -1;
+        int iteration = -1;
 		double threshold = 0.0;
-    bool debug = false;
 	};
     struct bedtoolsSettings{
         std::vector<std::vector<std::string> > bed_Array;
@@ -126,11 +131,8 @@ void generateSNPEffectMatrix(Dataset &data);
 
 //src files
 void accumSummary_scale(Dataset &data, const std::string &hfile, const std::string &cfile, int scale);
-void alignToGenomeWrapper(Dataset &data, int iteration, std::string genome = "../data/hg19");       //If we are using structs for all functions shouldn't we pass these additional arguments in the struct
-											    // ANSWER: we could do that, but I wanted to keep the "interface" similar to the way it is implemented
-											    // in the original Perl for ease of understanding, rather than change the struct
-											    // just pass the string in as an argument. We could change it later
-void bowtie_genome_map(Dataset &data, int length, const std::string& genome = "../data/hg19");
+void alignToGenomeWrapper(Dataset &data, int iteration, std::string genome = "data/hg19");     
+void bowtie_genome_map(Dataset &data, int length, const std::string& genome = "data/hg19");
 void changeBase(Dataset &data, int position, std::string nucleotide,
                                              std::vector<std::string> &new_kmer_vec,
                                               std::string const &genome);
