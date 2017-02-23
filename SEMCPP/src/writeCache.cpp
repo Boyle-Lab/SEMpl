@@ -1,7 +1,7 @@
 #include "iterativeSEM.hpp"
 #include "../lib/sqlite3/sqlite3.h"
 #include "common.h"
-#include <sstream>
+//#include <sstream>
 using namespace std;
 
 bool fileExists(const string &filename);
@@ -20,7 +20,9 @@ void writeCache(const Dataset &data, const string &cache){
     // wants the third space, indexed from 0
     map<string, string> kmers;
     for(string line : data.accumSummary_data.accum_lines){
-#ifdef
+#ifdef DEBUG
+        cout << "string at index 3 of string: " << line
+            << "\nis: " grab_string_at_index(line, 3) << '\n';
         assert(line.find(grab_string_at_index(line, 3)) != string::npos);
 #endif
         kmers[grab_string_at_index(line, 3)] = line;
@@ -76,48 +78,56 @@ void writeCache(const Dataset &data, const string &cache){
     msg = "INSERT OR IGNORE INTO kmer_cache VALUES(?,?)";
     prepareStmt(cacheDB, msg, staged_query);
 
-    for(val : kmers){
-        // need to figure out how to join
 
-        // message = sqlite3_bind_text(staged_query, 1, kmer_pair.first.c_str(), static_cast<int>(kmer_pair.first.size()), nullptr);
-        // problemEncountered(message, "bind text for inserting into seen_cache");
-        // message = sqlite3_bind_text(staged_query, 2, data.settings.iteration);
-        // problemEncountered(message, "bind int for inserting into seen_cache");
-        // message = sqlite3_step(staged_query);
-        // if(message != SQLITE_DONE){
-        //     cerr << "Build statement is not done!\n\tEXITING\n";
-        //     exit(1);
-        // }
-        // sqlite3_reset(staged_query);
-        // sqlite3_clear_bindings(staged_query);
+    //stringstream ss;
+    for(val1 : kmers){
+        /*
+        *   I believe the current C++ design does not
+        *   necessitate an equivalent join, as line 72 writeCache.pl
+        */
+
+        messsage = sqlite3_bind_text(staged_query, 1, val1.first.c_str(), static_cast<int>(val1.first.size()), nullptr);
+        problemEncountered(message, "bind text 1 for staged_query, writeCache");
+        message = sqlite3_bind_text(staged_query, 2, val1.second.c_str(), static_cast<int>(val1.second.size()), nullptr);
+        problemEncountered(message, "bind text 2 for staged_query, writeCache");
+        message = sqlite3_step(staged_query);
+        if(message != SQLITE_DONE){
+            cerr << "Build statement is not done!\n\tEXITING\n";
+            exit(1);
+        }
+        sqlite3_reset(staged_query);
+        sqlite3_clear_bindings(staged_query);
     }
+
+    message = sqlite3_close(cacheDB);
+    problemEncountered(message, "closing the connection");
 }
 
 
 
 static void prepareStmt(sqlite3 *db, string stmt, sqlite3_stmt *query){
-  //sqlite3_prepare(sqlite3 *db, const char *zSql, int nByte, sqlite3_stmt **ppStmt, const char **pzTail)
-  int message = sqlite3_prepare(db, stmt.c_str(), static_cast<int>(stmt.size()), &query, nullptr);
-  problemEncountered(message, stmt);
+    //sqlite3_prepare(sqlite3 *db, const char *zSql, int nByte, sqlite3_stmt **ppStmt, const char **pzTail)
+    int message = sqlite3_prepare(db, stmt.c_str(), static_cast<int>(stmt.size()), &query, nullptr);
+    problemEncountered(message, stmt);
 }
 
 static void problemEncountered(const int &message, const string &what){
-  if(message != SQLITE_OK){
-    cerr << "Problem encountered with " << what << "!\n\tEXITING\n";
-    exit(1);
-  }
+    if(message != SQLITE_OK){
+        cerr << "Problem encountered with " << what << "!\n\tEXITING\n";
+        exit(1);
+    }
 }
 
 static void checkDone(const int &message, const string &s){
-  if(message != SQLITE_DONE){
-    cerr << s << " is not done!\n\tEXITING\n";
-    exit(1);
-  }
+    if(message != SQLITE_DONE){
+        cerr << s << " is not done!\n\tEXITING\n";
+        exit(1);
+    }
 }
 
 static void isRowReady(const int &message){
-  if(message != SQLITE_ROW){
-    cerr << "Row isn't ready!!\n\tEXITING\n";
-    exit(1);
-  }
+    if(message != SQLITE_ROW){
+        cerr << "Row isn't ready!!\n\tEXITING\n";
+        exit(1);
+    }
 }

@@ -192,7 +192,7 @@ void checkCache(const Dataset &data, vector<string> &vec){
         checkDone(message, "build statement create unique index on seen_cache");
 
         sqlite3_stmt *staged_query = nullptr;
-        msg = "INSERT OR IGNORE INTO kmer_cache VALUES(?,?)";
+        msg = "INSERT OR IGNORE INTO seen_cache VALUES(?,?)";
         prepareStmt(cacheDB, msg, staged_query);
 
         for(auto kmer_pair : data.kmerHash){
@@ -217,28 +217,28 @@ void checkCache(const Dataset &data, vector<string> &vec){
 
 
 static void prepareStmt(sqlite3 *db, string stmt, sqlite3_stmt *query){
-  //sqlite3_prepare(sqlite3 *db, const char *zSql, int nByte, sqlite3_stmt **ppStmt, const char **pzTail)
-  int message = sqlite3_prepare(db, stmt.c_str(), static_cast<int>(stmt.size()), &query, nullptr);
-  problemEncountered(message, stmt);
+    //sqlite3_prepare(sqlite3 *db, const char *zSql, int nByte, sqlite3_stmt **ppStmt, const char **pzTail)
+    int message = sqlite3_prepare(db, stmt.c_str(), static_cast<int>(stmt.size()), &query, nullptr);
+    problemEncountered(message, stmt);
 }
 
 static void problemEncountered(const int &message, const string &what){
-  if(message != SQLITE_OK){
-    cerr << "Problem encountered with " << what << "!\n\tEXITING\n";
-    exit(1);
-  }
+    if(message != SQLITE_OK){
+        cerr << "Problem encountered with " << what << "!\n\tEXITING\n";
+        exit(1);
+    }
 }
 
 static void checkDone(const int &message, const string &s){
-  if(message != SQLITE_DONE){
-    cerr << s << " is not done!\n\tEXITING\n";
-    exit(1);
-  }
+    if(message != SQLITE_DONE){
+        cerr << s << " is not done!\n\tEXITING\n";
+        exit(1);
+    }
 }
 
 static void isRowReady(const int &message){
-  if(message != SQLITE_ROW){
-    cerr << "Row isn't ready!!\n\tEXITING\n";
-    exit(1);
-  }
+    if(message != SQLITE_ROW){
+        cerr << "Row isn't ready!!\n\tEXITING\n";
+        exit(1);
+    }
 }
