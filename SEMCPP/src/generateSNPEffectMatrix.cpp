@@ -1,5 +1,7 @@
 
-// generateSNPEffectMatrix.pl --PWM <PWM_file> --merge_file <merge file> --big_wig <bigwig file> --TF_name <TF_name> [options] ...
+// generateSNPEffectMatrix.pl --PWM <PWM_file>
+//    --merge_file <merge file> --big_wig <bigwig file>
+//    --TF_name <TF_name> [options] ...
 // Required Options:
 //  --PWM PWM input file
 //  --merge_file DNAse-seq file
@@ -27,7 +29,9 @@ my $writecache = 0;
 my $fastrun = 0;
 my $iteration = -1;
 */
-// ./generateSNPEffectMatrix.pl -PWM $PWM -merge_file $dnase -big_wig $chip -TF_name $tf -output $output -threshold $threshold -iteration $iterID -writecache -readcache $CACHE -verbose";
+// ./generateSNPEffectMatrix.pl -PWM $PWM -merge_file $dnase -big_wig $chip
+//     -TF_name $tf -output $output -threshold $threshold -iteration $iterID
+//     -writecache -readcache $CACHE -verbose";
 
 #include "iterativeSEM.hpp"
 #include <iostream>
@@ -47,20 +51,20 @@ void Enumerate_kmer(Dataset &data);
 
 void generateSNPEffectMatrix(Dataset &data){
 	// default options are built into settings within data
-
-	if(data.output_dir.empty()){
-		data.output_dir = "results/" + data.TF_name + "/";
-	}
-
-  ifstream test_file(data.output_dir);
-  if(test_file){
-    // directory exists
-  }
-  else{
-    string s = "mkdir -p ";
-    s += data.output_dir.c_str();
-    system(s.c_str());
-  }
+  //
+  // f(data.output_dir.empty()){
+  // data.output_dir = "results/" + data.TF_name + "/";
+  //
+  //
+  // ifstream test_file(data.output_dir);
+  // if(test_file){
+  //   // directory exists
+  // }
+  // else{
+  //   string s = "mkdir -p ";
+  //   s += data.output_dir;
+  //   system(s.c_str());
+  // }
 
 	if(data.cachefile.empty()){
 		data.cachefile = data.output_dir + "/CACHE.db";
@@ -140,10 +144,18 @@ void find_signal(Dataset &data){ //This function call needs to be checked or alt
     if(data.settings.verbose){
         cout << "Finding the average signal" << '\n';
     }
-    // ./bin/bedtools intersect -a $readfile -b $mergefile -wa -u | sort | uniq > $bedfile
-    // -wa writes whatever a was to output, -u write a if any overlaps found
-    // determine if ordering of output matters in some way,
-    // ANSWER: I believe ordering of output does not matter
+    // this function, in the original algorithm, iterates through files, where those
+    // files correspond to the length of something, then each nucleotide letter
+    // A, C, T, G
+
+    // the original implementation seems to gather input from filterDNaseWrapper,
+    // and print whatever output there is to bedfile. The input from filterDNaseWrapper
+    // is sorted, and unique
+
+    // I will need to understand the correct output of filterDNaseWrapper, then
+    // I can work on this. The exact output of filterDNaseWrapper is important
+
+    // http://bedtools.readthedocs.io/en/latest/content/example-usage.html
 
     // perl passes variables to subroutines by alias
     // chip is the file corresponding to the -big_wig argument
@@ -193,7 +205,8 @@ void find_signal(Dataset &data){ //This function call needs to be checked or alt
     // cmd = "mkdir " + data.output_dir + "/SIGNAL";
     //
     // system(cmd.c_str());
-    // cmd = "cp " + data.output_dir + "/ALIGNMENT/*/*/signal " + data.output_dir + "/SIGNAL/";
+    // cmd = "cp " + data.output_dir
+    //      + "/ALIGNMENT/*/*/signal " + data.output_dir + "/SIGNAL/";
     //
     // system(cmd.c_str());
     //
@@ -218,7 +231,8 @@ void create_baselines(Dataset &data, int length){
     system(cmd.c_str());
 
     //Create baseline from scrambled k-mers
-    cmd = "cut -f2 " + data.output_dir + "/Enumerated_kmer.txt > " + data.output_dir + "/BASELINE/Enumerated_kmer.txt";
+    cmd = "cut -f2 " + data.output_dir + "/Enumerated_kmer.txt > "
+            + data.output_dir + "/BASELINE/Enumerated_kmer.txt";
 
     system(cmd.c_str());
 
@@ -227,7 +241,9 @@ void create_baselines(Dataset &data, int length){
         //checkCache(data);
         //seq_col_to_fa(data, 0);
         //bowtie_genome_map(data);
-        cmd = "./bin/bedtools intersect -a " + data.output_dir + "/BASELINE/Scrambled_kmer.bed -b " + data.DNase_file + " -wa -u > "+ data.output_dir + "/BASELINE/Scrambled_kmer_filtered.bed";
+        cmd = "./bin/bedtools intersect -a " + data.output_dir + "/BASELINE/Scrambled_kmer.bed -b "
+                + data.DNase_file + " -wa -u > "+ data.output_dir
+                + "/BASELINE/Scrambled_kmer_filtered.bed";
         system(cmd.c_str());
         //accumSummary_scale(data, data.output_dir + "/BASELINE/Scrambled_kmer_filtered.bed", )
         if (data.settings.writecache){
@@ -235,7 +251,8 @@ void create_baselines(Dataset &data, int length){
         }
     }
 
-    cmd = "cat " + data.output_dir + "/BASELINE/Enumerated_kmer.cache | sort | uniq >> " + data.output_dir + "/BASELINE/Enumerated_kmer_filtered.signal";
+    cmd = "cat " + data.output_dir + "/BASELINE/Enumerated_kmer.cache | sort | uniq >> "
+            + data.output_dir + "/BASELINE/Enumerated_kmer_filtered.signal";
 
     system(cmd.c_str());
 
