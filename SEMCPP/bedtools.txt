@@ -161,5 +161,13 @@ Misc. notes-
 *check into the wa option, may be where to write it into the struct
 	-the variable needed to be found is _writeA
 	-returned by function getWriteA
-	-aforementioned function is used in RecordOutputMgr in function called reportOOverlapDetail line 351
+	-aforementioned function is used in RecordOutputMgr in function called reportOverlapDetail line 365
 	-appears to be where much of the data is written to stream but its usage needs to be traced.
+	-report overlap used by the print record function which is called by processHits
+	-as long as key list is declared the function should not need to be changed 
+
+*Investigation as to outputting the data to a stringstream which will allow for the other functions to parse it just like it 
+	was written to a file.
+
+Will need to talk to Dr. Boyle about the progression of bedtools and whether or not to continue trying to convert or whether 
+to prioritize finishing the project within a timely manner and having a working product.
