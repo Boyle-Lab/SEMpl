@@ -162,3 +162,4 @@ Misc. notes-
 	-the variable needed to be found is _writeA
 	-returned by function getWriteA
 	-aforementioned function is used in RecordOutputMgr in function called reportOOverlapDetail line 351
+	-appears to be where much of the data is written to stream but its usage needs to be traced.
