@@ -166,7 +166,7 @@ void find_signal(Dataset &data){ //This function call needs to be checked or alt
     //                                      hfile,          cfile,              scale
 
     for(auto val : data.filterDNaseWrapper_output){
-        //accumSummary_scale(data, const std::string &hfile, const std::string &cfile, int scale);
+        // accumSummary_scale(data, const std::string &hfile, const std::string &cfile, int scale);
         // will have to see how Colten implements bedtools, then make a decision about this
         // and accumSummary_scale
     }

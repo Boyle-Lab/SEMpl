@@ -27,8 +27,6 @@ using namespace std;
  -TF_name HNF4A -output examples/HNF4A/"
 */
 
-void generateSNPEffectMatrix(Dataset &data);
-
 int main(int argc, char **argv){
 
 	string pwm = "", dnase = "", chip = "", tf = "";
@@ -111,7 +109,7 @@ int main(int argc, char **argv){
 	}
 
 // data.cachefile.empty() checks if the string is empty, not the actual file
-	if(data.cachefile.empty())  data.cachefile = data.output_dir + "/CACHE.DB";
+	if(data.cachefile.empty())  data.cachefile = data.output_dir + "/CACHE.db";
 
     vector<double> pvals(total_iterations + 1);
     pvals.push_back(0.0009765625);

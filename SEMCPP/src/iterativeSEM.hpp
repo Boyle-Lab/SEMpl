@@ -23,12 +23,12 @@
 
 // overview
 // a struct to contain an instance of PWM data and DNase data
-// data members made public for ease of access, otherwise wouldn't given more time
+// data members made public for ease of access, otherwise wouldn't, given more time
 
 struct Dataset {
 private:
-    Dataset(const Dataset &other) {}
-    Dataset& operator=(const Dataset &other) { return *this; }
+    Dataset(const Dataset &other) = delete;
+    Dataset& operator=(const Dataset &other) = delete;
 
 public:
     Dataset(){ }
@@ -130,12 +130,16 @@ public:
 void generateSNPEffectMatrix(Dataset &data);
 
 //src files
-void accumSummary_scale(Dataset &data, const std::string &hfile, const std::string &cfile, int scale);
-void alignToGenomeWrapper(Dataset &data, int iteration, std::string genome = "data/hg19");     
-void bowtie_genome_map(Dataset &data, int length, const std::string& genome = "data/hg19");
-void changeBase(Dataset &data, int position, std::string nucleotide,
-                                             std::vector<std::string> &new_kmer_vec,
-                                              std::string const &genome);
+void accumSummary_scale(Dataset &data, const std::string &hfile,
+                        const std::string &cfile, int scale);
+void alignToGenomeWrapper(Dataset &data, int iteration,
+                            std::string genome = "data/hg19");
+void bowtie_genome_map(Dataset &data, int length, const std::string& genome,
+                        const std::string& file, const std::string& final_output);
+void changeBase(Dataset &data, int position,
+                            std::string nucleotide,
+                            std::vector<std::string> &new_kmer_vec,
+                            std::string const &genome);
 void checkCache(Dataset &data, std::vector<std::string> &cache_output);
 void combineBedFiles(Dataset &data);
 void Enumerate_kmer(Dataset &data);
@@ -152,7 +156,8 @@ double get_threshold(Dataset &data, double pval = 0.0009765625);
 void pwm_to_tfm(Dataset &data);
 void quality_control(Dataset &data);
 void scramble_kmer(Dataset &data);
-bool seq_col_to_fa(const std::vector<std::string> &column);
+bool seq_col_to_fa(const std::vector<std::string> &column,
+                    const std::string &file);
 void writeCache(Dataset &data);
 //Library converted function
 void bedtools(Dataset &data);

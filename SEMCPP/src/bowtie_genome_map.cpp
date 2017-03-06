@@ -18,24 +18,25 @@ string revCompDNA(string dna);
 //                                                        // defined in iterativeSEM.hpp
 // genome is "./data/hg19", DNA_FA_FILE  is the file that contains .fa
 
+
 int bowtie(int argc, const char **argv);
 
 
-void bowtie_genome_map(Dataset &data, int length, const string& genome){
-    const char *argvs[9] = {"./bin/bowtie", "--quiet", "-a", "-v", genome.c_str(), "-f", "../data/hg19", "temp.dat" };
+void bowtie_genome_map(Dataset &data, int length, const string& genome, const string& file, const string& final_output){
+    const char *argvs[9] = {"./bin/bowtie", "--quiet", "-a", "-v 0", genome.c_str(), "-f", file.c_str(), "temp.dat" };
 /*
-    argvs[0] = "./bin/bowtie\0";
-    argvs[1] = "--quiet\0";
-    argvs[2] = "-a\0";
-    argvs[3] = "-v\0";
-    argvs[4] = "0\0";
-    argvs[5]  = genome;
-    argvs[6] = "-f\0";
-    argvs[7] = "../data/hg19\0";
-    argvs[8] = "temp.dat\0";
+*    argvs[0] = "./bin/bowtie\0";
+*    argvs[1] = "--quiet\0";
+*    argvs[2] = "-a\0";
+*    argvs[3] = "-v\0";
+*    argvs[4] = "0\0";
+*    argvs[5]  = genome;
+*    argvs[6] = "-f\0";
+*    argvs[7] = "../data/hg19\0";
+*    argvs[8] = "temp.dat\0";
 */
     try{
-        // bowtie throws exceptions, I believe
+        // bowtie throws exceptions
         bowtie(9, argvs);
     }
     catch(exception e){
@@ -47,11 +48,19 @@ void bowtie_genome_map(Dataset &data, int length, const string& genome){
         exit(1);
     }
 
-    ifstream IN("temp.dat");
-    if(!IN){
-        cerr << "Failure to open temp.dat, ephemeral file\n";
+
+    ofstream OUT(final_output);
+    if(!OUT){
+        cerr << "Failure to open \"" << final_output << "\".\n";
         exit(1);
     }
+
+    ifstream IN(file);
+    if(!IN){
+        cerr << "Failure to open \"" << file << "\".\n";
+        exit(1);
+    }
+
     string map_line = "";
     vector<string> dat;
     string DNA = "";
@@ -69,8 +78,14 @@ void bowtie_genome_map(Dataset &data, int length, const string& genome){
             exit(1);
         }
         // bowtie_output is a vector of arrays, each array has 5 string spots
-        //                                            convert to int, perform addition, convert back to string
-        data.bowtie_output.push_back({{dat[2], dat[3], to_string(atoi(dat[3].c_str() +  length) ), DNA, dat[1]}});
+        //              convert to int, perform addition, convert back to string
+        //data.bowtie_output.push_back({{dat[2], dat[3],
+        //                              to_string(atoi(dat[3].c_str() +  length) ),
+        //                                  DNA, dat[1]}});
+
+        OUT << dat[2] << '\t' << dat[3] << '\t'
+            << atoi(dat[3].c_str()) + length
+            << '\t' << DNA << '\t' << dat[1] << '\n';
     }
     IN.close();
 }

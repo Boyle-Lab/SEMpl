@@ -1,4 +1,5 @@
 #include "iterativeSEM.hpp"
+#include "common.h"
 #include <iostream>
 #include <cstdlib>
 #include <string>
@@ -6,6 +7,8 @@
 
 using namespace std;
 
+
+// REQUIRES: Boost library installed
 void filterDNaseWrapper(Dataset &data){
    /*
     * I have added a member variable for the output of this function
@@ -19,8 +22,38 @@ void filterDNaseWrapper(Dataset &data){
 
     //bedtools(Dataset &data);
 
-    //See bedtools.txt for notes on how it works and an alternative for using the
-    //file in order to work with struct data
+    //See bedtools.txt for notes on how it works and an alternative for using
+    //the file in order to work with struct data
+
+
+    /*
+    *   I will make a quick implementation of this function, involving
+    *   reading in and out, just so that the function is working for now
+    *       -- Cody
+    */
+
+    //
+    vector<string> files;
+    string targetDir = "../" + data.output_dir + "/ALIGNMENT/";
+
+    GetFilesInDirectory(files, "../ALIGNMENT/");
+    for(auto file : files){
+        if(file.find("pos") != string::npos){
+            string bedfile = targetDir + file + "_filtered.bed";
+            string readfile = targetDir + file + ".bed";
+            ifstream IN(file);
+
+            if(fileExists(readfile)){
+                // CALL BEDTOOLS AS PRESCRIBED IN ORIGINAL ALGORITHM
+            }
+            else{
+                system(string("touch " + bedfile).c_str());
+            }
+        }
+        // if ($da == 1){
+        // rm -rf readfile
+        // }
+    }
 
 
 }
