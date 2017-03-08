@@ -45,6 +45,10 @@ void filterDNaseWrapper(Dataset &data){
 
             if(fileExists(readfile)){
                 // CALL BEDTOOLS AS PRESCRIBED IN ORIGINAL ALGORITHM
+                string bed_cmd = "../lib/bedtools intersect -a " + readfile+ " -b " + data.DNase_file + " -wa -u | sort |uniq > " + bedfile;
+                system(bed_cmd.c_str());
+                //I believe this is the correct implementation of the call to bedtools with the binary file
+                // located within lib
             }
             else{
                 system(string("touch " + bedfile).c_str());
