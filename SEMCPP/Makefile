@@ -25,7 +25,7 @@ SQLITESOURCE=lib/sqlite3/sqlite3.c
 SQLITEOBJ=obj/sqlite3.o
 
 
-EXECUTABLE=iterativeSEM.exe
+EXECUTABLE=iterativeSEM
 
 all: $(EXECUTABLE)
 

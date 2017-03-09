@@ -211,12 +211,23 @@ int main(int argc, char **argv){
             if (converge == 9){
 		            data.settings.fastrun = true;
             //    wkCmdstream.str("");
-            //    wkCmdstream << "./generateSNPEffectMatrix.cpp -PWM " << newPwm << " -merge_file " << dnase << " -big_wig " << chip <<" -TF_name " << tf << " -output " << newOutput.str() << " -threshold " << threshold << " -iteration " << iterID << " -writedata.cachefile-readdata.cachefile"<< data.cachefile<< " -fastrun -verbose";
+            //    wkCmdstream << "./generateSNPEffectMatrix.cpp -PWM " << newPwm
+            //          << " -merge_file " << dnase << " -big_wig " << chip
+            //          <<" -TF_name " << tf << " -output " << newOutput.str()
+            //          << " -threshold " << threshold << " -iteration " << iterID
+            //          << " -writedata.cachefile-readdata.cachefile"<< data.cachefile
+            //          << " -fastrun -verbose";
                 final_run = newOutput.str();
             }
             else{
             //    wkCmdstream.str("");
-            //    wkCmdstream << "./generateSNPEffectMatrix.cpp -PWM " << newPwm << " -merge_file " << dnase << " -big_wig " << chip <<" -TF_name " << tf << " -output " << newOutput.str() << " -threshold " << threshold << " -iteration " << iterID << " -writedata.cachefile-readdata.cachefile"<< data.cachefile<< " -verbose";
+            //    wkCmdstream << "./generateSNPEffectMatrix.cpp -PWM "
+            //          << newPwm << " -merge_file " << dnase << " -big_wig "
+            //          << chip <<" -TF_name " << tf << " -output "
+            //          << newOutput.str() << " -threshold " << threshold
+            //          << " -iteration " << iterID
+            //          << " -writedata.cachefile-readdata.cachefile"
+            //          << data.cachefile<< " -verbose";
             }
             generateSNPEffectMatrix(data);
             // kmerHash should be filled in after the above line, within data!!!!

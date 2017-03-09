@@ -88,21 +88,12 @@ public:
         int iteration = -1;
 		double threshold = 0.0;
 	};
-    struct bedtoolsSettings{
-        std::vector<std::vector<std::string> > bed_Array;
-        std::string context = "intersect";
-        std::string file_type = "bed";
-        bool subcommand = 1;
-        bool noname =1;
-        std::string options = "-a -b -wa -u";
-    };
 
-	DNase DNase_data;
+	// DNase DNase_data;
 	PWM PWM_data;
 	TFMdata TFM_data;
 	accumSummaryData accumSummary_data;
 	SettingsForSNPEffectMatrix settings;
-	bedtoolsSettings bedtoolsSettings;
 
   // name of original command passed in
 	std::string command = "";
@@ -118,8 +109,6 @@ public:
 	std::string cachefile = "";
 
     std::map<std::string, int> kmerHash;
-
-    std::vector<std::array<std::string, 5> > bowtie_output;
 
     std::vector<std::string> filterDNaseWrapper_output;
 };

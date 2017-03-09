@@ -41,7 +41,7 @@ my $iteration = -1;
 #include "common.h"
 using namespace std;
 
-void find_signal(Dataset &data);
+void find_signal(Dataset &data, int length);
 void create_baselines(Dataset &data, int length);
 void align_to_genome(Dataset &data);
 void generate_output(Dataset &data);
@@ -85,19 +85,22 @@ void generateSNPEffectMatrix(Dataset &data){
     // data.kmerHash is now filled in!!!!
 
 	//Step 2: Change one base at each location in k-mers and align to genome
+    // ALSO: print output to file
     if(data.settings.verbose){
         cout << "Aligning SNPs in kmers to the genome" << '\n';
     }
     align_to_genome(data);
 
     //Step 3: Filter using DNase data and finding the signal at each location
+    // ALSO: read in output of filterDNaseWrapper back to memory
     if(data.settings.verbose){
         cout << "Filtering using DNase data and finding the signal" << '\n';
     }
     filterDNaseWrapper(data);
+    // data.filterDNaseWrapper_output is filled!!!!!!
 
     //Step 4: Find the signal using chIP-seq data
-    find_signal(data);
+    find_signal(data, length);
 
     //Step 5: Generate baselines
     create_baselines(data, length);
@@ -135,12 +138,8 @@ void align_to_genome(Dataset &data){
 }
 
 // assumes filterDNaseWrapper_output is filled from previous function
-// assumes filterDNaseWrapper_output is filled from previous function
-// assumes filterDNaseWrapper_output is filled from previous function
 // and that the output is sorted, and contains only unique string values
-// and that the output is sorted, and contains only unique string values
-// and that the output is sorted, and contains only unique string values
-void find_signal(Dataset &data){ //This function call needs to be checked or altered
+void find_signal(Dataset &data, int length){ //This function call needs to be checked or altered
     if(data.settings.verbose){
         cout << "Finding the average signal" << '\n';
     }
@@ -152,71 +151,33 @@ void find_signal(Dataset &data){ //This function call needs to be checked or alt
     // and print whatever output there is to bedfile. The input from filterDNaseWrapper
     // is sorted, and unique
 
-    // I will need to understand the correct output of filterDNaseWrapper, then
-    // I can work on this. The exact output of filterDNaseWrapper is important
+    // signal is big_wig
+    data.accumSummary_data.accum_lines.clear();
+    data.accumSummary_data.accum_max.clear();
 
-    // http://bedtools.readthedocs.io/en/latest/content/example-usage.html
+    string targetDir = data.output_dir + "/ALIGNMENT/";
+    vector<string> files;
+    string cachefile = "";
 
-    // perl passes variables to subroutines by alias
-    // chip is the file corresponding to the -big_wig argument
-    // chip is a bigwig file
-    // Signal is chip
-    // first argument to accumSummary_scale is signal, then filteredBedfile, then length
-    //                                  bigwig file,    output of filterDNaseWrapper,  length
-    //                                      hfile,          cfile,              scale
+    GetFilesInDirectory(files, targetDir);
 
-    for(auto val : data.filterDNaseWrapper_output){
-        // accumSummary_scale(data, const std::string &hfile, const std::string &cfile, int scale);
-        // will have to see how Colten implements bedtools, then make a decision about this
-        // and accumSummary_scale
+    for(auto file : files){
+        accumSummary_scale(data, data.bigwig_file, file, length);
+#ifdef DEBUG
+        cout << "\tDeleting " << file << '\n';
+        int val = system(("rm -rf " + file).c_str());
+        assert(val == 0);
+#else
+        system(("rm -rf " + file).c_str());
+#endif
+        // write to cache
+        // -in_file and -cache are built in to data
+        writeCache(data);
+
+        cachefile = targetDir + file + ".signal.cache";
+
     }
 
-
-
-    //Processes bigwig
-    // string targetDir = data.output_dir + "/ALIGNMENT/";
-    // string filteredBedfile = "";
-    // // I don't think this can be done, I think you need to list the files, then
-    // // open each individually
-    // ifstream directory(targetDir);
-    // string file = "";
-    // while (directory >> file ){
-    //     if(file == "/pos/"){
-    //         targetDir += file + "/";
-    //         filteredBedfile = targetDir + file + "_filtered.bed";
-    //         //accumSummary_scale(data);
-    //         if(data.settings.writecache){
-    //             writeCache(data);
-    //         }
-    //         // Not sure on the implementation of the following line currently
-    //     }
-    //     string cachefile = targetDir + file + "signal.cache";
-    //
-    // }
-    // directory.close();
-    //
-    // if (data.settings.verbose){
-    //     cout << "Creating directory SIGNAL " << '\n';
-    // }
-    // string cmd = "rm -rf " + data.output_dir + "/SIGNAL";
-    //
-    //
-    // system(cmd.c_str());
-    // cmd = "mkdir " + data.output_dir + "/SIGNAL";
-    //
-    // system(cmd.c_str());
-    // cmd = "cp " + data.output_dir
-    //      + "/ALIGNMENT/*/*/signal " + data.output_dir + "/SIGNAL/";
-    //
-    // system(cmd.c_str());
-    //
-    //
-    // //build signal summary
-    // findMaximumAverageSignalWrapper(data);
-    //
-    // // cmd = "rm " + data.output_dir + "/SIGNAL/*.signal";
-    // //
-    // // system(cmd.c_str());
 }
 
 void create_baselines(Dataset &data, int length){

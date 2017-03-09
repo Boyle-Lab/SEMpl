@@ -1,7 +1,8 @@
 #include "iterativeSEM.cpp"
 using namespace std;
 
-void changeBase(Dataset &data, int position, string nucleotide, vector<string> &new_kmer_vec){
+// EFFECTS: fills new_kmer_vec
+void changeBase(const Dataset &data, int position, string nucleotide, vector<string> &new_kmer_vec){
   // find new_kmer
   // performs operations on Enumerated_kmer, or kmerHash
   // remove \r from line, not needed here, as stored in memory

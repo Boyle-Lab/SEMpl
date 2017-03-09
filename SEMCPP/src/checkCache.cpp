@@ -27,7 +27,8 @@ static void isRowReady(const int &message);
 static void prepareStmt(sqlite3 *db, string stmt, sqlite3_stmt *query);
 static void checkDone(const int &message, const string &s);
 
-
+// MODIFIES: adds appropriate kmers to vec
+// EFFECTS: checks cache located at data.cachefile
 void checkCache(const Dataset &data, vector<string> &vec){
     vector<int> output;
 
