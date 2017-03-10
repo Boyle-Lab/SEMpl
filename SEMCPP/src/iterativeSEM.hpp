@@ -14,7 +14,7 @@
 #include <fstream>
 #include <vector>
 #include <cassert>
-#include <map>
+#include <unordered_map>
 
 /*
  example execution from command line
@@ -108,9 +108,13 @@ public:
 	std::string output_dir = "";
 	std::string cachefile = "";
 
-    std::map<std::string, int> kmerHash;
+    std::unordered_map<std::string, int> kmerHash;
 
     std::vector<std::string> filterDNaseWrapper_output;
+
+    std::vector<std::string> signal_cache;
+
+    std::vector<std::string> signal_output;
 };
 
 //Declare functions in header to be used by other functions

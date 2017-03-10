@@ -15,7 +15,7 @@ using namespace std;
   // takes in_file, out_file, out_cache, cache(location of cache), current iteration,
   // all of them are file names, and are specific to nucleotide and position
 
-  // cachefile is the output cache
+  // signal_cache in Dataset is the output cache
   // cache is the input cache
                                // default is "none", defined in iterativeSEM.hpp
 
@@ -26,11 +26,13 @@ static void problemEncountered(const int &message, const string &what);
 static void isRowReady(const int &message);
 static void prepareStmt(sqlite3 *db, string stmt, sqlite3_stmt *query);
 static void checkDone(const int &message, const string &s);
+static const char* convert_to_const_char(const unsigned char* store);
+
 
 // MODIFIES: adds appropriate kmers to vec
 // EFFECTS: checks cache located at data.cachefile
-void checkCache(const Dataset &data, vector<string> &vec){
-    vector<int> output;
+void checkCache(Dataset &data, vector<string> &vec){
+    // vector<int> output;
 
     bool newcache = fileExists(data.cachefile);
     // data_local.cachefile is Cache in original algorithm!!
@@ -41,15 +43,16 @@ void checkCache(const Dataset &data, vector<string> &vec){
     }
 
     sqlite3 *cacheDB;
-    int message;
+    int message = 0;
     message = sqlite3_open(data.cachefile.c_str(), &cacheDB);
     problemEncountered(message, "open");
 
-    string msg = "SELECT count(*) FROM seen_cache WHERE kmer=? AND iter!=?";
+    string msg = "";
     //const char* tail_msg;
 
     if(newcache){
 
+        msg = "SELECT count(*) FROM seen_cache WHERE kmer=? AND iter!=?";
         sqlite3_stmt* seen_query = nullptr;
         prepareStmt(cacheDB, msg, seen_query);
 
@@ -72,41 +75,46 @@ void checkCache(const Dataset &data, vector<string> &vec){
             isRowReady(message);
 
             int num_col = sqlite3_column_count(data_query);
-    #ifdef DEBUG
-                cout << "There are " << num_col << " columns in data_query" << '\n';
-    #endif
+#ifdef DEBUG
+            cout << "There are " << num_col << " columns in data_query" << '\n';
+#endif
 
             if(num_col < 0) {
                 cerr << "Number of columns from data_query is less than 0!!\n\tEXITING" << '\n';
                 exit(1);
             }
-            int data_local{-1};
+            // int data_local{-1};
 
-    #ifdef DEBUG
+#ifdef DEBUG
+/*
             message = sqlite3_column_type(data_query, 0);
             if(message != SQLITE3_TEXT){
                 cerr << "first column type from data_query was not expected!!\n\tEXITING";
                 exit(1);
             }
             message = sqlite3_column_type(data_query, 1);
-            if(message != SQLITE_INTEGER){
+            if(message != SQLITE3_TEXT){
                 cerr << "second column type from data_query was not expected!!\n\tEXITING";
                 exit(1);
             }
-    #endif
+*/
+#endif
             //const unsigned char* store = sqlite3_column_text(data_query, i);
             // sqlite3_column_text returns const unsigned char*, but C++ string library words with const char*
             //const char* text = reinterpret_cast<const char*>(sqlite3_column_text(data_query, 0));
-            int iter = sqlite3_column_int(data_query, 1);
-            data_local = iter;
 
-            if(data_local == -1){
-                cerr << "problem with sqlite3_column_int on data_query" << '\n';
-                exit(1);
-            }
+            // const unsigned char* store = sqlite3_column_int(data_query, 1);
+            const char* text = convert_to_const_char(sqlite3_column_text(data_query, 1));
+            // data_local = iter;
 
-            if(data_local > 0){
-                output.push_back(data_local);
+            // if(data_local == -1){
+            //     cerr << "problem with sqlite3_column_int on data_query" << '\n';
+            //     exit(1);
+            // }
+
+            if(num_col > 0){
+                // output.push_back(data_local);
+                data.signal_cache.emplace_back(text);
             }
             else{
                 message = sqlite3_bind_text(seen_query, 1, kmer_pair.first.c_str(), static_cast<int>(kmer_pair.first.size()), nullptr);
@@ -149,17 +157,16 @@ void checkCache(const Dataset &data, vector<string> &vec){
                 }
                 //OUTF << kmer_pair.first << '\n';
             }
+
+            free(text);
+
             sqlite3_reset(seen_query);
             sqlite3_clear_bindings(seen_query);
             sqlite3_reset(data_query);
             sqlite3_clear_bindings(data_query);
         }
-        //OUTF.close();
-        //OUTF.open(data.cachefile);
-        //for(auto el : output){
-        //  OUTF << el << '\n';
-        // }
-        // OUTF.close();
+
+        // signal_cache is filled above on line 117
     }
     else{
         if(data.settings.verbose){
@@ -242,4 +249,9 @@ static void isRowReady(const int &message){
         cerr << "Row isn't ready!!\n\tEXITING\n";
         exit(1);
     }
+}
+
+static const char* convert_to_const_char(const unsigned char* store){
+    return reinterpret_cast<const char*>(store);
+
 }

@@ -4,10 +4,12 @@ using namespace std;
 
 static int getLength(Dataset &data);
 static void align_SNPs(Dataset &data, int length, const vector<string> &nucleotideStack);
-void changeBase(const Dataset &data, int position, string nucleotide, vector<string> &new_kmer_vec);
+void changeBase(const Dataset &data, int position, string nucleotide,
+                vector<string> &new_kmer_vec);
 void checkCache(Dataset &data, string outfile);
 bool seq_col_to_fa(Dataset &data);
-//void bowtie_genome_map(Dataset &data, int length, const string& genome, const string& file);
+//void bowtie_genome_map(Dataset &data, int length, const string& genome,
+//                                                     const string& file);
 
 // default genome is "hg19"
 // INFILE FROM ORIGINAL ALGORITHM IS ENUMERATED_KMER
@@ -25,7 +27,8 @@ void alignToGenomeWrapper(Dataset &data, int iteration, const string &genome) {
         cout << "Aligning" << '\n';
     }
 
-  // step 2: iterate through all the positions and nucleotides, creating SNP files and aligning to genome
+  // step 2: iterate through all the positions and nucleotides,
+  //            creating SNP files and aligning to genome
     align_SNPs(data, length, nucleotideStack);
 }
 
@@ -59,6 +62,7 @@ static void align_SNPs(Dataset &data, int length, const vector<string> &nucleoti
             changeBase(data, position, nucleotideStack[j], new_kmer);
             checkCache(data, cache_output);
             // pass in a sequence column, which is from output of checkCache
+            // cachefile in Dataset is $cache from original algorithm!!!
 
             fa_file = CWD + name + ".fa";
             bowtie_output = CWD + name + ".bed";

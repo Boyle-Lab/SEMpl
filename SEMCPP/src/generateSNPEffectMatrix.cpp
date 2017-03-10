@@ -171,10 +171,12 @@ void find_signal(Dataset &data, int length){ //This function call needs to be ch
         system(("rm -rf " + file).c_str());
 #endif
         // write to cache
-        // -in_file and -cache are built in to data
+        // -in_file and -cache are built into data
         writeCache(data);
 
-        cachefile = targetDir + file + ".signal.cache";
+        sort(data.signal_cache.begin(), data.signal_cache.end());
+        data.signal_output.reserve(data.signal_cache.size());
+        unique_copy(data.signal_cache, data.signal_cache, data.signal_output);
 
     }
 
