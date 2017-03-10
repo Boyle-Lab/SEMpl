@@ -178,6 +178,7 @@ void find_signal(Dataset &data, int length){ //This function call needs to be ch
         data.signal_output.reserve(data.signal_cache.size());
         unique_copy(data.signal_cache, data.signal_cache, data.signal_output);
 
+        //I believe build signal summary belongs here
     }
 
 }
@@ -219,7 +220,8 @@ void create_baselines(Dataset &data, int length){
 
     system(cmd.c_str());
 
-    findMaximumAverageSignalWrapper(data);
+    string file_dir = "baseline";
+    findMaximumAverageSignalWrapper(data, file_dir);
 
     if(data.settings.delAlignmentBed){
         cmd = "rm -f " + data.output_dir + "/BASELINE/Scrambled_kmer.bed";

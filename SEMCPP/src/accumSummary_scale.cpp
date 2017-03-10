@@ -18,7 +18,7 @@ using namespace std;
 
 //Extra parameters should be passed in the struct Dataset
 
-void accumSummary_scale(Dataset &data, const string &hfile, const string &cfile, int scale){
+void accumSummary_scale(Dataset &data, const string &hfile, const string &cfile, int scale, const string &file_dir){
 
 	// open file using library, below code is necessary
 	// because of C++ type system regarding const
@@ -138,9 +138,18 @@ void accumSummary_scale(Dataset &data, const string &hfile, const string &cfile,
 		if(hitcount / static_cast<double>(output.size()) < 0.9)
 			max = numeric_limits<double>::max();
 		// if max is maximum possible double value, then it is not applicable
-
-		data.accumSummary_data.accum_lines.push_back(line);
-		data.accumSummary_data.accum_max.push_back(max);
+        if(file_dir == "alignment"){
+            data.accumSummary_data.align_accum_lines.push_back(line);
+            data.accumSummary_data.align_accum_max.push_back(max);
+        }
+        else if (file_dir == "scrambled"){
+		data.accumSummary_data.scramble_accum_lines.push_back(line);
+		data.accumSummary_data.scramble_accum_max.push_back(max);
+        }
+        else if (file_dir == "enumerated"){
+		data.accumSummary_data.enum_accum_lines.push_back(line);
+		data.accumSummary_data.enum_accum_max.push_back(max);
+        }
 		}
 	bwClose(bwFile);
 	delete [] fname;

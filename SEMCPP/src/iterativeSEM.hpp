@@ -76,10 +76,20 @@ public:
     // should be int or char? int for now
 	};
 	struct accumSummaryData{
+	    //Alignment summary data
+
 		// lines of output from accumSummary_scale.pl
-		std::vector<std::string> accum_lines;
+		std::vector<std::string> align_accum_lines;
 		// max of output from accumSummary_scale.pl
-		std::vector<double> accum_max;
+		std::vector<double> align_accum_max;
+
+		//baseline scramble kmer summary data
+		std::vector<std::string> scramble_accum_lines;
+		std::vector<double> scramble_accum_max;
+
+		//baseline enumerated kmer summary data
+		std::vector<std::string> enum_accum_lines;
+		std::vector<double> enum_accum_max;
 	};
   // contains default settings
 	struct SettingsForSNPEffectMatrix{
@@ -88,12 +98,27 @@ public:
         int iteration = -1;
 		double threshold = 0.0;
 	};
+	// contains data from findMaximumAverageSignalWrapper
+	struct MaximumAverageSignalData{
+        //baseline signal data
+        double base_maximum = 0;
+        int base_counter = 0;
+        double base_stdev = 0;
+        double base_sterr = 0;
+
+        //alignment signal data, name may need to be changed
+        double alignment_maximum = 0;
+        int alignment_counter = 0;
+        double alignment_stdev = 0;
+        double alignment_sterr = 0;
+	};
 
 	// DNase DNase_data;
 	PWM PWM_data;
 	TFMdata TFM_data;
 	accumSummaryData accumSummary_data;
 	SettingsForSNPEffectMatrix settings;
+	MaximumAverageSignalData signal_Data;
 
   // name of original command passed in
 	std::string command = "";
@@ -124,7 +149,8 @@ void generateSNPEffectMatrix(Dataset &data);
 
 //src files
 void accumSummary_scale(Dataset &data, const std::string &hfile,
-                        const std::string &cfile, int scale);
+                        const std::string &cfile, int scale,
+                        const std::string &file_dir);
 void alignToGenomeWrapper(Dataset &data, int iteration,
                             std::string genome = "data/hg19");
 void bowtie_genome_map(Dataset &data, int length, const std::string& genome,
@@ -137,7 +163,7 @@ void checkCache(Dataset &data, std::vector<std::string> &cache_output);
 void combineBedFiles(Dataset &data);
 void Enumerate_kmer(Dataset &data);
 void filterDNaseWrapper(Dataset &data);
-void findMaximumAverageSignalWrapper(Dataset &data);
+void findMaximumAverageSignalWrapper(Dataset &data, const std::string &file_dir);
 void generatePWMfromSEM(Dataset &data);
 void generateRmeplot(Dataset &data);
 void generateRplot(Dataset &data);
