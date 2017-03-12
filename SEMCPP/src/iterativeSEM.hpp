@@ -150,7 +150,8 @@ void generateSNPEffectMatrix(Dataset &data);
 //src files
 void accumSummary_scale(Dataset &data, const std::string &hfile,
                         const std::string &cfile, int scale,
-                        const std::string &file_dir);
+                        const std::string &file_dir); 
+// check accumSummary_scale calls in steps before find_signal
 void alignToGenomeWrapper(Dataset &data, int iteration,
                             std::string genome = "data/hg19");
 void bowtie_genome_map(Dataset &data, int length, const std::string& genome,
