@@ -14,7 +14,7 @@
 #include <fstream>
 #include <vector>
 #include <cassert>
-#include <unordered_map>
+#include <map>
 
 /*
  example execution from command line
@@ -49,6 +49,7 @@ public:
 	    std::array<std::array<int, NUM_COLUMNS>, NUM_ROWS> sem_arr;
 
 	};
+    /*
 	struct DNase{
 
 	    static const int LINES_IN_FILE = 116018;
@@ -68,6 +69,7 @@ public:
 
 
 	};
+    */
 	struct TFMdata{
 		// a c g t
 		static const int LETTER_NUM = 4;
@@ -77,7 +79,7 @@ public:
 	};
 	struct accumSummaryData{
 	    //Alignment summary data
-
+        enum class accumSummary_dest{alignment, scrambled, enumerated, none};
 		// lines of output from accumSummary_scale.pl
 		std::vector<std::string> align_accum_lines;
 		// max of output from accumSummary_scale.pl
@@ -94,7 +96,8 @@ public:
   // contains default settings
 	struct SettingsForSNPEffectMatrix{
 		bool delSNPList = true, delAlignmentBed = true, delFilteredBed = true;
-		bool delSignalFile = false, writecache = false, fastrun = false, verbose = false;
+		bool delSignalFile = false, writecache = false, fastrun = false,
+             verbose = false;
         int iteration = -1;
 		double threshold = 0.0;
 	};
@@ -133,7 +136,8 @@ public:
 	std::string output_dir = "";
 	std::string cachefile = "";
 
-    std::unordered_map<std::string, int> kmerHash;
+    std::map<std::string, int> kmerHash;
+    std::vector<std::string> scramble_kmers;
 
     std::vector<std::string> filterDNaseWrapper_output;
 
@@ -150,7 +154,7 @@ void generateSNPEffectMatrix(Dataset &data);
 //src files
 void accumSummary_scale(Dataset &data, const std::string &hfile,
                         const std::string &cfile, int scale,
-                        const std::string &file_dir); 
+                        Dataset::accumSummaryData::accumSummary_dest dest);
 // check accumSummary_scale calls in steps before find_signal
 void alignToGenomeWrapper(Dataset &data, int iteration,
                             std::string genome = "data/hg19");
@@ -160,7 +164,8 @@ void changeBase(Dataset &data, int position,
                             std::string nucleotide,
                             std::vector<std::string> &new_kmer_vec,
                             std::string const &genome);
-void checkCache(Dataset &data, std::vector<std::string> &cache_output);
+void checkCache(Dataset &data, std::vector<std::string> &cache_output,
+                const std::string &cachefile);
 void combineBedFiles(Dataset &data);
 void Enumerate_kmer(Dataset &data);
 void filterDNaseWrapper(Dataset &data);
@@ -178,7 +183,8 @@ void quality_control(Dataset &data);
 void scramble_kmer(Dataset &data);
 bool seq_col_to_fa(const std::vector<std::string> &column,
                     const std::string &file);
-void writeCache(Dataset &data);
+void writeCache(Dataset &data, const std::string &cache,
+                Dataset::accumSummaryData::accumSummary_dest dest);
 //Library converted function
 void bedtools(Dataset &data);
 

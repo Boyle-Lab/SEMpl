@@ -11,15 +11,38 @@ static void prepareStmt(sqlite3 *db, string stmt, sqlite3_stmt *query);
 static void checkDone(const int &message, const string &s);
 
 // REQUIRES: accumSummary_scale is filled with the correct data
-// EFFECTS: writes output of accumSummary_scale to cache
-void writeCache(const Dataset &data, const string &cache){
+// EFFECTS: writes output of accumSummary_scale to cache, based upon dest
+void writeCache(const Dataset &data, const string &cache,
+                Dataset::accumSummaryData::accumSummary_dest dest){
 
     if(data.settings.verbose){
         cout << "Building cache for processed kmers.\n";
     }
     // wants the third space, indexed from 0
     map<string, string> kmers;
-    for(string line : data.accumSummary_data.accum_lines){
+
+    vector<string> *ptr = nullptr;
+    switch (dest) {
+        case Dataset::accumSummaryData::accumSummary_dest::none:
+            cerr << "dest shouldn't be none!!!!\n";
+            exit(1);
+        break;
+        case Dataset::accumSummaryData::accumSummary_dest::enumerated:
+            ptr = &data.accumSummary_data.enum_accum_lines;
+        break;
+        case Dataset::accumSummaryData::accumSummary_dest::scrambled:
+            ptr = &data.accumSummary_data.scramble_accum_lines;
+        break;
+        case Dataset::accumSummaryData::accumSummary_dest::alignment:
+            ptr = &data.accumSummary_data.align_accum_lines;
+        break;
+        default:
+            cerr << "there is no default for dest's switch statement!!!\n";
+            exit(1);
+        break;
+    }
+
+    for(string line : *ptr){
 #ifdef DEBUG
         cout << "string at index 3 of string: " << line
             << "\nis: " << grab_string_at_index(line, 3) << '\n';
@@ -37,7 +60,7 @@ void writeCache(const Dataset &data, const string &cache){
     sqlite3 *cacheDB;
     int message = 0;
     string msg;
-    message = sqlite3_open(data.cachefile.c_str(), &cacheDB);
+    message = sqlite3_open(cache.c_str(), &cacheDB);
     problemEncountered(message, "open");
 
     if(newcache){

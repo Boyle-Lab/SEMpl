@@ -31,10 +31,10 @@ static const char* convert_to_const_char(const unsigned char* store);
 
 // MODIFIES: adds appropriate kmers to vec
 // EFFECTS: checks cache located at data.cachefile
-void checkCache(Dataset &data, vector<string> &vec){
+void checkCache(Dataset &data, vector<string> &vec, const string &cachefile){
     // vector<int> output;
 
-    bool newcache = fileExists(data.cachefile);
+    bool newcache = fileExists(cachefile);
     // data_local.cachefile is Cache in original algorithm!!
     // data_local.cachefile was defined in generateSNPEffectMatrix!!
 
@@ -44,7 +44,7 @@ void checkCache(Dataset &data, vector<string> &vec){
 
     sqlite3 *cacheDB;
     int message = 0;
-    message = sqlite3_open(data.cachefile.c_str(), &cacheDB);
+    message = sqlite3_open(cachefile.c_str(), &cacheDB);
     problemEncountered(message, "open");
 
     string msg = "";

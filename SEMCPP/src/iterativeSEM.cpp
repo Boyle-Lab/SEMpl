@@ -166,14 +166,15 @@ int main(int argc, char **argv){
     map <string, int> kmers, kmers_2;
 
     for (int iteration = 1; iteration < total_iterations; iteration++){
-	      data.settings.fastrun = false;
-//        iterID = rand() % 16777216;
+	    data.settings.fastrun = false;
+//      iterID = rand() % 16777216;
         ofstream outFile(data.output_dir + "/kmer_similarity.out");
         if(iteration > 1 && converge < 10){
             int j = iteration - 1;
             total_1 = same = diff = total_diff = 0;
             ostringstream Ekmerstream;
-            Ekmerstream << data.output_dir<< "/it" << j << "/Enumerated_kmer.txt";
+            Ekmerstream << data.output_dir << "/it" << j
+                        << "/Enumerated_kmer.txt";
             string EkmerFile = Ekmerstream.str();
             ifstream Ekmer(EkmerFile);
             if (!Ekmer){

@@ -18,7 +18,9 @@ using namespace std;
 
 //Extra parameters should be passed in the struct Dataset
 
-void accumSummary_scale(Dataset &data, const string &hfile, const string &cfile, int scale, const string &file_dir){
+void accumSummary_scale(Dataset &data, const string &hfile,
+                        const string &cfile, int scale,
+                        Dataset::accumSummaryData::accumSummary_dest dest){
 
 	// open file using library, below code is necessary
 	// because of C++ type system regarding const
@@ -101,8 +103,8 @@ void accumSummary_scale(Dataset &data, const string &hfile, const string &cfile,
 		//double *bwStats(bigWigFile_t *fp, char *chrom, uint32_t start, uint32_t end, uint32_t nBins, enum bwStatsType type);
 		values = bwStats(bwFile, chrom, static_cast<uint32_t>(upstart), static_cast<uint32_t>(upend), static_cast<uint32_t>(upend - upstart), type);
         if(values == NULL){
-          cerr << "Failure to use bwStats!\n\tEXITING\n";
-          exit(1);
+            cerr << "Failure to use bwStats!\n\tEXITING\n";
+            exit(1);
         }
     		counter = 0;
 
@@ -115,42 +117,68 @@ void accumSummary_scale(Dataset &data, const string &hfile, const string &cfile,
 		delete [] chrom;
 
 		//output results
-		if(direction.find('+') != string::npos)
-			for(int k = 0; k < total_size; k++)
+		if(direction.find('+') != string::npos){
+			for(int k = 0; k < total_size; k++){
 				// need to determine how to check for definition of signal_array[k]
 				output[k] = signal_array[k];
+            }
+        }
 		else{
             reverse(signal_array.begin(), signal_array.end());
-			for(int k = total_size - 1; k >= 0; k--)
+			for(int k = total_size - 1; k >= 0; k--){
 				output[k] = signal_array[k];
             }
+        }
 
 
 		max = 0;
 		hitcount = 0;
 		for(int l = 0; l < static_cast<int>(output.size()); l++){
-			if(stod(output[l]) > max) // string to double
-				max = stod(output[l]);
-			if(output[l] != "N")
-				hitcount++;
+			if(stod(output[l]) > max) max = stod(output[l]);
+                                    // string to double
+			if(output[l] != "N") hitcount++;
 		}
-
-		if(hitcount / static_cast<double>(output.size()) < 0.9)
+        // if max is maximum possible double value, then it is not applicable
+		if(hitcount / static_cast<double>(output.size()) < 0.9){
 			max = numeric_limits<double>::max();
-		// if max is maximum possible double value, then it is not applicable
+        }
+        switch (dest) {
+            case Dataset::accumSummaryData::accumSummary_dest::none:
+                cerr << "dest shouldn't be none!!!!\n";
+                exit(1);
+            break;
+            case Dataset::accumSummaryData::accumSummary_dest::enumerated:
+                data.accumSummary_data.enum_accum_lines.push_back(line);
+                data.accumSummary_data.enum_accum_max.push_back(max);
+            break;
+            case Dataset::accumSummaryData::accumSummary_dest::scrambled:
+                data.accumSummary_data.scramble_accum_lines.push_back(line);
+                data.accumSummary_data.scramble_accum_max.push_back(max);
+            break;
+            case Dataset::accumSummaryData::accumSummary_dest::alignment:
+                data.accumSummary_data.align_accum_lines.push_back(line);
+                data.accumSummary_data.align_accum_max.push_back(max);
+            break;
+            default:
+                cerr << "there is no default for dest's switch statement!!!\n";
+                exit(1);
+            break;
+        }
+        /*
         if(file_dir == "alignment"){
             data.accumSummary_data.align_accum_lines.push_back(line);
             data.accumSummary_data.align_accum_max.push_back(max);
         }
         else if (file_dir == "scrambled"){
-		data.accumSummary_data.scramble_accum_lines.push_back(line);
-		data.accumSummary_data.scramble_accum_max.push_back(max);
+		    data.accumSummary_data.scramble_accum_lines.push_back(line);
+		    data.accumSummary_data.scramble_accum_max.push_back(max);
         }
         else if (file_dir == "enumerated"){
-		data.accumSummary_data.enum_accum_lines.push_back(line);
-		data.accumSummary_data.enum_accum_max.push_back(max);
+		    data.accumSummary_data.enum_accum_lines.push_back(line);
+		    data.accumSummary_data.enum_accum_max.push_back(max);
         }
-		}
+        */
+	}
 	bwClose(bwFile);
 	delete [] fname;
 }

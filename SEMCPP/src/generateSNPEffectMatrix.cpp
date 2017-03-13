@@ -115,14 +115,14 @@ void generateSNPEffectMatrix(Dataset &data){
 }
 
 int generate_kmers(Dataset &data){
-  if(data.settings.verbose){
-    cout << "Creating enumerated kmers" << '\n';
-  }
+    if(data.settings.verbose){
+        cout << "Creating enumerated kmers" << '\n';
+    }
 
-  Enumerate_kmer(data);
+    Enumerate_kmer(data);
   // data.kmerHash is now filled in!!!
 
-  return Dataset::PWM::NUM_ROWS;
+    return Dataset::PWM::NUM_ROWS;
 
   // convert_PWM_format.pl is effectively performed within Enumerate_kmer(args)
 
@@ -132,14 +132,16 @@ int generate_kmers(Dataset &data){
 }
 
 void align_to_genome(Dataset &data){
-        if(data.settings.verbose) cout << "Aligning SNPs in kmers to the genome\n";
+    if(data.settings.verbose){
+        cout << "Aligning SNPs in kmers to the genome\n";
+    }
         // align all to genome
-        alignToGenomeWrapper(data, data.settings.iteration);
+    alignToGenomeWrapper(data, data.settings.iteration);
 }
 
 // assumes filterDNaseWrapper_output is filled from previous function
 // and that the output is sorted, and contains only unique string values
-void find_signal(Dataset &data, int length){ //This function call needs to be checked or altered
+void find_signal(Dataset &data, int length){
     if(data.settings.verbose){
         cout << "Finding the average signal" << '\n';
     }
@@ -155,14 +157,14 @@ void find_signal(Dataset &data, int length){ //This function call needs to be ch
     data.accumSummary_data.accum_lines.clear();
     data.accumSummary_data.accum_max.clear();
 
-    string targetDir = data.output_dir + "/ALIGNMENT/";
     vector<string> files;
     string cachefile = "";
 
-    GetFilesInDirectory(files, targetDir);
+    GetFilesInDirectory(files, data.output_dir + "/ALIGNMENT/");
 
-    for(auto file : files){
-        accumSummary_scale(data, data.bigwig_file, file, length);
+    for(auto file& : files){
+        accumSummary_scale(data, data.bigwig_file, file, length,
+                           Dataset::accumSummaryData::accumSummary_dest::alignment);
 #ifdef DEBUG
         cout << "\tDeleting " << file << '\n';
         int val = system(("rm -rf " + file).c_str());
@@ -172,47 +174,54 @@ void find_signal(Dataset &data, int length){ //This function call needs to be ch
 #endif
         // write to cache
         // -in_file and -cache are built into data
-        writeCache(data);
+        writeCache(data, Dataset::accumSummaryData::accumSummary_dest::alignment);
 
         sort(data.signal_cache.begin(), data.signal_cache.end());
         data.signal_output.reserve(data.signal_cache.size());
         unique_copy(data.signal_cache, data.signal_cache, data.signal_output);
 
-        //I believe build signal summary belongs here
+
+        findMaximumAverageSignalWrapper(data,
+                                        Dataset::accumSummaryData::accumSummary_dest::alignment);
+
     }
 
 }
 
 void create_baselines(Dataset &data, int length){
-    if (data.settings.verbose){
-        cout << "Creating directory BASELINE" << '\n';
-    }
-    string cmd = "rm -rf " + data.output_dir + "/BASELINE";
-
-    system(cmd.c_str());
-    cmd = "mkdir " + data.output_dir + "/BASELINE";
-
-    system(cmd.c_str());
+    // if (data.settings.verbose){
+    //     cout << "Creating directory BASELINE" << '\n';
+    // }
+    // string cmd = "rm -rf " + data.output_dir + "/BASELINE";
+    //
+    // system(cmd.c_str());
+    // cmd = "mkdir " + data.output_dir + "/BASELINE";
+    //
+    // system(cmd.c_str());
 
     //Create baseline from scrambled k-mers
-    cmd = "cut -f2 " + data.output_dir + "/Enumerated_kmer.txt > "
-            + data.output_dir + "/BASELINE/Enumerated_kmer.txt";
 
-    system(cmd.c_str());
+    // grab keys of kmerHash
+
+    for(auto pair : kmerHash){
+        data.scramble_kmers.push_back(pair.first);
+    }
 
     if(!data.settings.fastrun){
         //scramble_kmer(data);
         //checkCache(data);
         //seq_col_to_fa(data, 0);
         //bowtie_genome_map(data);
-        cmd = "./bin/bedtools intersect -a " + data.output_dir + "/BASELINE/Scrambled_kmer.bed -b "
+        cmd = "./bin/bedtools intersect -a " + data.output_dir
+                + "/BASELINE/Scrambled_kmer.bed -b "
                 + data.DNase_file + " -wa -u > "+ data.output_dir
                 + "/BASELINE/Scrambled_kmer_filtered.bed";
         system(cmd.c_str());
         //accumSummary_scale(data, data.output_dir + "/BASELINE/Scrambled_kmer_filtered.bed", )
-        if (data.settings.writecache){
-            writeCache(data);
-        }
+
+        writeCache(data,
+                   Dataset::accumSummaryData::accumSummary_dest::alignment);
+
     }
 
     cmd = "cat " + data.output_dir + "/BASELINE/Enumerated_kmer.cache | sort | uniq >> "
@@ -241,23 +250,6 @@ void create_baselines(Dataset &data, int length){
         system(cmd.c_str());
     }
 
-    // if(data.settings.delSNPList){
-    //     cmd = "rm -f " + data.output_dir + "/BASELINE/*.scrambled";
-    //
-    //     system(cmd.c_str());
-    //     cmd = "rm -f " + data.output_dir + "/BASELINE/*.fa";
-    //
-    //     system(cmd.c_str());
-    //     cmd = "rm -f " + data.output_dir + "/BASELINE/*.sm.txt";
-    //
-    //     system(cmd.c_str());
-    //     cmd = "rm -f " + data.output_dir + "/BASELINE/*.cache";
-    //
-    //     system(cmd.c_str());
-    //     cmd = "rm -f " + data.output_dir + "/BASELINE/*.Enumerated_kmer.txt";
-    //
-    //     system(cmd.c_str());
-    // }
 }
 
 void generate_output(Dataset &data){
