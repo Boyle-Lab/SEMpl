@@ -150,6 +150,8 @@ public:
     std::vector<std::string> signal_cache_enumerate;
 
     std::vector<std::string> signal_output;
+    std::vector<std::string> signal_scramble_output;
+    std::vector<std::string> signal_enumerate_output;
 };
 
 //Declare functions in header to be used by other functions
@@ -164,7 +166,7 @@ void accumSummary_scale(Dataset &data, const std::string &hfile,
 // check accumSummary_scale calls in steps before find_signal
 void alignToGenomeWrapper(Dataset &data, int iteration,
                             std::string genome = "data/hg19");
-void bowtie_genome_map(Dataset &data, int length, const std::string& genome,
+void bowtie_genome_map(int length, const std::string& genome,
                         const std::string& file, const std::string& final_output);
 void changeBase(Dataset &data, int position,
                             std::string nucleotide,
@@ -176,7 +178,8 @@ void checkCache(Dataset &data, const std::vector<std::string> &in_file,
 void combineBedFiles(Dataset &data);
 void Enumerate_kmer(Dataset &data);
 void filterDNaseWrapper(Dataset &data);
-void findMaximumAverageSignalWrapper(Dataset &data, const std::string &file_dir);
+void findMaximumAverageSignalWrapper(Dataset &data,
+                                     Dataset::accumSummaryData::accumSummary_dest dest);
 void generatePWMfromSEM(Dataset &data);
 void generateRmeplot(Dataset &data);
 void generateRplot(Dataset &data);

@@ -22,7 +22,7 @@ string revCompDNA(string dna);
 int bowtie(int argc, const char **argv);
 
 
-void bowtie_genome_map(Dataset &data, int length, const string& genome, const string& file, const string& final_output){
+void bowtie_genome_map(int length, const string& genome, const string& file, const string& final_output){
     const char *argvs[9] = {"./bin/bowtie", "--quiet", "-a", "-v 0", genome.c_str(), "-f", file.c_str(), "temp.dat" };
 /*
 *    argvs[0] = "./bin/bowtie\0";

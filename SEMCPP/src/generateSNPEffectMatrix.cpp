@@ -189,19 +189,22 @@ void find_signal(Dataset &data, int length){
 }
 
 void create_baselines(Dataset &data, int length){
-    // if (data.settings.verbose){
-    //     cout << "Creating directory BASELINE" << '\n';
-    // }
-    // string cmd = "rm -rf " + data.output_dir + "/BASELINE";
-    //
-    // system(cmd.c_str());
-    // cmd = "mkdir " + data.output_dir + "/BASELINE";
-    //
-    // system(cmd.c_str());
+    if (data.settings.verbose){
+        cout << "Creating directory BASELINE" << '\n';
+    }
+    string cmd = "rm -rf " + data.output_dir + "/BASELINE";
+
+    system(cmd.c_str());
+    cmd = "mkdir " + data.output_dir + "/BASELINE";
+
+    system(cmd.c_str());
 
     //Create baseline from scrambled k-mers
 
     // grab keys of kmerHash
+
+
+    std::vector<string> scramble_cache_output;
 
     for(auto pair& : kmerHash){
         data.scramble_kmers.push_back(pair.first);
@@ -209,44 +212,90 @@ void create_baselines(Dataset &data, int length){
 
     if(!data.settings.fastrun){
         scramble_kmer(data);
-        // scramble_kmers IS NOW SCRAMBLED!!!!
+        // scramble_kmers IS NOW SCRAMBLED!!!!                          $Cache
+
+        checkCache(data, data.scramble_kmers, scramble_cache_output, data.cachefile,
+                    Dataset::accumSummaryData::accumSummary_dest::scrambled);
+        seq_col_to_fa(data.signal_cache_scramble,
+                      data.output_dir + "/BASELINE/Scrambled_kmer.fa");
+        bowtie_genome_map(data, length, "../data/hg19",
+                          data.output_dir + "/BASELINE/Scrambled_kmer.fa",
+                          data.output_dir + "/BASELINE/Scrambled_kmer.bed");
+
+        // NEED TO CHECK THAT THIS IS THE RIGHT RELATIVE DIRECTORY
         cmd = "./bin/bedtools intersect -a " + data.output_dir
                 + "/BASELINE/Scrambled_kmer.bed -b "
                 + data.DNase_file + " -wa -u > "+ data.output_dir
                 + "/BASELINE/Scrambled_kmer_filtered.bed";
         system(cmd.c_str());
-        //accumSummary_scale(data, data.output_dir + "/BASELINE/Scrambled_kmer_filtered.bed", )
 
-        writeCache(data,
-                   Dataset::accumSummaryData::accumSummary_dest::scrambled);
+        accumSummary_scale(data, data.bigwig_file,
+                           data.output_dir + "/BASELINE/Scrambled_kmer_filtered.bed",
+                           length,
+                           Dataset::accumSummaryData::accumSummary_dest::scrambled);
 
+        if(data.settings.writecache){
+            writeCache(data,
+                       Dataset::accumSummaryData::accumSummary_dest::scrambled);
+        }
+        sort(data.signal_cache_scramble.begin(), data.signal_cache_scramble.end());
+        data.signal_scramble_output.reserve(data.signal_cache_scramble.size());
+        //  FILLS data.signal_scramble_output !!!!!!!!!!!!
+        unique_copy(data.signal_cache_scramble, data.signal_cache_scramble, data.signal_output);
+
+    } // !data.settings.fastrun
+
+
+    // checkCache(Dataset &data, const std::vector<std::string> &in_file,
+    //            std::vector<std::string> &out_cache, const std::string &cachefile,
+    //            Dataset::accumSummaryData::accumSummary_dest dest)
+    checkCache(data, data.scramble_kmers, data.signal_cache_enumerate, data.cachefile,
+               Dataset::accumSummaryData::accumSummary_dest::enumerated);
+
+    if(!data.signal_cache_enumerate.empty()){
+        seq_col_to_fa(data.signal_cache_enumerate,
+                      data.output_dir + "/BASELINE/Enumerated_kmer.fa");
+        bowtie_genome_map(data, length,
+                          "../data/hg19", data.output_dir + "/BASELINE/Enumerated_kmer.fa",
+                          data.output_dir + "/BASELINE/Enumerated_kmer_filtered.bed");
+        accumSummary_scale(data, data.bigwig_file,
+                           data.output_dir + "/BASELINE/Enumerated_kmer_filtered.bed",
+                           length, Dataset::accumSummaryData::accumSummary_dest::enumerated);
+        if(data.settings.writecache){
+            writeCache(data, data.cachefile,
+                       Dataset::accumSummaryData::accumSummary_dest::enumerated);
+        }
     }
 
-    cmd = "cat " + data.output_dir + "/BASELINE/Enumerated_kmer.cache | sort | uniq >> "
-            + data.output_dir + "/BASELINE/Enumerated_kmer_filtered.signal";
 
-    system(cmd.c_str());
 
-    string file_dir = "baseline";
-    findMaximumAverageSignalWrapper(data, file_dir);
 
-    if(data.settings.delAlignmentBed){
-        cmd = "rm -f " + data.output_dir + "/BASELINE/Scrambled_kmer.bed";
 
-        system(cmd.c_str());
-        cmd = "rm -f " + data.output_dir + "/BASELINE/Enumerated_kmer.bed";
-
-        system(cmd.c_str());
-    }
-
-    if(data.settings.delFilteredBed){
-        cmd = "rm -f " + data.output_dir + "/BASELINE/Scrambled_kmer_filtered.bed";
-
-        system(cmd.c_str());
-        cmd = "rm -f " + data.output_dir + "/BASELINE/Enumerated_kmer_filtered.bed";
-
-        system(cmd.c_str());
-    }
+    // cmd = "cat " + data.output_dir + "/BASELINE/Enumerated_kmer.cache | sort | uniq >> "
+    //         + data.output_dir + "/BASELINE/Enumerated_kmer_filtered.signal";
+    //
+    // system(cmd.c_str());
+    //
+    // string file_dir = "baseline";
+    // findMaximumAverageSignalWrapper(data, file_dir);
+    //
+    // if(data.settings.delAlignmentBed){
+    //     cmd = "rm -f " + data.output_dir + "/BASELINE/Scrambled_kmer.bed";
+    //
+    //     system(cmd.c_str());
+    //     cmd = "rm -f " + data.output_dir + "/BASELINE/Enumerated_kmer.bed";
+    //
+    //     system(cmd.c_str());
+    // }
+    //
+    // if(data.settings.delFilteredBed){
+    //     cmd = "rm -f " + data.output_dir + "/BASELINE/Scrambled_kmer_filtered.bed";
+    //
+    //     system(cmd.c_str());
+    //     cmd = "rm -f " + data.output_dir + "/BASELINE/Enumerated_kmer_filtered.bed";
+    //
+    //     system(cmd.c_str());
+    // }
 
 }
 

@@ -81,6 +81,9 @@ void findMaximumAverageSignalWrapper(Dataset &data,
                 exit(1);
             break;
             case Dataset::accumSummaryData::accumSummary_dest::enumerated:
+                // SHOULD SOMETHING BE HERE?????
+
+            break;
             case Dataset::accumSummaryData::accumSummary_dest::scrambled:
                 data.signal_Data.base_counter = counter;
                 data.signal_Data.base_maximum = mean;
