@@ -14,7 +14,7 @@ void changeBase(const Dataset &data, int position, string nucleotide, vector<str
         string firsthalf = pair.first.substr(0, position);
         string secondhalf = pair.first.substr(position + 1);
 #ifdef DEBUG
-        cout << "\tDEBUG: " << pair.second << " has a firsthalf of " << firsthalf
+        cout << "\tDEBUG: " << pair.first << " has a firsthalf of " << firsthalf
             << " and a second half of " << secondhalf << '\n';
 #endif
         string new_kmer = firsthalf + nucleotide + secondhalf;

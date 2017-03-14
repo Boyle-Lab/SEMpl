@@ -32,7 +32,8 @@ void alignToGenomeWrapper(Dataset &data, int iteration, const string &genome) {
 }
 
 // INFILE FROM ORIGINAL ALGORITHM IS ENUMERATED_KMER
-static void align_SNPs(Dataset &data, int length, const vector<string> &nucleotideStack){
+static void align_SNPs(Dataset &data, int length,
+                       const vector<string> &nucleotideStack){
 
     vector<string> cache_output(nucleotideStack.size());
     string name = "";
@@ -59,7 +60,10 @@ static void align_SNPs(Dataset &data, int length, const vector<string> &nucleoti
             new_kmer.clear();
                                       // nucleotide
             changeBase(data, position, nucleotideStack[j], new_kmer);
-            checkCache(data, cache_output, data.cachefile);
+
+// void checkCache(Dataset &data, vector<string> &in_file, vector<string> &out_cache,
+//                 const string &cachefile);
+            checkCache(data, new_kmer, cache_output, data.cachefile);
             // pass in a sequence column, which is from output of checkCache
             // cachefile in Dataset is $cache from original algorithm!!!
 

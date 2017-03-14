@@ -18,7 +18,10 @@
 
 /*
  example execution from command line
- "./iterativeSEM.pl -PWM examples/MA0114.1.pwm -merge_file examples/wgEncodeOpenChromDnaseHepg2Pk.narrowPeak -big_wig examples/wgEncodeHaibTfbsHepg2Hnf4asc8987V0416101RawRep1.bigWig -TF_name HNF4A -output examples/HNF4A/"
+ "./iterativeSEM.pl -PWM examples/MA0114.1.pwm
+    -merge_file examples/wgEncodeOpenChromDnaseHepg2Pk.narrowPeak
+    -big_wig examples/wgEncodeHaibTfbsHepg2Hnf4asc8987V0416101RawRep1.bigWig
+    -TF_name HNF4A -output examples/HNF4A/"
 */
 
 // overview
@@ -41,7 +44,8 @@ public:
 
 	    // holds first three inputs as given in example
 	    std::string first_input, second_input, third_input;
-	    // holds the characters at the end of each matrix row, holds the two characters at the end
+	    // holds the characters at the end of each matrix row,
+        // holds the two characters at the end
 	    std::string end_of_line_char, end_of_matrix_char;
 	    // holds the integer values of the matrix
 	    std::array<std::array<int, NUM_COLUMNS>, NUM_ROWS> matrix_arr;
@@ -142,6 +146,8 @@ public:
     std::vector<std::string> filterDNaseWrapper_output;
 
     std::vector<std::string> signal_cache;
+    std::vector<std::string> signal_cache_scramble;
+    std::vector<std::string> signal_cache_enumerate;
 
     std::vector<std::string> signal_output;
 };
@@ -164,8 +170,9 @@ void changeBase(Dataset &data, int position,
                             std::string nucleotide,
                             std::vector<std::string> &new_kmer_vec,
                             std::string const &genome);
-void checkCache(Dataset &data, std::vector<std::string> &cache_output,
-                const std::string &cachefile);
+void checkCache(Dataset &data, const std::vector<std::string> &in_file,
+                std::vector<std::string> &out_cache, const std::string &cachefile,
+                Dataset::accumSummaryData::accumSummary_dest dest);
 void combineBedFiles(Dataset &data);
 void Enumerate_kmer(Dataset &data);
 void filterDNaseWrapper(Dataset &data);

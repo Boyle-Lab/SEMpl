@@ -29,20 +29,22 @@ static void checkDone(const int &message, const string &s);
 static const char* convert_to_const_char(const unsigned char* store);
 
 
-// MODIFIES: adds appropriate kmers to vec
-// EFFECTS: checks cache located at data.cachefile
-void checkCache(Dataset &data, vector<string> &vec, const string &cachefile){
-    // vector<int> output;
+// MODIFIES: adds appropriate kmers to the specific output_cache
+//           see line 121, switch statement
+// EFFECTS: checks cache located at cachefile
+// NOTE: THE NAMING SCHEME IS CONFUSING
+//       out_cache is the argument given to -out_cache in the original algorithm
+//       cachefile is the argument given to -cache in the original algorithm
+void checkCache(Dataset &data, const vector<string> &in_file, vector<string> &out_cache,
+                const string &cachefile, Dataset::accumSummaryData::accumSummary_dest dest){
 
     bool newcache = fileExists(cachefile);
-    // data_local.cachefile is Cache in original algorithm!!
-    // data_local.cachefile was defined in generateSNPEffectMatrix!!
 
     if(data.settings.verbose){
         cout << "Querying cache for processed kmers.\n";
     }
 
-    sqlite3 *cacheDB;
+    sqlite3 *cacheDB = NULL;
     int message = 0;
     message = sqlite3_open(cachefile.c_str(), &cacheDB);
     problemEncountered(message, "open");
@@ -65,9 +67,12 @@ void checkCache(Dataset &data, vector<string> &vec, const string &cachefile){
         prepareStmt(cacheDB, msg, staged_query);
 
         // range for loop, ranges over every pair within the "map"
-        for(auto kmer_pair : data.kmerHash){
 
-            message = sqlite3_bind_text(data_query, 1, kmer_pair.first.c_str(), static_cast<int>(kmer_pair.first.size()), NULL);
+
+        for(auto kmer : in_file){
+
+            message = sqlite3_bind_text(data_query, 1, kmer.c_str(),
+                      static_cast<int>(kmer.size()), NULL);
             problemEncountered(message, "bind_text for data_query");
 
             message = sqlite3_step(data_query);
@@ -100,7 +105,8 @@ void checkCache(Dataset &data, vector<string> &vec, const string &cachefile){
 */
 #endif
             //const unsigned char* store = sqlite3_column_text(data_query, i);
-            // sqlite3_column_text returns const unsigned char*, but C++ string library words with const char*
+            // sqlite3_column_text returns const unsigned char*,
+            //  but C++ string library works with const char*
             //const char* text = reinterpret_cast<const char*>(sqlite3_column_text(data_query, 0));
 
             // const unsigned char* store = sqlite3_column_int(data_query, 1);
@@ -114,10 +120,30 @@ void checkCache(Dataset &data, vector<string> &vec, const string &cachefile){
 
             if(num_col > 0){
                 // output.push_back(data_local);
-                data.signal_cache.emplace_back(text);
+                switch (dest) {
+                    case Dataset::accumSummaryData::accumSummary_dest::alignment:
+                        data.signal_cache.emplace_back(text);
+                    break;
+                    case Dataset::accumSummaryData::accumSummary_dest::scrambled:
+                        data.signal_cache_scramble.emplace_back(text);
+                    break;
+                    case Dataset::accumSummaryData::accumSummary_dest::enumerated:
+                        data.signal_cache_enumerate.emplace_back(text);
+                    break;
+                    case Dataset::accumSummaryData::accumSummary_dest::none:
+                        cerr << "none shouldn't happen!!\n";
+                        exit(1);
+                    break;
+                    default:
+                        cerr << "default shouldn't happen!!\n";
+                        exit(1);
+                    break;
+                }
+
             }
             else{
-                message = sqlite3_bind_text(seen_query, 1, kmer_pair.first.c_str(), static_cast<int>(kmer_pair.first.size()), nullptr);
+                message = sqlite3_bind_text(seen_query, 1, kmer.c_str(),
+                          static_cast<int>(kmer.size()), nullptr);
                 problemEncountered(message, "bind_text for seen_query");
                 // int sqlite3_bind_int(sqlite3_stmt*, int, int);
                 message = sqlite3_bind_int(seen_query, 2, data.settings.iteration);
@@ -135,14 +161,15 @@ void checkCache(Dataset &data, vector<string> &vec, const string &cachefile){
                     // have already seen this before, was filtered
                 }
                 else{
-                    message = sqlite3_bind_text(staged_query, 1, kmer_pair.first.c_str(), static_cast<int>(kmer_pair.first.size()), nullptr);
+                    message = sqlite3_bind_text(staged_query, 1, kmer.c_str(),
+                                static_cast<int>(kmer.size()), nullptr);
                     problemEncountered(message, "bind_text for staged_query");
                     // int sqlite3_bind_int(sqlite3_stmt*, int, int);
                     message = sqlite3_bind_int(staged_query, 2, data.settings.iteration);
                     problemEncountered(message, "bind_int for staged_query");
 
                     // return by reference
-                    vec.push_back(kmer_pair.first);
+                    out_cache.push_back(kmer);
 
                     message = sqlite3_step(staged_query);
                     checkDone(message, "staged query execution line 138");
@@ -155,7 +182,7 @@ void checkCache(Dataset &data, vector<string> &vec, const string &cachefile){
                     cerr << "Statement is not done!\n\tEXITING" << '\n';
                     exit(1);
                 }
-                //OUTF << kmer_pair.first << '\n';
+                //OUTF << kmer << '\n';
             }
 
             free(text);
@@ -203,8 +230,9 @@ void checkCache(Dataset &data, vector<string> &vec, const string &cachefile){
         msg = "INSERT OR IGNORE INTO seen_cache VALUES(?,?)";
         prepareStmt(cacheDB, msg, staged_query);
 
-        for(auto kmer_pair : data.kmerHash){
-            message = sqlite3_bind_text(staged_query, 1, kmer_pair.first.c_str(), static_cast<int>(kmer_pair.first.size()), nullptr);
+        for(auto kmer : in_file){
+            message = sqlite3_bind_text(staged_query, 1, kmer.c_str(),
+                      static_cast<int>(kmer.size()), nullptr);
             problemEncountered(message, "bind text for inserting into seen_cache");
             message = sqlite3_bind_int(staged_query, 2, data.settings.iteration);
             problemEncountered(message, "bind int for inserting into seen_cache");
@@ -225,7 +253,6 @@ void checkCache(Dataset &data, vector<string> &vec, const string &cachefile){
 
 
 static void prepareStmt(sqlite3 *db, string stmt, sqlite3_stmt *query){
-    //sqlite3_prepare(sqlite3 *db, const char *zSql, int nByte, sqlite3_stmt **ppStmt, const char **pzTail)
     int message = sqlite3_prepare(db, stmt.c_str(), static_cast<int>(stmt.size()), &query, nullptr);
     problemEncountered(message, stmt);
 }

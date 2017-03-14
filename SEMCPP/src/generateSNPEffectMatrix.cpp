@@ -203,15 +203,13 @@ void create_baselines(Dataset &data, int length){
 
     // grab keys of kmerHash
 
-    for(auto pair : kmerHash){
+    for(auto pair& : kmerHash){
         data.scramble_kmers.push_back(pair.first);
     }
 
     if(!data.settings.fastrun){
-        //scramble_kmer(data);
-        //checkCache(data);
-        //seq_col_to_fa(data, 0);
-        //bowtie_genome_map(data);
+        scramble_kmer(data);
+        // scramble_kmers IS NOW SCRAMBLED!!!!
         cmd = "./bin/bedtools intersect -a " + data.output_dir
                 + "/BASELINE/Scrambled_kmer.bed -b "
                 + data.DNase_file + " -wa -u > "+ data.output_dir
@@ -220,7 +218,7 @@ void create_baselines(Dataset &data, int length){
         //accumSummary_scale(data, data.output_dir + "/BASELINE/Scrambled_kmer_filtered.bed", )
 
         writeCache(data,
-                   Dataset::accumSummaryData::accumSummary_dest::alignment);
+                   Dataset::accumSummaryData::accumSummary_dest::scrambled);
 
     }
 
