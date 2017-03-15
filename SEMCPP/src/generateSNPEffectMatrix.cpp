@@ -241,7 +241,8 @@ void create_baselines(Dataset &data, int length){
         sort(data.signal_cache_scramble.begin(), data.signal_cache_scramble.end());
         data.signal_scramble_output.reserve(data.signal_cache_scramble.size());
         //  FILLS data.signal_scramble_output !!!!!!!!!!!!
-        unique_copy(data.signal_cache_scramble, data.signal_cache_scramble, data.signal_output);
+        unique_copy(data.signal_cache_scramble, data.signal_cache_scramble,
+                    data.signal_output);
 
     } // !data.settings.fastrun
 
@@ -267,7 +268,16 @@ void create_baselines(Dataset &data, int length){
         }
     }
 
+    // SHOULD THERE BE AN ERROR CHECK IF signal_cache_enumerate IS EMPTY????
+    sort(data.signal_cache_enumerate.begin(), data.signal_cache_enumerate.end());
+    data.signal_enumerate_output.reserve(data.signal_cache_enumerate.size());
+    //  FILLS data.signal_enumerate_output !!!!!!!!!!!!
+    unique_copy(data.signal_cache_enumerate, data.signal_cache_enumerate,
+                data.signal_enumerate_output);
 
+    findMaximumAverageSignalWrapper(data,
+                                    Dataset::accumSummaryData::accumSummary_dest::enumerated);
+    
 
 
 

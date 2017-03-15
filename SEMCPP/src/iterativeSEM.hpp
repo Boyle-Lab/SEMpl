@@ -108,16 +108,22 @@ public:
 	// contains data from findMaximumAverageSignalWrapper
 	struct MaximumAverageSignalData{
         //baseline signal data
-        double base_maximum = 0;
-        int base_counter = 0;
-        double base_stdev = 0;
-        double base_sterr = 0;
+        double scramble_maximum = 0;
+        int scramble_counter = 0;
+        double scramble_stdev = 0;
+        double scramble_sterr = 0;
 
         //alignment signal data, name may need to be changed
         double alignment_maximum = 0;
         int alignment_counter = 0;
         double alignment_stdev = 0;
         double alignment_sterr = 0;
+
+        //enumerate signal data, name may need to be changed
+        double enumerate_maximum = 0;
+        int enumerate_counter = 0;
+        double enumerate_stdev = 0;
+        double enumerate_sterr = 0;
 	};
 
 	// DNase DNase_data;
@@ -165,7 +171,7 @@ void accumSummary_scale(Dataset &data, const std::string &hfile,
                         Dataset::accumSummaryData::accumSummary_dest dest);
 // check accumSummary_scale calls in steps before find_signal
 void alignToGenomeWrapper(Dataset &data, int iteration,
-                            std::string genome = "data/hg19");
+                            std::string genome);
 void bowtie_genome_map(int length, const std::string& genome,
                         const std::string& file, const std::string& final_output);
 void changeBase(Dataset &data, int position,

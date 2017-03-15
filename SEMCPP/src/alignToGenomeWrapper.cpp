@@ -4,9 +4,7 @@ using namespace std;
 
 static int getLength(Dataset &data);
 static void align_SNPs(Dataset &data, int length, const vector<string> &nucleotideStack);
-void changeBase(const Dataset &data, int position, string nucleotide,
-                vector<string> &new_kmer_vec);
-bool seq_col_to_fa(Dataset &data);
+
 //void bowtie_genome_map(Dataset &data, int length, const string& genome,
 //                                                     const string& file);
 
@@ -59,11 +57,14 @@ static void align_SNPs(Dataset &data, int length,
 
             new_kmer.clear();
                                       // nucleotide
-            changeBase(data, position, nucleotideStack[j], new_kmer);
+            changeBase(data, position, nucleotideStack[j], new_kmer,
+                        "../data/hg19");
+                        // CHECK THAT THIS IS CORRECT RELATIVE LOCATION
 
 // void checkCache(Dataset &data, vector<string> &in_file, vector<string> &out_cache,
 //                 const string &cachefile);
-            checkCache(data, new_kmer, cache_output, data.cachefile);
+            checkCache(data, new_kmer, cache_output, data.cachefile,
+                        Dataset::accumSummaryData::accumSummary_dest::alignment);
             // pass in a sequence column, which is from output of checkCache
             // cachefile in Dataset is $cache from original algorithm!!!
 
@@ -72,7 +73,7 @@ static void align_SNPs(Dataset &data, int length,
 
             non_zero_file_size = seq_col_to_fa(cache_output, fa_file);
             if(non_zero_file_size){
-                bowtie_genome_map(data, length, "../data/hg19", fa_file, bowtie_output);
+                bowtie_genome_map(length, "../data/hg19", fa_file, bowtie_output);
             }
             cache_output.clear();
         }
