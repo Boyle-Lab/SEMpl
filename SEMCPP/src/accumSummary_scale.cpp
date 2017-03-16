@@ -29,7 +29,7 @@ void accumSummary_scale(Dataset &data, const string &hfile,
 	const char* const mode = "r";
 	bigWigFile_t *bwFile = bwOpen(fname, NULL, mode);
     	if(bwFile == NULL){
-        	cerr << "Failed to open hfile: " << hfile << endl;
+        	cerr << "Failed to open hfile: " << hfile << '\n';
         	exit(1);
     	}
 
@@ -59,7 +59,7 @@ void accumSummary_scale(Dataset &data, const string &hfile,
     int upstart = 0, upend = 0;
 	// pointer to hold double values from library function;
 	double *values = nullptr;
-	bwStatsType type = mean;
+
 
 	while(getline(input, line)){
 		// initialize vairables
@@ -100,32 +100,70 @@ void accumSummary_scale(Dataset &data, const string &hfile,
 		strcpy(chrom, seqid.c_str());
 
 		// stats function used from library
-		//double *bwStats(bigWigFile_t *fp, char *chrom, uint32_t start, uint32_t end, uint32_t nBins, enum bwStatsType type);
-		values = bwStats(bwFile, chrom, static_cast<uint32_t>(upstart), static_cast<uint32_t>(upend), static_cast<uint32_t>(upend - upstart), type);
+		//double *bwStats(bigWigFile_t *fp, char *chrom, uint32_t start,
+        //                uint32_t end, uint32_t nBins, enum bwStatsType type);
+        // should return each individual value, where the mean of a single value
+        // is that same value
+		values = bwStats(bwFile, chrom, static_cast<uint32_t>(upstart),
+                         static_cast<uint32_t>(upend),
+                         static_cast<uint32_t>(upend - upstart), bwStatsType::mean);
+#ifdef DEBUG
+        // check that this is the correect value
+        double *test1 = nullptr;
+        test1 = bwStats(bwFile, chrom, static_cast<uint32_t>(upstart),
+                         static_cast<uint32_t>(upend),
+                         static_cast<uint32_t>(upend - upstart), bwStatsType::min);
+        double *test2 = nullptr;
+        test2 = bwStats(bwFile, chrom, static_cast<uint32_t>(upstart),
+                         static_cast<uint32_t>(upend),
+                         static_cast<uint32_t>(upend - upstart), bwStatsType::max);
+        for(int i = 0; i < upend - upstart; ++i){
+            if(test1[i] != test2[i]){
+                cerr << "test1 AND test2 should match!!!!!!\nIf I understand it"
+                     << " correctly\n";
+                cerr << "\ttest1 val: " << test1[i] << "\n\ttest2 val: "
+                          << test2[i] << '\n\tEXITING';
+                exit(1);
+            }
+            if(test1[i] != values[i]){
+                cerr << "test1 AND values should match!!!!!!\nIf I understand it"
+                     << " correctly\n";
+                cerr << "\ttest1 val: " << test1[i] << "\n\tvalues val: "
+                     << values[i] << '\n\tEXITING';
+                exit(1);
+            }
+        }
+#endif
+
         if(values == NULL){
             cerr << "Failure to use bwStats!\n\tEXITING\n";
             exit(1);
         }
-    		counter = 0;
 
-    		for(counter = 0; counter < total_size; counter++){
-    			values[counter] = roundf(values[counter] * 1000) / 1000;
-    			signal_array[counter] = values[counter];
-    		}
+		counter = 0;
+        //                      I DON'T KNOW IF THIS
+        //                      IS THE RIGHT END OF INTERVAL
+        //                      UPEND - UPSTART
+		for(counter = 0; counter < upend - upstart; counter++){
+			values[counter] = roundf(values[counter] * 1000) / 1000;
+			signal_array[counter] =  to_string(values[counter]);
+		}
 
         free(values);
 		delete [] chrom;
 
 		//output results
 		if(direction.find('+') != string::npos){
-			for(int k = 0; k < total_size; k++){
+			for(int k = 0; k < total_size; ++k){
 				// need to determine how to check for definition of signal_array[k]
 				output[k] = signal_array[k];
             }
         }
 		else{
+            // use reserve so I can keep the same iteration direction
             reverse(signal_array.begin(), signal_array.end());
-			for(int k = total_size - 1; k >= 0; k--){
+			for(int k = 0; k < total_size; ++k){
+                // need to determine how to check for definition of signal_array[k]
 				output[k] = signal_array[k];
             }
         }
@@ -133,10 +171,10 @@ void accumSummary_scale(Dataset &data, const string &hfile,
 
 		max = 0;
 		hitcount = 0;
-		for(int l = 0; l < static_cast<int>(output.size()); l++){
+		for(int l = 0; l < static_cast<int>(output.size()); ++l){
 			if(stod(output[l]) > max) max = stod(output[l]);
                                     // string to double
-			if(output[l] != "N") hitcount++;
+			if(output[l] != to_string("N") ) ++hitcount;
 		}
         // if max is maximum possible double value, then it is not applicable
 		if(hitcount / static_cast<double>(output.size()) < 0.9){
@@ -164,20 +202,6 @@ void accumSummary_scale(Dataset &data, const string &hfile,
                 exit(1);
             break;
         }
-        /*
-        if(file_dir == "alignment"){
-            data.accumSummary_data.align_accum_lines.push_back(line);
-            data.accumSummary_data.align_accum_max.push_back(max);
-        }
-        else if (file_dir == "scrambled"){
-		    data.accumSummary_data.scramble_accum_lines.push_back(line);
-		    data.accumSummary_data.scramble_accum_max.push_back(max);
-        }
-        else if (file_dir == "enumerated"){
-		    data.accumSummary_data.enum_accum_lines.push_back(line);
-		    data.accumSummary_data.enum_accum_max.push_back(max);
-        }
-        */
 	}
 	bwClose(bwFile);
 	delete [] fname;

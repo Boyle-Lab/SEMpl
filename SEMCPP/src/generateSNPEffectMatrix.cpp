@@ -277,35 +277,22 @@ void create_baselines(Dataset &data, int length){
 
     findMaximumAverageSignalWrapper(data,
                                     Dataset::accumSummaryData::accumSummary_dest::enumerated);
-    
 
-
-
-    // cmd = "cat " + data.output_dir + "/BASELINE/Enumerated_kmer.cache | sort | uniq >> "
-    //         + data.output_dir + "/BASELINE/Enumerated_kmer_filtered.signal";
-    //
-    // system(cmd.c_str());
-    //
-    // string file_dir = "baseline";
-    // findMaximumAverageSignalWrapper(data, file_dir);
-    //
-    // if(data.settings.delAlignmentBed){
-    //     cmd = "rm -f " + data.output_dir + "/BASELINE/Scrambled_kmer.bed";
-    //
-    //     system(cmd.c_str());
-    //     cmd = "rm -f " + data.output_dir + "/BASELINE/Enumerated_kmer.bed";
-    //
-    //     system(cmd.c_str());
-    // }
-    //
-    // if(data.settings.delFilteredBed){
-    //     cmd = "rm -f " + data.output_dir + "/BASELINE/Scrambled_kmer_filtered.bed";
-    //
-    //     system(cmd.c_str());
-    //     cmd = "rm -f " + data.output_dir + "/BASELINE/Enumerated_kmer_filtered.bed";
-    //
-    //     system(cmd.c_str());
-    // }
+    if(data.settings.delAlignmentBed){
+        system(("rm -f " + data.output_dir + "/BASELINE/Scrambled_kmer.bed").c_str());
+        system(("rm -f " + data.output_dir + "/BASELINE/Enumerated_kmer.bed").c_str());
+    }
+    if(data.delFilteredBed){
+        system(("rm -f " + data.output_dir + "/BASELINE/Scrambled_kmer_filtered.bed").c_str());
+        system(("rm -f " + data.output_dir + "/BASELINE/Enumerated_kmer_filtered.bed").c_str());
+    }
+    if(data.settings.delSNPList){
+        system("rm -f  " + data.output_dir + "/BASELINE/*.scrambled");
+		system("rm -f  " + data.output_dir + "/BASELINE/*.fa");
+		system("rm -f  " + data.output_dir + "/BASELINE/*.sm.txt");
+		system("rm -f  " + data.output_dir + "/BASELINE/*.cache");
+		system("rm -f  " + data.output_dir + "/BASELINE/Enumerated_kmer.txt");
+    }
 
 }
 
