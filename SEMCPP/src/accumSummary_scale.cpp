@@ -133,6 +133,8 @@ void accumSummary_scale(Dataset &data, const string &hfile,
                 exit(1);
             }
         }
+        free(test2);
+        free(test1);
 #endif
 
         if(values == NULL){
@@ -146,17 +148,28 @@ void accumSummary_scale(Dataset &data, const string &hfile,
         //                      UPEND - UPSTART
 		for(counter = 0; counter < upend - upstart; counter++){
 			values[counter] = roundf(values[counter] * 1000) / 1000;
-			signal_array[counter] =  to_string(values[counter]);
+			signal_array[counter] = to_string(values[counter]);
 		}
 
         free(values);
 		delete [] chrom;
 
 		//output results
+        // I AM GOING TO ASSUME THAT A VALUE OF 0.0 MEANS UNDEFINED.
+        // ACCESSING SOMETHING THAT IS UNDEFINED IN C++ IS A SEGMENTATION FAULT,
+        // A RUNTIME ERROR. I DON'T KNOW IF values DOESN'T POINT TO ANY
+        // UNDEFINED DATA (0.0 as I am assuming)
 		if(direction.find('+') != string::npos){
 			for(int k = 0; k < total_size; ++k){
 				// need to determine how to check for definition of signal_array[k]
-				output[k] = signal_array[k];
+
+                // checks that signal_array[k] is non-zero
+                if(signal_array[k]){
+                    output[k] = signal_array[k];
+                }
+                else{
+                    output[k] = "N";
+                }
             }
         }
 		else{
@@ -164,7 +177,14 @@ void accumSummary_scale(Dataset &data, const string &hfile,
             reverse(signal_array.begin(), signal_array.end());
 			for(int k = 0; k < total_size; ++k){
                 // need to determine how to check for definition of signal_array[k]
-				output[k] = signal_array[k];
+
+                // checks that signal_array[k] is non-zero
+                if(signal_array[k]){
+                    output[k] = signal_array[k];
+                }
+                else{
+                    output[k] = "N";
+                }
             }
         }
 

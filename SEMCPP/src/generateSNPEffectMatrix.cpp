@@ -79,7 +79,7 @@ void generateSNPEffectMatrix(Dataset &data){
 	}
 
 	//Step 1: Generate Enumerated k-mers
-	cout << "Creating enumerated kmers from PWM file" << '\n';
+	cout << "Creating enumerated kmers from PWM file\n";
 
     int length = generate_kmers(data);
     // data.kmerHash is now filled in!!!!
@@ -87,14 +87,14 @@ void generateSNPEffectMatrix(Dataset &data){
 	//Step 2: Change one base at each location in k-mers and align to genome
     // ALSO: print output to file
     if(data.settings.verbose){
-        cout << "Aligning SNPs in kmers to the genome" << '\n';
+        cout << "Aligning SNPs in kmers to the genome\n";
     }
     align_to_genome(data);
 
     //Step 3: Filter using DNase data and finding the signal at each location
     // ALSO: read in output of filterDNaseWrapper back to memory
     if(data.settings.verbose){
-        cout << "Filtering using DNase data and finding the signal" << '\n';
+        cout << "Filtering using DNase data and finding the signal\n";
     }
     filterDNaseWrapper(data);
     // data.filterDNaseWrapper_output is filled!!!!!!
@@ -116,7 +116,7 @@ void generateSNPEffectMatrix(Dataset &data){
 
 int generate_kmers(Dataset &data){
     if(data.settings.verbose){
-        cout << "Creating enumerated kmers" << '\n';
+        cout << "Creating enumerated kmers\n";
     }
 
     Enumerate_kmer(data);
@@ -143,7 +143,7 @@ void align_to_genome(Dataset &data){
 // and that the output is sorted, and contains only unique string values
 void find_signal(Dataset &data, int length){
     if(data.settings.verbose){
-        cout << "Finding the average signal" << '\n';
+        cout << "Finding the average signal\n";
     }
     // this function, in the original algorithm, iterates through files, where those
     // files correspond to the length of something, then each nucleotide letter
@@ -190,7 +190,7 @@ void find_signal(Dataset &data, int length){
 
 void create_baselines(Dataset &data, int length){
     if (data.settings.verbose){
-        cout << "Creating directory BASELINE" << '\n';
+        cout << "Creating directory BASELINE\n";
     }
     string cmd = "rm -rf " + data.output_dir + "/BASELINE";
 
@@ -298,7 +298,7 @@ void create_baselines(Dataset &data, int length){
 
 void generate_output(Dataset &data){
     if (data.settings.verbose){
-        cout << "Generating Output" << '\n';
+        cout << "Generating Output\n";
     }
 
     generateSEM(data);
