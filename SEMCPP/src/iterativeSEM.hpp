@@ -190,7 +190,7 @@ void generatePWMfromSEM(Dataset &data);
 void generateRmeplot(Dataset &data);
 void generateRplot(Dataset &data);
 void generateSelfInfo(Dataset &data);
-void generateSEM(Dataset &data);
+void generateSEM(const Dataset &data);
 void generateSignalMethylTable(Dataset &data);
 //                                      as noted in original implementation
 double get_threshold(Dataset &data, double pval = 0.0009765625);

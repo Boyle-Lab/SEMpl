@@ -18,7 +18,8 @@ using namespace std;
 void findMaximumAverageSignalWrapper(Dataset &data,
                                      Dataset::accumSummaryData::accumSummary_dest dest){
 
-        vector<string> *max_ptr = nullptr;
+        vector<double> *max_ptr = nullptr;
+        vector<string> *line_ptr = nullptr;
 
         switch (dest) {
             case Dataset::accumSummaryData::accumSummary_dest::none:
@@ -27,12 +28,15 @@ void findMaximumAverageSignalWrapper(Dataset &data,
             break;
             case Dataset::accumSummaryData::accumSummary_dest::enumerated:
                 max_ptr = &data.accumSummary_data.enum_accum_max;
+                line_ptr = &data.accumSummary_data.enum_accum_lines;
             break;
             case Dataset::accumSummaryData::accumSummary_dest::scrambled:
                 max_ptr = &data.accumSummary_data.scramble_accum_max;
+                line_ptr = &data.accumSummary_data.scramble_accum_lines;
             break;
             case Dataset::accumSummaryData::accumSummary_dest::alignment:
                 max_ptr = &data.accumSummary_data.align_accum_max;
+                line_ptr = &data.accumSummary_data.align_accum_lines;
             break;
             default:
                 cerr << "there is no default for dest's switch statement!!!\n";
