@@ -158,6 +158,10 @@ public:
     std::vector<std::string> signal_output;
     std::vector<std::string> signal_scramble_output;
     std::vector<std::string> signal_enumerate_output;
+
+#ifdef DEBUG
+    size_t size_of_kmerHash = 0;
+#endif
 };
 
 //Declare functions in header to be used by other functions

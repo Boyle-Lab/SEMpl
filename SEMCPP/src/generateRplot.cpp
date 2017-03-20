@@ -31,6 +31,8 @@ void generate_input(Dataset &data){
     //Not sure if the original print function prints with spaces
     //between commands or newline characters so for now I have newline
     //characters.
+    // REPLY: I believe this is correct, If I understand the "<<" command or option
+    // or whatever it is correctly, then the text is printed literally as it appears
     Rfile << "pdf(\"$output/$TFname_semplot.pdf\")\n"
           <<"source(\"src/plotSEM_Functions.R\")\n"
           <<"plotSEM(\"$output\", \"$TFname\", error=TRUE)\n"

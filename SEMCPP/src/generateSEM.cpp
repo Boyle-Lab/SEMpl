@@ -128,8 +128,8 @@ void generateSEM(const Dataset &data){
                    << "\t" << STDErr[make_pair(j, "T")]
                    << "\n";;
     }
+
     sem_file.close();
     sterr_file.close();
-
 
 }

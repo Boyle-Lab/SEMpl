@@ -49,7 +49,7 @@ int generate_kmers(Dataset &data);
 void Enumerate_kmer(Dataset &data);
 
 
-void generateSNPEffectMatrix(Dataset &data){
+void generateSNPEffectMatrix(Dataset &data) {
 	// default options are built into settings within data
   //
   // f(data.output_dir.empty()){
@@ -68,12 +68,13 @@ void generateSNPEffectMatrix(Dataset &data){
 
 	if(data.cachefile.empty()){
 		data.cachefile = data.output_dir + "/CACHE.db";
+
 	}
 
 // main script content
 //---------------------------------------------------------
 
-	if(data.settings.verbose){
+    if(data.settings.verbose){
 		cout << "\nGenerating SEM for " + data.TF_name + "\n"
 			<< "Command: \n" << data.command << "\n";
 	}
@@ -86,7 +87,7 @@ void generateSNPEffectMatrix(Dataset &data){
 
 	//Step 2: Change one base at each location in k-mers and align to genome
     // ALSO: print output to file
-    if(data.settings.verbose){
+    if ( data.settings.verbose ) {
         cout << "Aligning SNPs in kmers to the genome\n";
     }
     align_to_genome(data);
@@ -177,7 +178,7 @@ void find_signal(Dataset &data, int length){
         writeCache(data, Dataset::accumSummaryData::accumSummary_dest::alignment);
 
         sort(data.signal_cache.begin(), data.signal_cache.end());
-        data.signal_output.reserve(data.signal_cache.size());
+        data.signal_output.resize(data.signal_cache.size());
         unique_copy(data.signal_cache, data.signal_cache, data.signal_output);
 
 
@@ -218,7 +219,7 @@ void create_baselines(Dataset &data, int length){
                     Dataset::accumSummaryData::accumSummary_dest::scrambled);
         seq_col_to_fa(data.signal_cache_scramble,
                       data.output_dir + "/BASELINE/Scrambled_kmer.fa");
-        bowtie_genome_map(data, length, "../data/hg19",
+        bowtie_genome_map(length, "../data/hg19",
                           data.output_dir + "/BASELINE/Scrambled_kmer.fa",
                           data.output_dir + "/BASELINE/Scrambled_kmer.bed");
 
@@ -239,7 +240,7 @@ void create_baselines(Dataset &data, int length){
                        Dataset::accumSummaryData::accumSummary_dest::scrambled);
         }
         sort(data.signal_cache_scramble.begin(), data.signal_cache_scramble.end());
-        data.signal_scramble_output.reserve(data.signal_cache_scramble.size());
+        data.signal_scramble_output.resize(data.signal_cache_scramble.size());
         //  FILLS data.signal_scramble_output !!!!!!!!!!!!
         unique_copy(data.signal_cache_scramble, data.signal_cache_scramble,
                     data.signal_output);
@@ -256,7 +257,7 @@ void create_baselines(Dataset &data, int length){
     if(!data.signal_cache_enumerate.empty()){
         seq_col_to_fa(data.signal_cache_enumerate,
                       data.output_dir + "/BASELINE/Enumerated_kmer.fa");
-        bowtie_genome_map(data, length,
+        bowtie_genome_map(length,
                           "../data/hg19", data.output_dir + "/BASELINE/Enumerated_kmer.fa",
                           data.output_dir + "/BASELINE/Enumerated_kmer_filtered.bed");
         accumSummary_scale(data, data.bigwig_file,
@@ -270,7 +271,13 @@ void create_baselines(Dataset &data, int length){
 
     // SHOULD THERE BE AN ERROR CHECK IF signal_cache_enumerate IS EMPTY????
     sort(data.signal_cache_enumerate.begin(), data.signal_cache_enumerate.end());
-    data.signal_enumerate_output.reserve(data.signal_cache_enumerate.size());
+    data.signal_enumerate_output.resize(data.signal_cache_enumerate.size());
+
+    // CHANGE REQUIRED REGARDING WHAT IS IN DATA.SIGNAL_ENUMERATE..._OUTPUT
+    // CHANGE REQUIRED REGARDING WHAT IS IN DATA.SIGNAL_ENUMERATE..._OUTPUT
+    // CHANGE REQUIRED REGARDING WHAT IS IN DATA.SIGNAL_ENUMERATE..._OUTPUT
+    // and corresponding other data
+
     //  FILLS data.signal_enumerate_output !!!!!!!!!!!!
     unique_copy(data.signal_cache_enumerate, data.signal_cache_enumerate,
                 data.signal_enumerate_output);

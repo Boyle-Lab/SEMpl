@@ -68,6 +68,10 @@ void Enumerate_kmer(Dataset &data){
         }
     }
     // data.kmerHash is now ready for use
+
+#ifdef DEBUG
+    data.size_of_kmerHash = data.kmerHash.size();
+#endif
 }
 
 // EFFECTS: finds maximum mapped value
@@ -173,9 +177,9 @@ static void parse_pwm(const Dataset &data,
             sum += data.PWM_data.matrix_arr[i][j];
             modifiedFields[j+1] = log2((static_cast<double>(data.PWM_data.matrix_arr[i][j]) + 0.25) / (sum + 1)) - log2(0.25);
         }
-        #ifdef DEBUG
+#ifdef DEBUG
         size_t sz = modifiedFields.size();
-        #endif
+#endif
         // TEST ME!!!
         // TEST ME!!!
         // TEST ME!!!
@@ -183,7 +187,7 @@ static void parse_pwm(const Dataset &data,
         for(int k = 1; k < Dataset::PWM::NUM_COLUMNS + 1; k++){
             pwmHash[{data.PWM_data.matrix_arr[i][0] + 1, nucleotideStack[k - 1]}] = modifiedFields[k];
         }
-        #ifdef DEBUG
+#ifdef DEBUG
         if(sz != modifiedFields.size()){
             cerr << "modifiedFields has changed in size!!\n\tEXITING\n";
             exit(1);

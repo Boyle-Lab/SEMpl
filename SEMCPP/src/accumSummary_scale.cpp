@@ -122,14 +122,14 @@ void accumSummary_scale(Dataset &data, const string &hfile,
                 cerr << "test1 AND test2 should match!!!!!!\nIf I understand it"
                      << " correctly\n";
                 cerr << "\ttest1 val: " << test1[i] << "\n\ttest2 val: "
-                          << test2[i] << '\n\tEXITING';
+                          << test2[i] << "\n\tEXITING";
                 exit(1);
             }
             if(test1[i] != values[i]){
                 cerr << "test1 AND values should match!!!!!!\nIf I understand it"
                      << " correctly\n";
                 cerr << "\ttest1 val: " << test1[i] << "\n\tvalues val: "
-                     << values[i] << '\n\tEXITING';
+                     << values[i] << "\n\tEXITING";
                 exit(1);
             }
         }
@@ -164,7 +164,7 @@ void accumSummary_scale(Dataset &data, const string &hfile,
 				// need to determine how to check for definition of signal_array[k]
 
                 // checks that signal_array[k] is non-zero
-                if(signal_array[k]){
+                if(stod(signal_array[k]) != 0.0){
                     output[k] = signal_array[k];
                 }
                 else{
@@ -179,7 +179,7 @@ void accumSummary_scale(Dataset &data, const string &hfile,
                 // need to determine how to check for definition of signal_array[k]
 
                 // checks that signal_array[k] is non-zero
-                if(signal_array[k]){
+                if(stod(signal_array[k]) != 0.0){
                     output[k] = signal_array[k];
                 }
                 else{
@@ -194,7 +194,7 @@ void accumSummary_scale(Dataset &data, const string &hfile,
 		for(int l = 0; l < static_cast<int>(output.size()); ++l){
 			if(stod(output[l]) > max) max = stod(output[l]);
                                     // string to double
-			if(output[l] != to_string("N") ) ++hitcount;
+			if(output[l] != string("N") ) ++hitcount;
 		}
         // if max is maximum possible double value, then it is not applicable
 		if(hitcount / static_cast<double>(output.size()) < 0.9){
@@ -206,14 +206,38 @@ void accumSummary_scale(Dataset &data, const string &hfile,
                 exit(1);
             break;
             case Dataset::accumSummaryData::accumSummary_dest::enumerated:
+#ifdef DEBUG
+                if(!data.accumSummary_data.enum_accum_lines.empty() 
+                    || !data.accumSummary_data.enum_accum_max.empty()){
+                    cout << "enum accum data should be empty!!! I think!!\n"
+                         << "\tEXITING\n";
+                         exit(1);
+                }
+#endif
                 data.accumSummary_data.enum_accum_lines.push_back(line);
                 data.accumSummary_data.enum_accum_max.push_back(max);
             break;
             case Dataset::accumSummaryData::accumSummary_dest::scrambled:
+#ifdef DEBUG
+                if(!data.accumSummary_data.scramble_accum_lines.empty() 
+                    || !data.accumSummary_data.scramble_accum_max.empty()){
+                    cout << "scramble accum data should be empty!!! I think!!\n"
+                         << "\tEXITING\n";
+                         exit(1);
+                }
+#endif
                 data.accumSummary_data.scramble_accum_lines.push_back(line);
                 data.accumSummary_data.scramble_accum_max.push_back(max);
             break;
             case Dataset::accumSummaryData::accumSummary_dest::alignment:
+#ifdef DEBUG
+                if(!data.accumSummary_data.align_accum_lines.empty() 
+                    || !data.accumSummary_data.align_accum_max.empty()){
+                    cout << "align accum data should be empty!!! I think!!\n"
+                         << "\tEXITING\n";
+                         exit(1);
+                }
+#endif            
                 data.accumSummary_data.align_accum_lines.push_back(line);
                 data.accumSummary_data.align_accum_max.push_back(max);
             break;
