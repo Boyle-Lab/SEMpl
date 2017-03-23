@@ -12,16 +12,16 @@
 
 using namespace std;
 
-void generate_input (Dataset &data);
-void run_R (Dataset &data);
+static void generate_input (const Dataset &data);
+static void run_R (const Dataset &data);
 
-void generateRplot(Dataset &data){
+static void generateRplot(Dataset &data){
 
     generate_input(data);
     run_R(data);
 }
 
-void generate_input(Dataset &data){
+static  void generate_input(const Dataset &data){
 
     stringstream Rout;
     Rout << data.output_dir  << "/generateRinput.input";
@@ -40,7 +40,7 @@ void generate_input(Dataset &data){
     Rfile.close();
 }
 
-void run_R(Dataset &data){
+static void run_R(const Dataset &data){
 
     stringstream Rout;
     Rout << "R --vanilla < " << data.output_dir << "/generateRinput.input";

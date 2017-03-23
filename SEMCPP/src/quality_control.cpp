@@ -2,6 +2,7 @@
 #include "common.h"
 #include <fstream>
 #include <sstream>
+#include <cstdio>
 
 
 /*
@@ -12,10 +13,13 @@
 
 using namespace std;
 
-int count_kmer(Dataset &data);
-int findMaximumPerRow(Dataset &data, const string dest);
-int ttest(Dataset &data, int max_scram, int max_enum);
+static int count_kmer(const Dataset &data);
+//int findMaximumPerRow(Dataset &data, const string dest);
+static double ttest(const Dataset &data, int max_scram, int max_enum);
 
+
+// REQUIRES: data.signal_scramble_output is filled
+//           along with data.signal_enumerate_output
 void quality_control(Dataset &data){
 
     ofstream quality_output;
@@ -23,46 +27,20 @@ void quality_control(Dataset &data){
     output_stream << data.output_dir << "/Quality_control.txt";
     quality_output.open(output_stream.str());
 
-    if(!quality_output){
-
-    }
+    
 
     //Step 1: Total kmer check
     int total_kmers = count_kmer(data);
     quality_output << "Total k-mer count: " << total_kmers <<"\n";
 
     //Step 2: T-test on signal to background
+    double p_val = ttest(data);
+    quality_output << "Signal to background T-test: " << p_val << '\n';
 
-    Dataset::accumSummaryData::accumSummary_dest dest = 
-                            Dataset::accumSummaryData::accumSummary_dest::none;
-
-    //First generate baseline value file
-    dest = Dataset::accumSummaryData::accumSummary_dest::scrambled;
-
-    //                DEPRECATED
-    //int max_scram = findMaximumPerRow(data, dest);
-
-    // will operate on final data from creating baseline from initially
-    // scrambled kmers
-
-    //Next generate signal value file
-    dest = Dataset::accumSummaryData::accumSummary_dest::enumerated;
-
-    //                DEPRECATED
-    //int max_enum = findMaximumPerRow(data, dest);
-
-    // will operate on final data from creating baseline from initially
-    // enumerated kmers
-
-    //Then run t-test
-    double t_result = ttest(data, max_scram, max_enum);
-    quality_output << "Signal to background T-test: "
-                   << t_result << "\n";
-    quality_output.close();
 
 }
 
-int count_kmer(Dataset &data){
+int count_kmer(const Dataset &data){
 
     //Must use the output from enumerate kmer and count the kmers
 
@@ -91,8 +69,41 @@ int findMaximumPerRow(Dataset &data,
 }
 */
 
-double ttest(Dataset &data, int max_scram, int max_enum){
+double ttest(const Dataset &data){
 
     //Interacts with R to perform a T-test
 
+    ofstream OUT(data.output_dir + "/runTtest.R");
+    ofstream OUT1(data.output_dir + "Enumerated_kmer_filtered.signal");
+    ofstream OUT2(data.output_dir + "Scrambled_kmer.filtered.signal");
+    for(auto val : data.signal_scramble_output){
+        OUT2 << val << '\n';
+    }
+    for(auto val : data.signal_enumerate_output){
+        OUT1 << val << '\n';
+    }
+    OUT << "signal <- read.table(\"" <<  data.output_dir 
+        << "Enumerated_kmer_filtered.signal\")" << '\n'
+        << "baseline <- read.table(\"" <<  data.output_dir 
+        << "Scrambled_kmer_filtered.signal\")" << "\n\n"
+        << "res <- t.test(signal$V6, baseline$V6)\n"
+        << "pval <- -log10(res$p.value)\n\n"
+        << "cat(pval, sep=\"\\n\")\n";
+
+    string cmd = "R --vanilla --no-save --slave < " 
+                 + data.output_dir 
+                 + "/runTtest.R";
+
+    FILE * strm = popen(cmd, 'r');
+    double p_val = -1.0;
+    int message = fscanf(strm, " %lf", p_val);
+    if(p_val == -1.0){
+        cerr << "Failure to read p_val!!!!!!\n\tEXITING";
+        exit(1);
+    }
+    if(message != 1){
+        cerr << "incorrect message from fscanf(args)!!!!!\n\tEXITING";
+        exit(1);
+    }
+    return p_val;
 }
