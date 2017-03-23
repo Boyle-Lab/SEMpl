@@ -82,15 +82,18 @@ void checkCache(Dataset &data, const vector<string> &in_file, vector<string> &ou
             int num_col = sqlite3_column_count(data_query);
 #ifdef DEBUG
             cout << "There are " << num_col << " columns in data_query" << '\n';
-#endif
+
 
             if(num_col < 0) {
                 cerr << "Number of columns from data_query is less than 0!!\n\tEXITING" << '\n';
                 exit(1);
             }
+            if(num_col != 2) {
+                cerr << "Number of columns from data_query is 2!!\n\tEXITING" << '\n';
+                exit(1);
+            }
             // int data_local{-1};
 
-#ifdef DEBUG
 /*
             message = sqlite3_column_type(data_query, 0);
             if(message != SQLITE3_TEXT){
@@ -104,13 +107,13 @@ void checkCache(Dataset &data, const vector<string> &in_file, vector<string> &ou
             }
 */
 #endif
-            //const unsigned char* store = sqlite3_column_text(data_query, i);
+            // const unsigned char* store = sqlite3_column_text(data_query, i);
             // sqlite3_column_text returns const unsigned char*,
             //  but C++ string library works with const char*
-            //const char* text = reinterpret_cast<const char*>(sqlite3_column_text(data_query, 0));
+            // const char* text = reinterpret_cast<const char*>(sqlite3_column_text(data_query, 0));
 
             // const unsigned char* store = sqlite3_column_int(data_query, 1);
-            const char* text = convert_to_const_char(sqlite3_column_text(data_query, 1));
+            
             // data_local = iter;
 
             // if(data_local == -1){
@@ -120,6 +123,8 @@ void checkCache(Dataset &data, const vector<string> &in_file, vector<string> &ou
 
             if(num_col > 0){
                 // output.push_back(data_local);
+                const char* text = convert_to_const_char(sqlite3_column_text(data_query, 1));
+
                 switch (dest) {
                     case Dataset::accumSummaryData::accumSummary_dest::alignment:
                         data.signal_cache.emplace_back(text);

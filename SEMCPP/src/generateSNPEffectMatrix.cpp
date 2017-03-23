@@ -177,9 +177,25 @@ void find_signal(Dataset &data, int length){
         // -in_file and -cache are built into data
         writeCache(data, Dataset::accumSummaryData::accumSummary_dest::alignment);
 
-        sort(data.signal_cache.begin(), data.signal_cache.end());
-        data.signal_output.resize(data.signal_cache.size());
-        unique_copy(data.signal_cache, data.signal_cache, data.signal_output);
+        // SHOULD THERE BE AN ERROR CHECK IF signal_cache_enumerate IS EMPTY????
+        sort(data.signal_cache.begin(), 
+             data.signal_cache.end());
+        data.signal_output.resize(data.signal_cache.size() 
+                                + data.accumSummaryData.align_accum_lines.size());
+        // returns iterator to one past the location of the last copy
+        auto iter = copy(data.accumSummaryData.align_accum_lines.begin(),
+                         data.accumSummaryData.align_accum_lines.end(),
+                         data.signal_output.begin());
+
+        // CHANGE REQUIRED REGARDING WHAT IS IN DATA.SIGNAL_ENUMERATE..._OUTPUT
+        // CHANGE REQUIRED REGARDING WHAT IS IN DATA.SIGNAL_ENUMERATE..._OUTPUT
+        // CHANGE REQUIRED REGARDING WHAT IS IN DATA.SIGNAL_ENUMERATE..._OUTPUT
+        // and corresponding other data
+
+        //  FILLS data.signal_enumerate_output !!!!!!!!!!!!
+        unique_copy(data.signal_cache_enumerate.begin(), 
+                    data.signal_cache_enumerate.end(),
+                    iter);
 
 
         findMaximumAverageSignalWrapper(data,
@@ -239,11 +255,25 @@ void create_baselines(Dataset &data, int length){
             writeCache(data,
                        Dataset::accumSummaryData::accumSummary_dest::scrambled);
         }
-        sort(data.signal_cache_scramble.begin(), data.signal_cache_scramble.end());
-        data.signal_scramble_output.resize(data.signal_cache_scramble.size());
-        //  FILLS data.signal_scramble_output !!!!!!!!!!!!
-        unique_copy(data.signal_cache_scramble, data.signal_cache_scramble,
-                    data.signal_output);
+        // SHOULD THERE BE AN ERROR CHECK IF signal_cache_enumerate IS EMPTY????
+        sort(data.signal_cache_scramble.begin(), 
+             data.signal_cache_scramble.end());
+        data.signal_enumerate_output.resize(data.signal_cache_scramble.size() 
+                                          + data.accumSummaryData.scramble_accum_lines.size());
+        // returns iterator to one past the location of the last copy
+        auto iter = copy(data.accumSummaryData.scramble_accum_lines.begin(),
+                         data.accumSummaryData.scramble_accum_lines.end(),
+                         data.signal_scramble_output.begin());
+
+        // CHANGE REQUIRED REGARDING WHAT IS IN DATA.SIGNAL_ENUMERATE..._OUTPUT
+        // CHANGE REQUIRED REGARDING WHAT IS IN DATA.SIGNAL_ENUMERATE..._OUTPUT
+        // CHANGE REQUIRED REGARDING WHAT IS IN DATA.SIGNAL_ENUMERATE..._OUTPUT
+        // and corresponding other data
+
+        //  FILLS data.signal_enumerate_output !!!!!!!!!!!!
+        unique_copy(data.signal_cache_scramble.begin(), 
+                    data.signal_cache_scramble.end(),
+                    iter);
 
     } // !data.settings.fastrun
 
@@ -270,8 +300,14 @@ void create_baselines(Dataset &data, int length){
     }
 
     // SHOULD THERE BE AN ERROR CHECK IF signal_cache_enumerate IS EMPTY????
-    sort(data.signal_cache_enumerate.begin(), data.signal_cache_enumerate.end());
-    data.signal_enumerate_output.resize(data.signal_cache_enumerate.size());
+    sort(data.signal_cache_enumerate.begin(), 
+         data.signal_cache_enumerate.end());
+    data.signal_enumerate_output.resize(data.signal_cache_enumerate.size() 
+                                      + data.accumSummaryData.enum_accum_lines.size());
+    // returns iterator to one past the location of the last copy
+    auto iter = copy(data.accumSummaryData.enum_accum_lines.begin(),
+                     data.accumSummaryData.enum_accum_lines.end(),
+                     data.signal_enumerate_output.begin());
 
     // CHANGE REQUIRED REGARDING WHAT IS IN DATA.SIGNAL_ENUMERATE..._OUTPUT
     // CHANGE REQUIRED REGARDING WHAT IS IN DATA.SIGNAL_ENUMERATE..._OUTPUT
@@ -279,8 +315,9 @@ void create_baselines(Dataset &data, int length){
     // and corresponding other data
 
     //  FILLS data.signal_enumerate_output !!!!!!!!!!!!
-    unique_copy(data.signal_cache_enumerate, data.signal_cache_enumerate,
-                data.signal_enumerate_output);
+    unique_copy(data.signal_cache_enumerate.begin(), 
+                data.signal_cache_enumerate.end(),
+                iter);
 
     findMaximumAverageSignalWrapper(data,
                                     Dataset::accumSummaryData::accumSummary_dest::enumerated);

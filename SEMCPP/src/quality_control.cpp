@@ -39,6 +39,7 @@ void quality_control(Dataset &data){
     //First generate baseline value file
     dest = Dataset::accumSummaryData::accumSummary_dest::scrambled;
 
+    //                DEPRECATED
     //int max_scram = findMaximumPerRow(data, dest);
 
     // will operate on final data from creating baseline from initially
@@ -47,6 +48,7 @@ void quality_control(Dataset &data){
     //Next generate signal value file
     dest = Dataset::accumSummaryData::accumSummary_dest::enumerated;
 
+    //                DEPRECATED
     //int max_enum = findMaximumPerRow(data, dest);
 
     // will operate on final data from creating baseline from initially
@@ -76,6 +78,8 @@ int count_kmer(Dataset &data){
 
 }
 
+// THIS MIGHT BE DEPRECATED BELOW
+/*
 int findMaximumPerRow(Dataset &data, 
                       Dataset::accumSummaryData::accumSummary_dest dest){
 
@@ -85,6 +89,7 @@ int findMaximumPerRow(Dataset &data,
         
 
 }
+*/
 
 double ttest(Dataset &data, int max_scram, int max_enum){
 
