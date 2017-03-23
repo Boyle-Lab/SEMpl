@@ -33,9 +33,9 @@ static  void generate_input(const Dataset &data){
     //characters.
     // REPLY: I believe this is correct, If I understand the "<<" command or option
     // or whatever it is correctly, then the text is printed literally as it appears
-    Rfile << "pdf(\"$output/$TFname_semplot.pdf\")\n"
+    Rfile << "pdf(\"" << data.output_dir << "" << data.TF_name << "_semplot.pdf\")\n"
           <<"source(\"src/plotSEM_Functions.R\")\n"
-          <<"plotSEM(\"$output\", \"$TFname\", error=TRUE)\n"
+          <<"plotSEM(\"" << data.output_dir << "\", \"" << data.TF_name << "\", error=TRUE)\n"
           <<"dev.off ()";
     Rfile.close();
 }
