@@ -1,6 +1,6 @@
 #include "iterativeSEM.hpp"
 #include "../lib/sqlite3/sqlite3.h"
-#include "common.h"
+#include "common.hpp"
 //#include <sstream>
 using namespace std;
 

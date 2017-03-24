@@ -1,6 +1,6 @@
 #include "iterativeSEM.hpp"
 #include <cmath>
-#include "common.h"
+#include "common.hpp"
 #include <vector>
 #include <cstring>
 #include <map>

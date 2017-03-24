@@ -29,11 +29,11 @@
 // data members made public for ease of access, otherwise wouldn't, given more time
 
 struct Dataset {
-private:
+
     Dataset(const Dataset &other) = delete;
     Dataset& operator=(const Dataset &other) = delete;
 
-public:
+
     Dataset(){ }
 	// overview
 	// a struct to contain and manage the PWM data as given in the example file

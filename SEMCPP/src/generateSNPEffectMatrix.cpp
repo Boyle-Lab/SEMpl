@@ -38,7 +38,7 @@ my $iteration = -1;
 #include <cstdlib>
 #include <string>
 #include <cstring>
-#include "common.h"
+#include "common.hpp"
 using namespace std;
 
 void find_signal(Dataset &data, int length);

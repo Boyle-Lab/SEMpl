@@ -1,5 +1,5 @@
 #include "iterativeSEM.hpp"
-#include "common.h"
+#include "common.hpp"
 #include <cstdlib>
 #include <string>
 #include <vector>
@@ -85,20 +85,20 @@ void findMaximumAverageSignalWrapper(Dataset &data,
                 exit(1);
             break;
             case Dataset::accumSummaryData::accumSummary_dest::enumerated:
-                data.signal_Data.enumerate_counter = counter;
                 data.signal_Data.enumerate_maximum = mean;
+                data.signal_Data.enumerate_counter = counter;
                 data.signal_Data.enumerate_stdev = stdev;
                 data.signal_Data.enumerate_sterr = sterr;
             break;
             case Dataset::accumSummaryData::accumSummary_dest::scrambled:
-                data.signal_Data.scramble_counter = counter;
                 data.signal_Data.scramble_maximum = mean;
+                data.signal_Data.scramble_counter = counter;
                 data.signal_Data.scramble_stdev = stdev;
                 data.signal_Data.scramble_sterr = sterr;
             break;
             case Dataset::accumSummaryData::accumSummary_dest::alignment:
-                data.signal_Data.alignment_counter = counter;
                 data.signal_Data.alignment_maximum = mean;
+                data.signal_Data.alignment_counter = counter;
                 data.signal_Data.alignment_stdev = stdev;
                 data.signal_Data.alignment_sterr = sterr;
             break;

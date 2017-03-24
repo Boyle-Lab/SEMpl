@@ -18,9 +18,11 @@ double get_threshold(Dataset & data, double pval){
 
 	ofstream temp_out(TEMPFILE);
 
+#ifdef DEBUG
 	assert(data.TFM_data.letter_array[0].size() == data.TFM_data.letter_array[1].size());
 	assert(data.TFM_data.letter_array[0].size() == data.TFM_data.letter_array[2].size());
 	assert(data.TFM_data.letter_array[0].size() == data.TFM_data.letter_array[3].size());
+#endif
 
 	for(int i = 0; i < Dataset::TFMdata::LETTER_NUM; i++){
 		for(int j = 0; j < static_cast<int>(data.TFM_data.letter_array[i].size()); j++){
@@ -51,9 +53,14 @@ double get_threshold(Dataset & data, double pval){
 		min = (score - ceil(m.errorMax + 0.5)) * 10;
 		max = (score + ceil(m.errorMax + 0.5)) * 10;
 	}
+#ifdef DEBUG
 	assert(score != 0);
+	assert(m.granularity != 0.0);
+#endif
 	final_score = (score - m.offset) / m.granularity;
+#ifdef DEBUG
 	assert(final_score != 0.0);
+#endif
 	return final_score;
 
 }

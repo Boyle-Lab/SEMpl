@@ -8,7 +8,7 @@
 extern "C"{
     #include "../lib/sqlite3/sqlite3.h"
 }
-#include "common.h"
+#include "common.hpp"
 #include <iostream>
 using namespace std;
 

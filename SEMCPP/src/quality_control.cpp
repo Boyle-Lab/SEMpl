@@ -1,5 +1,5 @@
 #include "iterativeSEM.hpp"
-#include "common.h"
+#include "common.hpp"
 #include <fstream>
 #include <sstream>
 #include <cstdio>
@@ -73,6 +73,7 @@ double ttest(const Dataset &data){
 
     //Interacts with R to perform a T-test
 
+    // writes the three files necessary to do the t-test
     ofstream OUT(data.output_dir + "/runTtest.R");
     ofstream OUT1(data.output_dir + "Enumerated_kmer_filtered.signal");
     ofstream OUT2(data.output_dir + "Scrambled_kmer.filtered.signal");

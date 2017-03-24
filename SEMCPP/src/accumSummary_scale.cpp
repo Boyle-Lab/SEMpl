@@ -1,6 +1,6 @@
 #include "lib/libBigWig-master/bigWig.h"
 #include "iterativeSEM.hpp"
-#include "common.h"
+#include "common.hpp"
 #include <fstream>
 #include <string>
 #include <iostream>

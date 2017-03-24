@@ -13,69 +13,163 @@
 
 using namespace std;
 
+// parses pwm, places appropriate data in map
+void static parse_pwm(const string &pwm, map<char, vector<double> > &map);
 
 //REQUIRES: requires data is a valid Dataset with pwm filled in
 //MODIFIES: modifies data, specifically pwm
 //EFFECTS: Creates a pwm matrix from the previous sem matrix
 void generatePWMfromSEM(Dataset & data){
-    int minimumScore = 1000;
-    int avgScore = 0;
-    string rawBaseline = data.output_dir + "/BASELINE/baseline.maximums";
-    ifstream inf(rawBaseline);
-    string temp;
-    vector<string> line;
-    while (inf >> temp){
-           line.push_back(temp);
-    }
-    if (line[0] == "Enumerated_kmer_filtered.signal"){
-        int tempint = atoi(line[1].c_str());
-        avgScore = pow(tempint, 2);
-    }
-    inf.close();
+    
+    // raw baseline is the output from running findMaximumAverageSignal... on
+    // "enumerate" data
 
-    vector<int> AA;
-    vector<int> TT;
-    vector<int> CC;
-    vector<int> GG;
+    string rawInput = data.output_dir + "/" + data.TF_name + ".sem";
+    string pwmOutput = data.output_dir + "/" + data.TF_name + ".pwm";
+
+    double avgScore = data.signal_Data.enumerate_maximum;
+    avgScore = avgScore * avgScore;
+    if(avgScore == 0){
+        cerr << "avgScore shouldn't be 0!!!!!!\n\tEXITING\n";
+        exit(1);
+    }
+
+    vector<double> AA;
+    vector<double> TT;
+    vector<double> CC;
+    vector<double> GG;
     vector<int> A;
     vector<int> T;
     vector<int> C;
     vector<int> G;
 
+    ifstream INF(rawInput);
 
-    for(int i=0; i < data.PWM_data.NUM_ROWS; i++){
-            AA.push_back(data.PWM_data.matrix_arr[1][i]);
-    }
-    for(int i=0; i < data.PWM_data.NUM_ROWS; i++){
-            CC.push_back(data.PWM_data.matrix_arr[1][i]);
-    }
-    for(int i=0; i < data.PWM_data.NUM_ROWS; i++){
-            GG.push_back(data.PWM_data.matrix_arr[1][i]);
-    }
-    for(int i=0; i < data.PWM_data.NUM_ROWS; i++){
-            TT.push_back(data.PWM_data.matrix_arr[1][i]);
+    if(INF){
+        cerr << "INF is not good!!!!!\n\tEXITING\n";
+        exit(1);
     }
 
-    for(int i = 0; i < data.PWM_data.NUM_ROWS; i++){
-        int rowmin = minimumScore;
-        int denom =0;
-        denom += (AA[i] - rowmin)/(avgScore-rowmin);
-        denom += (CC[i] - rowmin)/(avgScore-rowmin);
-        denom += (GG[i] - rowmin)/(avgScore-rowmin);
-        denom += (TT[i] - rowmin)/(avgScore-rowmin);
+    string line = "";
+    vector<string> fields_str;
+    vector<double> fields_dbl;
 
-        A.push_back(round((AA[i]-rowmin)/(avgScore-rowmin) * (1000/denom) + 0.5));
-        C.push_back(round((CC[i]-rowmin)/(avgScore-rowmin) * (1000/denom) + 0.5));
-        G.push_back(round((GG[i]-rowmin)/(avgScore-rowmin) * (1000/denom) + 0.5));
-        T.push_back(round((TT[i]-rowmin)/(avgScore-rowmin) * (1000/denom) + 0.5));
+    double minimumScore = 1000.0;
+
+    map<char, vector<double> > pwm;
+    parse_pwm(data.PWM_file, pwm);
+
+    while(getline(INF, line, '\n')){
+
+        split(line, "\t", fields_str);
+        fields_dbl.resize(fields_str.size());
+
+        for(size_t i = 1; i < 5; ++i){
+            try{
+                fields_dbl[i] = avgScore * pow(2, stod(fields_str[i]));
+            }
+            catch(...){
+                cerr << "Something has been caught!!\n\tEXITING\n";
+                exit(1);
+            }
+
+            if(fields_dbl[i] < minimumScore){
+                minimumScore = fields_dbl[i];
+            }
+        }
+
+        AA.push_back(fields_dbl[1]);
+        CC.push_back(fields_dbl[2]);
+        GG.push_back(fields_dbl[3]);
+        TT.push_back(fields_dbl[4]);
+    }
+    INF.close();
+
+
+    for(size_t i = 0; i < AA.size(); ++i){
+        double rowmin = minimumScore;
+        double denom = 0.0;
+        denom += (AA[i] - rowmin) / (avgScore - rowmin);
+        denom += (CC[i] - rowmin) / (avgScore - rowmin);
+        denom += (GG[i] - rowmin) / (avgScore - rowmin);
+        denom += (TT[i] - rowmin) / (avgScore - rowmin);
+
+        A.push_back(static_cast<int>( ( AA[i] - rowmin ) 
+                                    / ( avgScore - rowmin ) 
+                                    * ( 1000.0 / denom ) + 0.5 ) );
+        C.push_back(static_cast<int>( ( CC[i] - rowmin ) 
+                                    / ( avgScore - rowmin ) 
+                                    * ( 1000.0 / denom ) + 0.5 ) );
+        G.push_back(static_cast<int>( ( GG[i] - rowmin ) 
+                                    / ( avgScore - rowmin ) 
+                                    * ( 1000.0 / denom ) + 0.5 ) );
+        T.push_back(static_cast<int>( ( TT[i] - rowmin ) 
+                                    / ( avgScore - rowmin ) 
+                                    * ( 1000.0 / denom ) + 0.5 ) );
     }
 
-    double alpha = 0.5;
-    for (int i = 0; i < static_cast<int>(A.size()); i++){
+    double alpha = 0.05;
+
+    ofstream OUTF(pwmOutput);
+
+    if(!OUTF){
+        cerr << "OUTF is not good!!!!!\n\tEXITING\n";
+        exit(1);
+    }
+
+    OUTF << "DE\t" + data.TF_name + '\n';
+
+    for(size_t i = 0; i < A.size(); ++i){
         int rowsum = A[i] + C[i] + G[i] + T[i];
-        data.PWM_data.sem_arr[1][i] = ((A[i] * alpha) + (data.PWM_data.matrix_arr[1][i] * rowsum * (1-alpha)) + .5);
-        data.PWM_data.sem_arr[2][i] = ((A[i] * alpha) + (data.PWM_data.matrix_arr[2][i] * rowsum * (1-alpha)) + .5);
-        data.PWM_data.sem_arr[3][i] = ((A[i] * alpha) + (data.PWM_data.matrix_arr[3][i] * rowsum * (1-alpha)) + .5);
-        data.PWM_data.sem_arr[4][i] = ((A[i] * alpha) + (data.PWM_data.matrix_arr[4][i] * rowsum * (1-alpha)) + .5);
+
+        OUTF << i + '\t';
+        // OUTF << static_cast<int>( (static_cast<double>(A[i]) * alpha)
+        //                       + (  ))
+    }
+
+    
+}
+
+static void parse_pwm(const string &pwm, map<char, vector<double> > &map){
+    ifstream IN_HANDLE(pwm);
+
+    if(!IN_HANDLE){
+        cerr << "IN_HANDLE is not good!!!!\n\tEXITING\n";
+        exit(1);
+    }
+
+    string line = "";
+    vector<string> fields;
+    vector<int> fields_int
+    while(getline(IN_HANDLE, line, '\n')){
+        // getline removes the newline character
+        // if neither of those strings are present in the current line
+        if( ( line.find("DE") == string::npos ) 
+         && ( line.find("XX") == string::npos ) ){
+            split(line, "\t", fields);
+
+            fields_int.push_back(-1);
+
+            for(size_t i = 0; i < fields.size(); ++i){
+                if(i == 0) continue;
+                fields_int.push_back(stoi(fields[i]));
+            }
+
+            int rowsum = fields_int[1] + fields_int[2] 
+                       + fields_int[3] + fields_int[4];
+
+            map['A'].push_back(static_cast<double>(fields_int[1]) / 
+                               static_cast<double>(rowsum) );
+            map['C'].push_back(static_cast<double>(fields_int[2]) / 
+                               static_cast<double>(rowsum) );
+            map['G'].push_back(static_cast<double>(fields_int[3]) / 
+                               static_cast<double>(rowsum) );
+            map['T'].push_back(static_cast<double>(fields_int[4]) / 
+                               static_cast<double>(rowsum) );
+
+            fields.clear();
+            fields_int.clear();
+        }
     }
 }
+

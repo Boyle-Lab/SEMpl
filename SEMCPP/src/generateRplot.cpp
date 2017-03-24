@@ -15,13 +15,13 @@ using namespace std;
 static void generate_input (const Dataset &data);
 static void run_R (const Dataset &data);
 
-static void generateRplot(Dataset &data){
+void generateRplot(Dataset &data){
 
     generate_input(data);
     run_R(data);
 }
 
-static  void generate_input(const Dataset &data){
+static void generate_input(const Dataset &data){
 
     stringstream Rout;
     Rout << data.output_dir  << "/generateRinput.input";

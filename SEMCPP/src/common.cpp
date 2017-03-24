@@ -1,4 +1,4 @@
-#include "common.h"
+#include "common.hpp"
 using namespace std;
 
 string revCompDNA(string dna){
@@ -126,5 +126,5 @@ string grab_string_at_index(const string &str, size_t index){
         ++index_ptr;
     }
     return string(ptr, static_cast<size_t>(index_ptr - ptr));
-
 }
+
