@@ -20,7 +20,7 @@ void static parse_pwm(const string &pwm, map<char, vector<double> > &map);
 //MODIFIES: modifies data, specifically pwm
 //EFFECTS: Creates a pwm matrix from the previous sem matrix
 void generatePWMfromSEM(Dataset & data){
-    
+
     // raw baseline is the output from running findMaximumAverageSignal... on
     // "enumerate" data
 
@@ -94,17 +94,17 @@ void generatePWMfromSEM(Dataset & data){
         denom += (GG[i] - rowmin) / (avgScore - rowmin);
         denom += (TT[i] - rowmin) / (avgScore - rowmin);
 
-        A.push_back(static_cast<int>( ( AA[i] - rowmin ) 
-                                    / ( avgScore - rowmin ) 
+        A.push_back(static_cast<int>( ( AA[i] - rowmin )
+                                    / ( avgScore - rowmin )
                                     * ( 1000.0 / denom ) + 0.5 ) );
-        C.push_back(static_cast<int>( ( CC[i] - rowmin ) 
-                                    / ( avgScore - rowmin ) 
+        C.push_back(static_cast<int>( ( CC[i] - rowmin )
+                                    / ( avgScore - rowmin )
                                     * ( 1000.0 / denom ) + 0.5 ) );
-        G.push_back(static_cast<int>( ( GG[i] - rowmin ) 
-                                    / ( avgScore - rowmin ) 
+        G.push_back(static_cast<int>( ( GG[i] - rowmin )
+                                    / ( avgScore - rowmin )
                                     * ( 1000.0 / denom ) + 0.5 ) );
-        T.push_back(static_cast<int>( ( TT[i] - rowmin ) 
-                                    / ( avgScore - rowmin ) 
+        T.push_back(static_cast<int>( ( TT[i] - rowmin )
+                                    / ( avgScore - rowmin )
                                     * ( 1000.0 / denom ) + 0.5 ) );
     }
 
@@ -123,11 +123,28 @@ void generatePWMfromSEM(Dataset & data){
         int rowsum = A[i] + C[i] + G[i] + T[i];
 
         OUTF << i + '\t';
-        // OUTF << static_cast<int>( (static_cast<double>(A[i]) * alpha)
-        //                       + (  ))
+        OUTF << static_cast<int>( (static_cast<double>(A[i]) * alpha)
+                                    + (static_cast<double>(pwm['A'][i] * rowsum * (1- alpha) ))
+                                    + .5 );
+        OUTF << i + '\t';
+        OUTF << static_cast<int>( (static_cast<double>(C[i]) * alpha)
+                                    + (static_cast<double>(pwm['C'][i] * rowsum * (1- alpha) ))
+                                    + .5 );
+        OUTF << i + '\t';
+        OUTF << static_cast<int>( (static_cast<double>(G[i]) * alpha)
+                                    + (static_cast<double>(pwm['G'][i] * rowsum * (1- alpha) ))
+                                    + .5 );
+        OUTF << i + '\t';
+        OUTF << static_cast<int>( (static_cast<double>(T[i]) * alpha)
+                                    + (static_cast<double>(pwm['T'][i] * rowsum * (1- alpha) ))
+                                    + .5 );
+        OUTF << "\tX\n";
     }
 
-    
+    OUTF << "XX\n";
+    OUTF.close();
+
+
 }
 
 static void parse_pwm(const string &pwm, map<char, vector<double> > &map){
@@ -140,11 +157,11 @@ static void parse_pwm(const string &pwm, map<char, vector<double> > &map){
 
     string line = "";
     vector<string> fields;
-    vector<int> fields_int
+    vector<int> fields_int;
     while(getline(IN_HANDLE, line, '\n')){
         // getline removes the newline character
         // if neither of those strings are present in the current line
-        if( ( line.find("DE") == string::npos ) 
+        if( ( line.find("DE") == string::npos )
          && ( line.find("XX") == string::npos ) ){
             split(line, "\t", fields);
 
@@ -155,16 +172,16 @@ static void parse_pwm(const string &pwm, map<char, vector<double> > &map){
                 fields_int.push_back(stoi(fields[i]));
             }
 
-            int rowsum = fields_int[1] + fields_int[2] 
+            int rowsum = fields_int[1] + fields_int[2]
                        + fields_int[3] + fields_int[4];
 
-            map['A'].push_back(static_cast<double>(fields_int[1]) / 
+            map['A'].push_back(static_cast<double>(fields_int[1]) /
                                static_cast<double>(rowsum) );
-            map['C'].push_back(static_cast<double>(fields_int[2]) / 
+            map['C'].push_back(static_cast<double>(fields_int[2]) /
                                static_cast<double>(rowsum) );
-            map['G'].push_back(static_cast<double>(fields_int[3]) / 
+            map['G'].push_back(static_cast<double>(fields_int[3]) /
                                static_cast<double>(rowsum) );
-            map['T'].push_back(static_cast<double>(fields_int[4]) / 
+            map['T'].push_back(static_cast<double>(fields_int[4]) /
                                static_cast<double>(rowsum) );
 
             fields.clear();
