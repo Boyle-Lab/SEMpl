@@ -66,7 +66,7 @@ void generateSEM(const Dataset &data){
 // use to translate indexes in this file's Perl equivalent
 
     double enum_ = data.signal_Data.enumerate_maximum;
-    double enum_err = data.signal_Data.enumerate_sterr;
+    //double enum_err = data.signal_Data.enumerate_sterr;
 
     double score = data.signal_Data.alignment_maximum;
     double st_err = data.signal_Data.alignment_sterr;
@@ -85,7 +85,7 @@ void generateSEM(const Dataset &data){
 
     vector<string> fields1;
     const string splitBy =  "_";
-    for(int i =0; i < data.accumSummary_data.align_accum_lines.size(); i++){
+    for(size_t i = 0; i < data.accumSummary_data.align_accum_lines.size(); ++i){
         split(data.accumSummary_data.align_accum_lines[i], splitBy, fields1);
         string BP = fields1[0];
         string loc = fields1[1];
@@ -100,6 +100,7 @@ void generateSEM(const Dataset &data){
         // Hash with a pair key of locations and base pair
         SNPEffect [ make_pair(strtol(loc.c_str(), 0, 10), BP)]= log(score/enum_)/log(2.0);
         STDErr [make_pair(strtol(loc.c_str(), 0, 10), BP)]= st_err/enum_;
+        fields1.clear();
     }
 
     //Constructing Output File
