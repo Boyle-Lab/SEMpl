@@ -94,7 +94,7 @@ double ttest(const Dataset &data){
                  + data.output_dir 
                  + "/runTtest.R";
 
-    FILE * strm = popen(cmd, 'r');
+    FILE * strm = popen(cmd.c_str(), "r");
     double p_val = -1.0;
     int message = fscanf(strm, " %lf", &p_val);
     if(p_val == -1.0){
