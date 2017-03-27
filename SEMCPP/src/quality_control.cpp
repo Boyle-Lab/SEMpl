@@ -15,8 +15,7 @@ using namespace std;
 
 static int count_kmer(const Dataset &data);
 //int findMaximumPerRow(Dataset &data, const string dest);
-static double ttest(const Dataset &data, int max_scram, int max_enum);
-
+double ttest(const Dataset &data);
 
 // REQUIRES: data.signal_scramble_output is filled
 //           along with data.signal_enumerate_output
