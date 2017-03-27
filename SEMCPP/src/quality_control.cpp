@@ -96,7 +96,7 @@ double ttest(const Dataset &data){
 
     FILE * strm = popen(cmd, 'r');
     double p_val = -1.0;
-    int message = fscanf(strm, " %lf", p_val);
+    int message = fscanf(strm, " %lf", &p_val);
     if(p_val == -1.0){
         cerr << "Failure to read p_val!!!!!!\n\tEXITING";
         exit(1);
