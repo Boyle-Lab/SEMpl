@@ -10,6 +10,7 @@
 #include <map>
 #include <fstream>
 #include <string>
+#include "src/common.hpp"
 
 using namespace std;
 

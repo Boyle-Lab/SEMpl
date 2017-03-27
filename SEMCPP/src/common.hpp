@@ -1,6 +1,7 @@
 #include "iterativeSEM.hpp"
 #include <iostream>
 #include <regex>
+#include <dirent.h>
 #include <sys/stat.h>
 
 std::string revCompDNA(std::string DNA);

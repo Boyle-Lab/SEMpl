@@ -1,6 +1,6 @@
 #include "iterativeSEM.hpp"
 #include <iostream>
-#include "lib/bowtie-1.0.0/ebwt.h"
+#include "../lib/bowtie-1.0.0/ebwt.h"
 using namespace std;
 
 

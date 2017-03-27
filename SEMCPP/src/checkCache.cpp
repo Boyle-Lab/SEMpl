@@ -144,6 +144,7 @@ void checkCache(Dataset &data, const vector<string> &in_file, vector<string> &ou
                         exit(1);
                     break;
                 }
+                free((char*)text);
 
             }
             else{
@@ -190,7 +191,6 @@ void checkCache(Dataset &data, const vector<string> &in_file, vector<string> &ou
                 //OUTF << kmer << '\n';
             }
 
-            free(text);
 
             sqlite3_reset(seen_query);
             sqlite3_clear_bindings(seen_query);

@@ -1,7 +1,7 @@
 #include "iterativeSEM.hpp"
 using namespace std;
 
-string seq_col_to_fa(const vector<string> &column, const string &file){
+bool seq_col_to_fa(const vector<string> &column, const string &file){
 
     // takes input from checkCache, made a mark in checkCache at line 150
     // UPDATE: made changes

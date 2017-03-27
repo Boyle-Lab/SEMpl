@@ -1,4 +1,4 @@
-#include "lib/libBigWig-master/bigWig.h"
+#include "../lib/libBigWig-master/bigWig.h"
 #include "iterativeSEM.hpp"
 #include "common.hpp"
 #include <fstream>
