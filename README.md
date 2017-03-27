@@ -1,7 +1,7 @@
 # SEM_CPP
 C++ implementation of the SEM algorithm
 
-#Compilation
+# Compilation
 Copy entire repository to computer, then cd into lib/libBigWig-master/ and run "make".
 
 SeqAn library will need to be installed on the computer
@@ -12,7 +12,7 @@ cd back into directory where makefile is present, or from the previous location 
 
 Run "make" again.
 
-#Tasks
+# Tasks
 
 Continue C++ implementation of algorithm.
 Use descriptive variable names
@@ -23,12 +23,8 @@ ALWAYS INITIALIZE VARIABLES
 Use assert(bool) to check REQUIRES clauses and for error checking
 	
 More comments
-	
-#Notes
 
-1-8-17 Ready to begin bowtie implementation
-
-#Resources
+# Resources
 
 http://search.cpan.org/~lds/Bio-BigFile/lib/Bio/DB/BigWig.pm
 
