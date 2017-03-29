@@ -82,6 +82,7 @@ void generatePWMfromSEM(Dataset & data){
         CC.push_back(fields_dbl[2]);
         GG.push_back(fields_dbl[3]);
         TT.push_back(fields_dbl[4]);
+        fields_str.clear();
     }
     INF.close();
 
