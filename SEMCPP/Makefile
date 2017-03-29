@@ -1,6 +1,6 @@
 CXX=g++
 
-C++FLAGS=-Wall -Werror -pedantic --std=c++11 -I.
+C++FLAGS=-Wall -Werror -pedantic --std=c++11 -I. -pthread
 
 DEBUG_OR_OPTIMIZE = -DDEBUG -g3 -Wno-variadic-macros -Wno-unused-local-typedefs -Wno-enum-compare
 
