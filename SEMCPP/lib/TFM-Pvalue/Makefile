@@ -5,10 +5,11 @@ SOURCES=TFMpvalue.cpp $(HEADERS:.h=.cpp)
 OBJECTS=$(SOURCES:.cpp=.o)
 PROGRAMS=TFMpvalue-pv2sc TFMpvalue-sc2pc TFMpvalue-distrib TFMpvalue-fastpvalue TFMpvalue-lazydistrib
 
+SEMCPPobj: $(SOURCES) $(HEADERS)
+	${CC} ${CFLAGS} -DPROGRAM=0 -fPIC -shared $(SOURCES) -o libTFMpvalue.so
+
 all: TFMpvalue-pv2sc TFMpvalue-sc2pv TFMpvalue-distrib TFMpvalue-fastpvalue TFMpvalue-lazydistrib
 
-SEMCPPobj: $(SOURCES) $(HEADERS)
-	${CC} ${CFLAGS} -DPROGRAM=0 $(SOURCES) -o TFMpvalue-pv2sc.o
 
 TFMpvalue-pv2sc: $(SOURCES) $(HEADERS)
 	${CC} ${CFLAGS} -DPROGRAM=0 $(SOURCES) -o TFMpvalue-pv2sc
@@ -29,7 +30,7 @@ TFMpvalue-lazydistrib: $(SOURCES) $(HEADERS)
 	$(CC) $(CFLAGS) -DPROGRAM=5 $(SOURCES) -o TFMpvalue-lazydistrib
 	
 clean:
-	rm TFMpvalue-* *.o *~
+	rm -f TFMpvalue-* *.o *~
 
 testpv2sc: TFMpvalue-pv2sc
 	./TFMpvalue-pv2sc -a 0.25 -t 0.25 -c 0.25 -g 0.25 -m MA0045.pfm -p 1e-5
@@ -43,3 +44,4 @@ testdistrib: TFMpvalue-distrib
 dist:
 	tar -czvf TFMpvalue.tgz $(HEADERS) $(SOURCES) Makefile ReadMe MA0045.pfm
 
+.PHONY: clean SEMCPPobj        

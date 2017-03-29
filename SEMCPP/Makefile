@@ -15,7 +15,11 @@ BIGWIGLIBRARYLOC=-Llib/libBigWig-master
 BOWTIELIBRARY=-lbowtie
 BOWTIELIBRARYLOC=-Llib/bowtie-1.0.0
 
+TFMLIBRARY=-lTFMpvalue
+TFMLIBRARYLOC=-Llib/TFM-Pvalue
+
 CSOURCES=bw{Read,Stats,Values,Write}.c
+
 
 TFMHEADER=$(wildcard lib/TFM-Pvalue/*.cpp)
 TFMOBJ=$(subst lib/TFM-Pvalue/,obj/,$(TFMHEADER))
@@ -25,22 +29,23 @@ SQLITESOURCE=lib/sqlite3/sqlite3.c
 SQLITEOBJ=obj/sqlite3.o
 
 
+
 EXECUTABLE=iterativeSEM
 
 all: $(EXECUTABLE)
 
-$(EXECUTABLE): $(C++OBJ) $(SQLITEOBJ) $(TFMOBJ)
-		$(CXX) $(C++FLAGS) $(BIGWIGLIBRARYLOC) $(BIGWIGLIBRARY) -o $(EXECUTABLE) $(C++OBJ) $(SQLITEOBJ) $(TFMOBJ)
+$(EXECUTABLE): $(C++OBJ) $(SQLITEOBJ)
+		$(CXX) $(C++FLAGS) $(BIGWIGLIBRARYLOC) $(BIGWIGLIBRARY) $(TFMLIBRARYLOC) $(TFMLIBRARY) -o $(EXECUTABLE) $(C++OBJ) $(SQLITEOBJ)
 
 obj/%.o : lib/TFM-Pvalue/%.cpp
 		$(CXX) $(C++FLAGS) $(DEBUG_OR_OPTIMIZE) -c $< -o $@
 obj/%.o : src/%.cpp												#pre-requisite   #target
 		$(CXX) $(C++FLAGS) $(DEBUG_OR_OPTIMIZE) -c $< -o $@
 obj/%.o : lib/sqlite3/%.c
-		gcc $(DEBUG_OR_OPTIMIZE) -c $< -o $@
+		gcc -Wall -Werror -pedantic $(DEBUG_OR_OPTIMIZE) -c $< -o $@
 
 clean:
 		rm -f obj/*.o
 		rm -f $(EXECUTABLE)
 
-.PHONY: all
+.PHONY: all clean

@@ -21,7 +21,7 @@ void writeCache(const Dataset &data, const string &cache,
     // wants the third space, indexed from 0
     map<string, string> kmers;
 
-    vector<string> *ptr = nullptr;
+    const vector<string> *ptr = nullptr;
     switch (dest) {
         case Dataset::accumSummaryData::accumSummary_dest::none:
             cerr << "dest shouldn't be none!!!!\n";

@@ -2,13 +2,11 @@
 C++ implementation of the SEM algorithm
 
 # Compilation
-Copy entire repository to computer, then cd into lib/libBigWig-master/ and run "make".
+Clone to computer, then cd into lib/libBigWig-master and run "make".
 
-SeqAn library will need to be installed on the computer
+cd into lib/TFM-Pvalue and run "make".
 
-cd into directory where bowtie's makefile is present, and run "make"
-
-cd back into directory where makefile is present, or from the previous location "cd .." twice.
+cd into lib/bowtie-1.0.0 and run "make".
 
 Run "make" again.
 
@@ -21,8 +19,6 @@ ALWAYS INITIALIZE VARIABLES
 	can be quite difficult to debug uninitialized variables
 
 Use assert(bool) to check REQUIRES clauses and for error checking
-	
-More comments
 
 # Resources
 

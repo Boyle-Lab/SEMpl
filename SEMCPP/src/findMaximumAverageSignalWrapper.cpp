@@ -19,7 +19,7 @@ void findMaximumAverageSignalWrapper(Dataset &data,
                                      Dataset::accumSummaryData::accumSummary_dest dest){
 
         vector<double> *max_ptr = nullptr;
-        vector<string> *line_ptr = nullptr;
+        //vector<string> *line_ptr = nullptr;
 
         switch (dest) {
             case Dataset::accumSummaryData::accumSummary_dest::none:
@@ -28,15 +28,15 @@ void findMaximumAverageSignalWrapper(Dataset &data,
             break;
             case Dataset::accumSummaryData::accumSummary_dest::enumerated:
                 max_ptr = &data.accumSummary_data.enum_accum_max;
-                line_ptr = &data.accumSummary_data.enum_accum_lines;
+                //line_ptr = &data.accumSummary_data.enum_accum_lines;
             break;
             case Dataset::accumSummaryData::accumSummary_dest::scrambled:
                 max_ptr = &data.accumSummary_data.scramble_accum_max;
-                line_ptr = &data.accumSummary_data.scramble_accum_lines;
+                //line_ptr = &data.accumSummary_data.scramble_accum_lines;
             break;
             case Dataset::accumSummaryData::accumSummary_dest::alignment:
                 max_ptr = &data.accumSummary_data.align_accum_max;
-                line_ptr = &data.accumSummary_data.align_accum_lines;
+                //line_ptr = &data.accumSummary_data.align_accum_lines;
             break;
             default:
                 cerr << "there is no default for dest's switch statement!!!\n";
@@ -58,7 +58,7 @@ void findMaximumAverageSignalWrapper(Dataset &data,
         //Finds maximums of each line and stores into a vector called
         // maximums.
 
-        for(int i = 0; i < max_ptr->size(); ++i){
+        for(size_t i = 0; i < max_ptr->size(); ++i){
             // checks if the value corresponds to "NA"
             if(max_ptr->at(i) != numeric_limits<double>::max()){
                 sum += max_ptr->at(i);
@@ -73,8 +73,8 @@ void findMaximumAverageSignalWrapper(Dataset &data,
         // The following is the calculations for the standard deviation
         // and standard error.
         double sqtotal = 0.0;
-        for (int i = 0; i < data.max_ptr->size(); i++){
-            sqtotal += pow((mean - max_ptr.at(i), 2.0);
+        for (size_t i = 0; i < max_ptr->size(); i++){
+            sqtotal += pow((mean - max_ptr->at(i)), 2.0);
         }
         stdev = pow( (sqtotal / (max_ptr->size()-1) ), 0.5);
         sterr = stdev / pow(counter, 0.5);
