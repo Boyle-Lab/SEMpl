@@ -1,4 +1,6 @@
-#include "../lib/libBigWig-master/bigWig.h"
+extern "C" {
+    #include "lib/libBigWig-master/bigWig.h"
+}
 #include "iterativeSEM.hpp"
 #include "common.hpp"
 #include <fstream>
@@ -26,8 +28,7 @@ void accumSummary_scale(Dataset &data, const string &hfile,
 	// because of C++ type system regarding const
 	char *fname = new char[hfile.length() + 1];
 	strcpy(fname, hfile.c_str());
-	const char* const mode = "r";
-	bigWigFile_t *bwFile = bwOpen(fname, NULL, mode);
+	bigWigFile_t *bwFile = bwOpen(fname, NULL, "r");
     	if(bwFile == NULL){
         	cerr << "Failed to open hfile: " << hfile << '\n';
         	exit(1);

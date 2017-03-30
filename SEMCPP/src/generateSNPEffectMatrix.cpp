@@ -33,12 +33,12 @@ my $iteration = -1;
 //     -TF_name $tf -output $output -threshold $threshold -iteration $iterID
 //     -writecache -readcache $CACHE -verbose";
 
-#include "iterativeSEM.hpp"
+#include "src/iterativeSEM.hpp"
 #include <iostream>
 #include <cstdlib>
 #include <string>
 #include <cstring>
-#include "common.hpp"
+#include "src/common.hpp"
 using namespace std;
 
 void find_signal(Dataset &data, int length);
@@ -47,7 +47,6 @@ void align_to_genome(Dataset &data);
 void generate_output(Dataset &data);
 int generate_kmers(Dataset &data);
 void Enumerate_kmer(Dataset &data);
-
 
 void generateSNPEffectMatrix(Dataset &data) {
 	// default options are built into settings within data

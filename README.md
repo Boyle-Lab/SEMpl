@@ -8,6 +8,9 @@ cd into lib/TFM-Pvalue and run "make".
 
 cd into lib/bowtie-1.0.0 and run "make".
 
+mv all .so files into lib/\n
+There should be three .so files.
+
 Run "make" again.
 
 # Tasks

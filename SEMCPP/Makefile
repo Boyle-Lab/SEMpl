@@ -9,14 +9,17 @@ C++SOURCES=$(wildcard src/*.cpp)
 C++OBJ=$(subst src/,obj/,$(C++SOURCES))
 C++OBJ:=$(C++OBJ:.cpp=.o)
 
-BIGWIGLIBRARY=-lBigWig
-BIGWIGLIBRARYLOC=-Llib/libBigWig-master
+BIGWIGLIB=-lBigWig
+#BIGWIGLIBRARYLOC=-Llib/libBigWig-master
 
-BOWTIELIBRARY=-lbowtie
-BOWTIELIBRARYLOC=-Llib/bowtie-1.0.0
+BOWTIELIB=-lbowtie
+#BOWTIELIBRARYLOC=-Llib/bowtie-1.0.0
 
-TFMLIBRARY=-lTFMpvalue
-TFMLIBRARYLOC=-Llib/TFM-Pvalue
+TFMLIB=-lTFMpvalue
+#TFMLIBRARYLOC=-Llib/TFM-Pvalue
+
+
+LIBLOC=-Llib
 
 CSOURCES=bw{Read,Stats,Values,Write}.c
 
@@ -35,7 +38,7 @@ EXECUTABLE=iterativeSEM
 all: $(EXECUTABLE)
 
 $(EXECUTABLE): $(C++OBJ) $(SQLITEOBJ)
-		$(CXX) $(C++FLAGS) $(BIGWIGLIBRARYLOC) $(BIGWIGLIBRARY) $(TFMLIBRARYLOC) $(TFMLIBRARY) -o $(EXECUTABLE) $(C++OBJ) $(SQLITEOBJ)
+		$(CXX) $(C++FLAGS) $(LIBLOC) -o $(EXECUTABLE) $(C++OBJ) $(SQLITEOBJ) $(TFMLIB) $(BIGWIGLIB) $(TFMLIB) -ldl
 
 obj/%.o : lib/TFM-Pvalue/%.cpp
 		$(CXX) $(C++FLAGS) $(DEBUG_OR_OPTIMIZE) -c $< -o $@
