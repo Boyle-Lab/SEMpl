@@ -178,9 +178,9 @@ void find_signal(Dataset &data, int length){
                    Dataset::accumSummaryData::accumSummary_dest::alignment);
 
         // SHOULD THERE BE AN ERROR CHECK IF signal_cache_enumerate IS EMPTY????
-        sort(data.signal_cache.begin(), 
+        sort(data.signal_cache.begin(),
              data.signal_cache.end());
-        data.signal_output.resize(data.signal_cache.size() 
+        data.signal_output.resize(data.signal_cache.size()
                                 + data.accumSummary_data.align_accum_lines.size());
         // returns iterator to one past the location of the last copy
         auto iter = copy(data.accumSummary_data.align_accum_lines.begin(),
@@ -193,7 +193,7 @@ void find_signal(Dataset &data, int length){
         // and corresponding other data
 
         //  FILLS data.signal_enumerate_output !!!!!!!!!!!!
-        unique_copy(data.signal_cache_enumerate.begin(), 
+        unique_copy(data.signal_cache_enumerate.begin(),
                     data.signal_cache_enumerate.end(),
                     iter);
 
@@ -240,7 +240,7 @@ void create_baselines(Dataset &data, int length){
                           data.output_dir + "/BASELINE/Scrambled_kmer.bed");
 
         // NEED TO CHECK THAT THIS IS THE RIGHT RELATIVE DIRECTORY
-        cmd = "./bin/bedtools intersect -a " + data.output_dir
+        cmd = "./lib/bedtools intersect -a " + data.output_dir
                 + "/BASELINE/Scrambled_kmer.bed -b "
                 + data.DNase_file + " -wa -u > "+ data.output_dir
                 + "/BASELINE/Scrambled_kmer_filtered.bed";
@@ -252,13 +252,13 @@ void create_baselines(Dataset &data, int length){
                            Dataset::accumSummaryData::accumSummary_dest::scrambled);
 
         if(data.settings.writecache){
-            writeCache(data, data.cachefile, 
+            writeCache(data, data.cachefile,
                        Dataset::accumSummaryData::accumSummary_dest::scrambled);
         }
         // SHOULD THERE BE AN ERROR CHECK IF signal_cache_enumerate IS EMPTY????
-        sort(data.signal_cache_scramble.begin(), 
+        sort(data.signal_cache_scramble.begin(),
              data.signal_cache_scramble.end());
-        data.signal_enumerate_output.resize(data.signal_cache_scramble.size() 
+        data.signal_enumerate_output.resize(data.signal_cache_scramble.size()
                                           + data.accumSummary_data.scramble_accum_lines.size());
         // returns iterator to one past the location of the last copy
         auto iter = copy(data.accumSummary_data.scramble_accum_lines.begin(),
@@ -271,7 +271,7 @@ void create_baselines(Dataset &data, int length){
         // and corresponding other data
 
         //  FILLS data.signal_enumerate_output !!!!!!!!!!!!
-        unique_copy(data.signal_cache_scramble.begin(), 
+        unique_copy(data.signal_cache_scramble.begin(),
                     data.signal_cache_scramble.end(),
                     iter);
 
@@ -300,9 +300,9 @@ void create_baselines(Dataset &data, int length){
     }
 
     // SHOULD THERE BE AN ERROR CHECK IF signal_cache_enumerate IS EMPTY????
-    sort(data.signal_cache_enumerate.begin(), 
+    sort(data.signal_cache_enumerate.begin(),
          data.signal_cache_enumerate.end());
-    data.signal_enumerate_output.resize(data.signal_cache_enumerate.size() 
+    data.signal_enumerate_output.resize(data.signal_cache_enumerate.size()
                                       + data.accumSummary_data.enum_accum_lines.size());
     // returns iterator to one past the location of the last copy
     auto iter = copy(data.accumSummary_data.enum_accum_lines.begin(),
@@ -315,7 +315,7 @@ void create_baselines(Dataset &data, int length){
     // and corresponding other data
 
     //  FILLS data.signal_enumerate_output !!!!!!!!!!!!
-    unique_copy(data.signal_cache_enumerate.begin(), 
+    unique_copy(data.signal_cache_enumerate.begin(),
                 data.signal_cache_enumerate.end(),
                 iter);
 

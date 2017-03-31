@@ -1,6 +1,8 @@
 #include "iterativeSEM.hpp"
 #include <iostream>
-#include "../lib/bowtie-1.0.0/ebwt.h"
+#include <sstream>
+#include <cstdlib>
+//#include "../lib/bowtie-1.0.0/ebwt.h"
 using namespace std;
 
 
@@ -19,11 +21,11 @@ string revCompDNA(string dna);
 // genome is "./data/hg19", DNA_FA_FILE  is the file that contains .fa
 
 
-int bowtie(int argc, const char **argv);
+//int bowtie(int argc, const char **argv);
 
 
 void bowtie_genome_map(int length, const string& genome, const string& file, const string& final_output){
-    const char *argvs[9] = {"./bin/bowtie", "--quiet", "-a", "-v 0", genome.c_str(), "-f", file.c_str(), "temp.dat" };
+    //const char *argvs[9] = {"./bin/bowtie", "--quiet", "-a", "-v 0", genome.c_str(), "-f", file.c_str(), "temp.dat" };
 /*
 *    argvs[0] = "./bin/bowtie\0";
 *    argvs[1] = "--quiet\0";
@@ -35,18 +37,22 @@ void bowtie_genome_map(int length, const string& genome, const string& file, con
 *    argvs[7] = "../data/hg19\0";
 *    argvs[8] = "temp.dat\0";
 */
-    try{
-        // bowtie throws exceptions
-        bowtie(9, argvs);
-    }
-    catch(exception e){
-        cerr << e.what() << '\n';
-        exit(1);
-    }
-    catch(...){
-        cerr << "Error with bowtie\n";
-        exit(1);
-    }
+
+    stringstream cmd;
+    cmd << "./lib/bowtie --quiet -a -v 0 " << genome << " -f " << file;
+    system(cmd.str().c_str());
+
+//    try{
+//        // bowtie throws exceptions
+//    }
+//    catch(exception e){
+//        cerr << e.what() << '\n';
+//        exit(1);
+//    }
+//    catch(...){
+//        cerr << "Error with bowtie\n";
+//        exit(1);
+//    }
 
 
     ofstream OUT(final_output);
