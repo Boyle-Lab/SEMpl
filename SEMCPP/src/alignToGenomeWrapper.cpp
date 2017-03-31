@@ -10,7 +10,7 @@ static void align_SNPs(Dataset &data, int length, const vector<string> &nucleoti
 
 // default genome is "hg19"
 // INFILE FROM ORIGINAL ALGORITHM IS ENUMERATED_KMER
-void alignToGenomeWrapper(Dataset &data, int iteration, const string &genome) {
+void alignToGenomeWrapper(Dataset &data, int iteration, string genome) {
 
     vector<string> nucleotideStack(4);
     nucleotideStack.push_back("A");
@@ -57,8 +57,10 @@ static void align_SNPs(Dataset &data, int length,
 
             new_kmer.clear();
                                       // nucleotide
+	    string genome = "../data/hg19";
+
             changeBase(data, position, nucleotideStack[j], new_kmer,
-                        "../data/hg19");
+                        genome);
                         // CHECK THAT THIS IS CORRECT RELATIVE LOCATION
 
 // void checkCache(Dataset &data, vector<string> &in_file, vector<string> &out_cache,

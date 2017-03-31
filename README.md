@@ -11,6 +11,8 @@ cd into lib/bowtie-1.0.0 and run "make".
 mv all .so files into lib/\n
 There should be three .so files.
 
+mkdir obj for executable files.
+
 Run "make" again.
 
 # Tasks

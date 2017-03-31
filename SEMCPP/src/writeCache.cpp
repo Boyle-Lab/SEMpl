@@ -12,7 +12,7 @@ static void checkDone(const int &message, const string &s);
 
 // REQUIRES: accumSummary_scale is filled with the correct data
 // EFFECTS: writes output of accumSummary_scale to cache, based upon dest
-void writeCache(const Dataset &data, const string &cache,
+void writeCache(Dataset &data, const string &cache,
                 Dataset::accumSummaryData::accumSummary_dest dest){
 
     if(data.settings.verbose){
