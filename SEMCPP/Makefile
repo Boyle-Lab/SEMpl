@@ -38,7 +38,7 @@ EXECUTABLE=iterativeSEM
 all: $(EXECUTABLE)
 
 $(EXECUTABLE): $(C++OBJ) $(SQLITEOBJ)
-		$(CXX) $(C++FLAGS) $(LIBLOC) -o $(EXECUTABLE) $(C++OBJ) $(SQLITEOBJ) $(TFMLIB) $(BIGWIGLIB) $(TFMLIB) -ldl
+		$(CXX) $(C++FLAGS) $(LIBLOC) -o $(EXECUTABLE) $(C++OBJ) $(SQLITEOBJ) $(TFMLIB) $(BIGWIGLIB) -ldl
 
 obj/%.o : lib/TFM-Pvalue/%.cpp
 		$(CXX) $(C++FLAGS) $(DEBUG_OR_OPTIMIZE) -c $< -o $@
