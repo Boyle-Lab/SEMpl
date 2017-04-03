@@ -1,4 +1,7 @@
-#include "iterativeSEM.cpp"
+#include "src/iterativeSEM.hpp"
+#ifdef DEBUG
+    #include <iostream>
+#endif
 using namespace std;
 
 // EFFECTS: fills new_kmer_vec
