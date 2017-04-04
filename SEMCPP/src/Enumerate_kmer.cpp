@@ -58,9 +58,13 @@ void Enumerate_kmer(Dataset &data){
         cerr << "cutoff value unchanged within Enumerate_kmer.cpp\n\tEXITING\n";
         exit(1);
     }
-
-    create_kmer(data, pwmHash, nucleotideStack, bestCase, data.kmerHash, cutoff);
-
+    try{
+        create_kmer(data, pwmHash, nucleotideStack, bestCase, data.kmerHash, cutoff);
+    }
+    catch(...){
+        cerr << "Problem with create_kmer!\n\tEXITING" << endl;
+        exit(1);
+    }
     // print_kmer is replaced by a simple object assignment
     for(auto pair : data.kmerHash){
         if(pair.second <= cutoff){
@@ -99,7 +103,7 @@ static void create_kmer(const Dataset &data,
     }
 
     vector<int> maxScores(bestCase.size() + 1);
-    maxScores[bestCase.size()] = 0;
+    maxScores.at(bestCase.size()) = 0;
     for(int i = static_cast<int>(bestCase.size()) - 1; i >= 0; i--){
       maxScores[i] = maxScores[i+1] + bestCase[i];
     }
