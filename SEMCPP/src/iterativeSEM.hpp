@@ -197,7 +197,7 @@ void generateSelfInfo(Dataset &data);
 void generateSEM(const Dataset &data);
 void generateSignalMethylTable(Dataset &data);
 //                                      as noted in original implementation
-double get_threshold(Dataset &data, double pval = 0.0009765625);
+double get_threshold(Dataset &data, double pval);
 void pwm_to_tfm(Dataset &data);
 void quality_control(Dataset &data);
 void scramble_kmer(Dataset &data);

@@ -11,9 +11,10 @@ C++ implementation of the SEM algorithm
 3. cd into lib/bowtie-1.0.0 and run "make".
 4. mv all .so files into lib/\n
 5. There should be three .so files.
-6. mkdir obj for executable files.
-7. run "export LD_LIBRARY_PATH="/lib/x86_64-linux-gnu:/home/cmorteru/SEM_CPP/SEMCPP/lib"" so that dynamic libraries can be found
-8. Run "make" to compile everything.
+6. mkdir obj for object files.
+7. mkdir bin and place expected binaries.
+8. run "export LD_LIBRARY_PATH="/lib/x86_64-linux-gnu:/home/cmorteru/SEM_CPP/SEMCPP/lib"" so that dynamic libraries can be found
+9. Run "make" to compile everything.
 
 # Tasks
 

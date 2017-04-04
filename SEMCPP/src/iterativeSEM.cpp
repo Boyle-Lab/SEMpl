@@ -1,4 +1,4 @@
-//
+///
 //  iterativeSEM.cpp
 //  SEMCPP
 //
@@ -29,11 +29,9 @@ using namespace std;
 
 int main(int argc, char **argv){
 
-	string pwm = "", dnase = "", chip = "", tf = "";
-
 	Dataset data;
 
-	int total_iterations = 500;
+	int total_iterations = 0;
 
 	time_t timer;
 	time(&timer);
@@ -48,10 +46,11 @@ int main(int argc, char **argv){
         {"TF_name", required_argument, NULL, 't'},
         {"output", required_argument, NULL, 'o'},
         {"readcache", optional_argument, NULL,  'c'},
+        {"verbose", no_argument, NULL, 'v'},
         {0, 0, 0, 0}
     };
     char c = '\0';
-    c = static_cast<char>(getopt_long_only(argc, argv, "p:m:b:t:o:c::", long_opts, &index));
+    c = static_cast<char>(getopt_long_only(argc, argv, "p:m:b:t:o:c::v", long_opts, &index));
     do {
         switch (c) {
             case 'p':
@@ -91,20 +90,26 @@ int main(int argc, char **argv){
                 cout << "\tcachefile: " << optarg << '\n';
 #endif
                 break;
+            case 'v':
+#ifdef DEBUG
+                cout << "\tverbose\n";
+#endif
+                data.settings.verbose = true;
+                break;
             default:
                 cout << "unknown option!" << c << '\n';
                 break;
         }
-        c = static_cast<char>(getopt_long_only(argc, argv, "p:m:b:t:o:c::", long_opts, &index));
+        c = static_cast<char>(getopt_long_only(argc, argv, "p:m:b:t:o:c::v", long_opts, &index));
     } while(c != -1);
 
-	if(pwm.empty()){
-		cout << "No PWM file given" << '\n';
+	if(data.PWM_file.empty()){
+		cout << "No PWM file given" << '\n' << flush;
 		exit(1);
 	}
 
 	if(data.output_dir.empty()){
-		cout << "No output file given" << '\n';
+		cout << "No output file given" << '\n' << flush;
 		exit(1);
 	}
 
@@ -117,13 +122,10 @@ int main(int argc, char **argv){
         pvals.push_back(0.0004882812);
     }
 
-    pvals.erase(pvals.begin());
-//    double pVal = pvals.front();
+//    pvals.erase(pvals.begin());
+    double pVal = pvals.front();
 
-//  ostringstream threshstream;
-//  threshstream << "./get_threshold " << pwm << " " << pVal;
-//  string threshCmd = threshstream.str();
-    data.settings.threshold = get_threshold(data);
+    data.settings.threshold = get_threshold(data, pvals.front());
     if (data.settings.threshold < 0){
         data.settings.threshold = 0;
     }
@@ -131,7 +133,16 @@ int main(int argc, char **argv){
     cout << "--- Iteration 0 ---" << '\n';
 
     data.settings.iteration = 0;
-    generateSNPEffectMatrix(data);
+    try{
+#ifdef DEBUG
+        cout << "\tgenerating SNPEffectMatrix\n" << flush;
+#endif
+        generateSNPEffectMatrix(data);
+    }
+    catch(...){
+        cerr << "Problem with generateSNPEffectMatrix!!!\n\tEXITING\n";
+        exit(1);
+    }
     generatePWMfromSEM(data);
 
 /*
@@ -147,7 +158,7 @@ int main(int argc, char **argv){
 //    threshold = threshCmd.c_str();
 //    threshold = get_threshold( something here ) ;
 
-    data.settings.threshold = get_threshold(data);
+    data.settings.threshold = get_threshold(data, 0.0006765625);
     if (data.settings.threshold < 0){
         data.settings.threshold = 0;
     }
@@ -208,37 +219,21 @@ int main(int argc, char **argv){
             outFile << iteration << "\t" << converge << "\t" << same << "\t" << diff << "\n";
             cout << "---Iteration " << iteration << "---"<< '\n';
             ostringstream newOutput;
-            newOutput <<data.output_dir<< "/" << "it" << iteration << "/";
+            newOutput << data.output_dir<< "/" << "it" << iteration << "/";
             if (converge == 9){
-		            data.settings.fastrun = true;
-            //    wkCmdstream.str("");
-            //    wkCmdstream << "./generateSNPEffectMatrix.cpp -PWM " << newPwm
-            //          << " -merge_file " << dnase << " -big_wig " << chip
-            //          <<" -TF_name " << tf << " -output " << newOutput.str()
-            //          << " -threshold " << threshold << " -iteration " << iterID
-            //          << " -writedata.cachefile-readdata.cachefile"<< data.cachefile
-            //          << " -fastrun -verbose";
+		        data.settings.fastrun = true;
                 final_run = newOutput.str();
-            }
-            else{
-            //    wkCmdstream.str("");
-            //    wkCmdstream << "./generateSNPEffectMatrix.cpp -PWM "
-            //          << newPwm << " -merge_file " << dnase << " -big_wig "
-            //          << chip <<" -TF_name " << tf << " -output "
-            //          << newOutput.str() << " -threshold " << threshold
-            //          << " -iteration " << iterID
-            //          << " -writedata.cachefile-readdata.cachefile"
-            //          << data.cachefile<< " -verbose";
             }
             generateSNPEffectMatrix(data);
             // kmerHash should be filled in after the above line, within data!!!!
 
             generatePWMfromSEM(data);
 
+            pVal = pvals.front();
+
             pvals.erase(pvals.begin());
-//          pVal = pvals.front();
             // newPwm = data.output_dir+ "/" + tf + ".pwm";
-            data.settings.threshold = get_threshold(data);
+            data.settings.threshold = get_threshold(data, pVal);
             if(data.settings.threshold < 0){
                 data.settings.threshold = 0;
             }

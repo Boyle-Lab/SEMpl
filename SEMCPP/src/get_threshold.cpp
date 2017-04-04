@@ -4,7 +4,7 @@ using namespace std;
 
 class Matrix;
 
-const string TEMPFILE = "output/temp.txt";
+const string TEMPFILE = "examples/temp.txt";
 
 //REQUIRES: data is a valid Dataset, in that data is not "missing," with PWM_data filled in
 //MODIFIES: data
@@ -15,6 +15,7 @@ double get_threshold(Dataset & data, double pval){
 
 	pwm_to_tfm(data);
 	Matrix m(0.25, 0.25, 0.25, 0.25);
+
 
 	ofstream temp_out(TEMPFILE);
 
@@ -35,8 +36,12 @@ double get_threshold(Dataset & data, double pval){
 
 	temp_out.close();
 
-	m.readJasparMatrix(TEMPFILE);
-
+    try{
+    	m.readJasparMatrix(TEMPFILE);
+    }
+    catch(...){
+        cout << "failed to read JasparMatrix" << endl;
+    }
 	// implementation of TFMpvalue.cpp below
 
 	double initial_gran = 0.1;
@@ -48,8 +53,15 @@ double get_threshold(Dataset & data, double pval){
 	double final_score = 0.0;
 
 	for(double granularity = initial_gran; granularity >= 1e-10; granularity /= 10){
-		m.computesIntegerMatrix(granularity);
-		score = m.lookForScore(min, max, pval, &pv, &ppv);
+        try{
+		    m.computesIntegerMatrix(granularity);
+		}
+        catch(...){
+            cout << "problem with computing integer matrix" << endl;
+        }
+
+
+        score = m.lookForScore(min, max, pval, &pv, &ppv);
 		min = (score - ceil(m.errorMax + 0.5)) * 10;
 		max = (score + ceil(m.errorMax + 0.5)) * 10;
 	}

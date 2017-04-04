@@ -92,7 +92,7 @@ static void create_kmer(const Dataset &data,
                         map<string, int> &retHash,
                         const double cutoff){
     if(data.settings.verbose){
-    cout << "Generating kmer list.\n";
+        cout << "Generating kmer list.\n";
     }
     for(size_t i = 0; i < nucleotideStack.size(); i++){
         retHash[nucleotideStack[i]] = pwmHash.at({1, nucleotideStack[i]});
@@ -169,6 +169,10 @@ static void parse_pwm(const Dataset &data,
   // in original implementation, fields[0] contains number of row
   // first row with numbers is indexed from 0, thus the last row is 12
   // but there are 13 total rows
+
+#ifdef DEBUG
+    cout << "\tparse_pwm!" << endl;
+#endif
 
     for(int i = 0; i < Dataset::PWM::NUM_ROWS; i++){
         int sum = 0;

@@ -74,8 +74,7 @@ void generateSNPEffectMatrix(Dataset &data) {
 //---------------------------------------------------------
 
     if(data.settings.verbose){
-		cout << "\nGenerating SEM for " + data.TF_name + "\n"
-			<< "Command: \n" << data.command << "\n";
+		cout << "\nGenerating SEM for " << data.TF_name << '\n';
 	}
 
 	//Step 1: Generate Enumerated k-mers
