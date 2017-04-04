@@ -39,7 +39,7 @@ void bowtie_genome_map(int length, const string& genome, const string& file, con
 */
 
     stringstream cmd;
-    cmd << "./lib/bowtie --quiet -a -v 0 " << genome << " -f " << file;
+    cmd << "./bin/bowtie --quiet -a -v 0 " << genome << " -f " << file;
     system(cmd.str().c_str());
 
 //    try{

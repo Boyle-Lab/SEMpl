@@ -54,7 +54,7 @@ void filterDNaseWrapper(Dataset &data){
 #endif
 
 
-                string bed_cmd = "../lib/bedtools intersect -a " + readfile
+                string bed_cmd = "./bin/bedtools intersect -a " + readfile
                     + " -b " + data.DNase_file + " -wa -u | sort | uniq > "
                     + bedfile;
 #ifdef DEBUG
