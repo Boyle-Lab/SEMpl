@@ -15,6 +15,7 @@ using namespace std;
 
 // custom comparator necessary for map
 // is a function object
+/*
 class hash_comp{
 public:
     bool operator()(const pair<int, string> &one, const pair<int, string> &two) const {
@@ -24,17 +25,19 @@ public:
         return one.first < two.first;
     }
 };
+*/
+
 
 static double findMax(const map<int, double> &v);
 static double get_cutoff(const Dataset &data);
 static void create_kmer(const Dataset &data,
-                        const map<pair<int, string>, int, hash_comp> &pwmHash,
+                        const map<pair<int, string>, int/*, hash_comp*/> &pwmHash,
                         const vector<string> &nucleotideStack,
                         const vector<int> &bestCase,
                         map<string, int> &retHash,
                         const double cutoff);
 static void parse_pwm(const Dataset &data,
-                      map<pair<int, string>, int, hash_comp> &pwmHash,
+                      map<pair<int, string>, int/*, hash_comp*/> &pwmHash,
                       const vector<string> &nucleotideStack,
                       vector<int> &bestCase);
 
@@ -42,7 +45,7 @@ static void parse_pwm(const Dataset &data,
 // EFFECTS: created enumerated kmers using a cutoff and a PWM matrix, returns the map
 // note: for now, searches for a pre-calculated cutoff
 void Enumerate_kmer(Dataset &data){
-    map<pair<int, string>, int, hash_comp> pwmHash;
+    map<pair<int, string>, int/*, hash_comp*/> pwmHash;
     vector<string> nucleotideStack {"A", "C", "G", "T"};
     vector<int> bestCase;
     double cutoff = 0.0;
@@ -90,7 +93,7 @@ static double findMax(const map<int, double> &v){
 }
 
 static void create_kmer(const Dataset &data,
-                        const map<pair<int, string>, int, hash_comp> &pwmHash,
+                        const map<pair<int, string>, int/*, hash_comp*/> &pwmHash,
                         const vector<string> &nucleotideStack,
                         const vector<int> &bestCase,
                         map<string, int> &retHash,
@@ -99,13 +102,27 @@ static void create_kmer(const Dataset &data,
         cout << "Generating kmer list.\n";
     }
     for(size_t i = 0; i < nucleotideStack.size(); i++){
-        retHash[nucleotideStack[i]] = pwmHash.at({1, nucleotideStack[i]});
+        try{
+            // memory leak here
+            retHash[nucleotideStack[i]] = pwmHash.at({1, nucleotideStack[i]});
+        }
+        catch(...){
+            cerr << "likely out of bounds error line 107 Enumerate_kmer.cpp\n"
+                 << "\tindex " << i << '\n';
+            exit(1);
+        }
     }
-
     vector<int> maxScores(bestCase.size() + 1);
-    maxScores.at(bestCase.size()) = 0;
-    for(int i = static_cast<int>(bestCase.size()) - 1; i >= 0; i--){
-      maxScores[i] = maxScores[i+1] + bestCase[i];
+
+    try{
+        maxScores.at(bestCase.size()) = 0;
+        for(int i = static_cast<int>(bestCase.size()) - 1; i >= 0; i--){
+            maxScores[i] = maxScores[i+1] + bestCase[i];
+        }
+    }
+    catch(...){
+        cerr << "out of bounds error line 119 Enumerate_kmer.cpp\n";
+        exit(1);
     }
 
   // watch to debug below here
@@ -115,10 +132,22 @@ static void create_kmer(const Dataset &data,
             int length = static_cast<int>(pair.first.size());
             int maxscore = maxScores[length] + score;
             if(maxscore < cutoff){
-                retHash.erase(pair.first);
+                try{
+                    retHash.erase(pair.first);
+                }
+                catch(...){
+                    cerr << "error on erase line 135\n";
+                    exit(1);
+                }
             }
             else{
-                retHash.erase(pair.first);
+                try{
+                    retHash.erase(pair.first);
+                }
+                catch(...){
+                    cerr << "error on erase line 144\n";
+                    exit(1);
+                }
                 for(size_t j = 0; j < nucleotideStack.size(); j++){
                     string newkey = pair.first + nucleotideStack[j];
                     int newscore = score + pwmHash.at({i + 1, nucleotideStack[j]});
@@ -128,6 +157,9 @@ static void create_kmer(const Dataset &data,
     }
   // debug above here
     }
+#ifdef DEBUG
+    cout << "retHash.size(): " << retHash.size() << endl;
+#endif
 }
 
 static double get_cutoff(const Dataset &data){
@@ -165,7 +197,7 @@ static double get_cutoff(const Dataset &data){
 }
 
 static void parse_pwm(const Dataset &data,
-                      map<pair<int, string>, int, hash_comp> &pwmHash,
+                      map<pair<int, string>, int/*, hash_comp*/> &pwmHash,
                       const vector<string> &nucleotideStack,
                       vector<int> &bestCase){
 
@@ -196,8 +228,13 @@ static void parse_pwm(const Dataset &data,
             pwmHash[{data.PWM_data.matrix_arr[i][0] + 1, nucleotideStack[k - 1]}] = modifiedFields[k];
         }
 #ifdef DEBUG
+        cout << "pwmHash size " << pwmHash.size() << endl;
         if(sz != modifiedFields.size()){
             cerr << "modifiedFields has changed in size!!\n\tEXITING\n";
+            exit(1);
+        }
+        if(sz == 0){
+            cerr << "modifiedFields shouldn't have size 0!!!!\n\tEXITING\n";
             exit(1);
         }
 #endif
