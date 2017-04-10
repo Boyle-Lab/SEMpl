@@ -13,6 +13,7 @@ const string TEMPFILE = "examples/temp.txt";
 
 double get_threshold(Dataset & data, double pval){
 
+	read_pwm(data);
 	pwm_to_tfm(data);
 	Matrix m(0.25, 0.25, 0.25, 0.25);
 
@@ -25,8 +26,8 @@ double get_threshold(Dataset & data, double pval){
 	assert(data.TFM_data.letter_array[0].size() == data.TFM_data.letter_array[3].size());
 #endif
 
-	for(int i = 0; i < Dataset::TFMdata::LETTER_NUM; i++){
-		for(int j = 0; j < static_cast<int>(data.TFM_data.letter_array[i].size()); j++){
+	for(int i = 0; i < Dataset::TFMdata::LETTER_NUM; ++i){
+		for(int j = 0; j < static_cast<int>(data.TFM_data.letter_array[i].size()); ++j){
 			temp_out << data.TFM_data.letter_array[i][j] << ' ';
 		}
 		temp_out << '\n';

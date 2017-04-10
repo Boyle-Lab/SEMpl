@@ -4,6 +4,7 @@ C++ implementation of the SEM algorithm
 # Expectations
 1. bowtie binary in ./bin
 2. bedtools binary in ./bin
+3. argument to "-readcache" is not optional.
 
 # Compilation
 1. Clone to computer, then cd into lib/libBigWig-master and run "make".

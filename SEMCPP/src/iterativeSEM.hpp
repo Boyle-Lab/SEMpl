@@ -39,18 +39,12 @@ struct Dataset {
 	// a struct to contain and manage the PWM data as given in the example file
 	struct PWM{
 
-	    static const int NUM_ROWS = 13, NUM_COLUMNS = 5;
+	    static const int NUM_ROWS = 13, NUM_COLUMNS = 4;
 
-
-	    // holds first three inputs as given in example
-	    std::string first_input, second_input, third_input;
-	    // holds the characters at the end of each matrix row,
-        // holds the two characters at the end
-	    std::string end_of_line_char, end_of_matrix_char;
 	    // holds the integer values of the matrix
 	    std::array<std::array<int, NUM_COLUMNS>, NUM_ROWS> matrix_arr;
 	    // holds the modified SEM version of the PWM
-	    std::array<std::array<int, NUM_COLUMNS>, NUM_ROWS> sem_arr;
+	    // std::array<std::array<int, NUM_COLUMNS>, NUM_ROWS> sem_arr;
 
 	};
     /*
@@ -207,5 +201,7 @@ void writeCache(Dataset &data, const std::string &cache,
                 Dataset::accumSummaryData::accumSummary_dest dest);
 //Library converted function
 void bedtools(Dataset &data);
+
+void read_pwm(Dataset &data);
 
 #endif /* iterativeSEM_hpp */

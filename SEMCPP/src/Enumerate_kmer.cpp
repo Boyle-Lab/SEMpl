@@ -15,7 +15,6 @@ using namespace std;
 
 // custom comparator necessary for map
 // is a function object
-/*
 class hash_comp{
 public:
     bool operator()(const pair<int, string> &one, const pair<int, string> &two) const {
@@ -25,19 +24,17 @@ public:
         return one.first < two.first;
     }
 };
-*/
-
 
 static double findMax(const map<int, double> &v);
 static double get_cutoff(const Dataset &data);
 static void create_kmer(const Dataset &data,
-                        const map<pair<int, string>, int/*, hash_comp*/> &pwmHash,
+                        const map<pair<int, string>, int, hash_comp> &pwmHash,
                         const vector<string> &nucleotideStack,
                         const vector<int> &bestCase,
                         map<string, int> &retHash,
                         const double cutoff);
 static void parse_pwm(const Dataset &data,
-                      map<pair<int, string>, int/*, hash_comp*/> &pwmHash,
+                      map<pair<int, string>, int, hash_comp> &pwmHash,
                       const vector<string> &nucleotideStack,
                       vector<int> &bestCase);
 
@@ -45,7 +42,7 @@ static void parse_pwm(const Dataset &data,
 // EFFECTS: created enumerated kmers using a cutoff and a PWM matrix, returns the map
 // note: for now, searches for a pre-calculated cutoff
 void Enumerate_kmer(Dataset &data){
-    map<pair<int, string>, int/*, hash_comp*/> pwmHash;
+    map<pair<int, string>, int, hash_comp> pwmHash;
     vector<string> nucleotideStack {"A", "C", "G", "T"};
     vector<int> bestCase;
     double cutoff = 0.0;
@@ -92,8 +89,66 @@ static double findMax(const map<int, double> &v){
     return max;
 }
 
+static void parse_pwm(const Dataset &data,
+                      map<pair<int, string>, int, hash_comp> &pwmHash,
+                      const vector<string> &nucleotideStack,
+                      vector<int> &bestCase){
+
+  // modifiedFields is indexed from 1 in original implementation
+  // in original implementation, fields[0] contains number of row
+  // first row with numbers is indexed from 0, thus the last row is 12
+  // but there are 13 total rows
+
+#ifdef DEBUG
+    cout << "\tparse_pwm!" << endl;
+#endif
+
+    // cout << Dataset::PWM::NUM_ROWS << ' ' << Dataset::PWM::NUM_COLUMNS << endl;
+
+    for(int i = 0; i < Dataset::PWM::NUM_ROWS; i++){
+        int sum = 0;
+        map<int, double> modifiedFields;
+        for(int j = 0; j < Dataset::PWM::NUM_COLUMNS; j++){
+            sum += data.PWM_data.matrix_arr[i][j];
+#ifdef DEBUG
+            // cout << data.PWM_data.matrix_arr[i][j] << endl;;
+#endif
+            modifiedFields[j+1] = log2((static_cast<double>(data.PWM_data.matrix_arr[i][j]) + 0.25) / (sum + 1)) - log2(0.25);
+        }
+#ifdef DEBUG
+        for(auto val : modifiedFields) cout << val.first << ' ' << val.second << endl;
+            cout << endl;
+
+        size_t sz = modifiedFields.size();
+#endif
+        // TEST ME!!!
+        // TEST ME!!!
+        // TEST ME!!!
+        bestCase.push_back(findMax(modifiedFields));
+        for(int k = 1; k < Dataset::PWM::NUM_COLUMNS + 1; k++){
+            pwmHash[{data.PWM_data.matrix_arr[i][0] + 1, nucleotideStack[k - 1]}] = modifiedFields[k];
+        }
+#ifdef DEBUG
+        if(sz != modifiedFields.size()){
+            cerr << "modifiedFields has changed in size!!\n\tEXITING\n";
+            exit(1);
+        }
+        if(sz == 0){
+            cerr << "sz shouldn't be 0!!\n\tEXITING";
+            exit(1);
+        }
+#endif
+    }
+    #ifdef DEBUG
+
+        cout << endl;
+        for(auto val : pwmHash) cout << val.first.first << ' ' << val.first.second << ' ' << val.second << endl;
+    #endif
+
+}
+
 static void create_kmer(const Dataset &data,
-                        const map<pair<int, string>, int/*, hash_comp*/> &pwmHash,
+                        const map<pair<int, string>, int, hash_comp> &pwmHash,
                         const vector<string> &nucleotideStack,
                         const vector<int> &bestCase,
                         map<string, int> &retHash,
@@ -103,63 +158,47 @@ static void create_kmer(const Dataset &data,
     }
     for(size_t i = 0; i < nucleotideStack.size(); i++){
         try{
-            // memory leak here
             retHash[nucleotideStack[i]] = pwmHash.at({1, nucleotideStack[i]});
         }
         catch(...){
-            cerr << "likely out of bounds error line 107 Enumerate_kmer.cpp\n"
-                 << "\tindex " << i << '\n';
+            cerr << "line 103 Enumerate_kmer.cpp" << endl;
             exit(1);
         }
     }
-    vector<int> maxScores(bestCase.size() + 1);
 
-    try{
-        maxScores.at(bestCase.size()) = 0;
-        for(int i = static_cast<int>(bestCase.size()) - 1; i >= 0; i--){
-            maxScores[i] = maxScores[i+1] + bestCase[i];
-        }
-    }
-    catch(...){
-        cerr << "out of bounds error line 119 Enumerate_kmer.cpp\n";
-        exit(1);
+    vector<int> maxScores(bestCase.size() + 1);
+    maxScores.at(bestCase.size()) = 0;
+    for(int i = static_cast<int>(bestCase.size()) - 1; i >= 0; i--){
+      maxScores[i] = maxScores[i+1] + bestCase[i];
     }
 
   // watch to debug below here
-    for(size_t i = 1; i < bestCase.size(); i++){
+
+    for(size_t i = 1; i < bestCase.size(); ++i){
         for(auto pair : retHash){
             int score = pair.second;
             int length = static_cast<int>(pair.first.size());
             int maxscore = maxScores[length] + score;
+            try{
+                retHash.erase(pair.first);
+            }
+            catch(...){
+                cerr << "line 125 Enumerate_kmer.cpp" << endl;
+                exit(1);
+            }
             if(maxscore < cutoff){
-                try{
-                    retHash.erase(pair.first);
-                }
-                catch(...){
-                    cerr << "error on erase line 135\n";
-                    exit(1);
-                }
+                
             }
             else{
-                try{
-                    retHash.erase(pair.first);
-                }
-                catch(...){
-                    cerr << "error on erase line 144\n";
-                    exit(1);
-                }
                 for(size_t j = 0; j < nucleotideStack.size(); j++){
                     string newkey = pair.first + nucleotideStack[j];
                     int newscore = score + pwmHash.at({i + 1, nucleotideStack[j]});
                     retHash[newkey] = newscore;
+                }
             }
         }
-    }
   // debug above here
     }
-#ifdef DEBUG
-    cout << "retHash.size(): " << retHash.size() << endl;
-#endif
 }
 
 static double get_cutoff(const Dataset &data){
@@ -194,50 +233,4 @@ static double get_cutoff(const Dataset &data){
     cerr << "Unable to find pre-caluclated cutoff in file\n\tEXITING\n";
     exit(1);
     return 0.0;
-}
-
-static void parse_pwm(const Dataset &data,
-                      map<pair<int, string>, int/*, hash_comp*/> &pwmHash,
-                      const vector<string> &nucleotideStack,
-                      vector<int> &bestCase){
-
-  // modifiedFields is indexed from 1 in original implementation
-  // in original implementation, fields[0] contains number of row
-  // first row with numbers is indexed from 0, thus the last row is 12
-  // but there are 13 total rows
-
-#ifdef DEBUG
-    cout << "\tparse_pwm!" << endl;
-#endif
-
-    for(int i = 0; i < Dataset::PWM::NUM_ROWS; i++){
-        int sum = 0;
-        map<int, double> modifiedFields;
-        for(int j = 0; j < Dataset::PWM::NUM_COLUMNS; j++){
-            sum += data.PWM_data.matrix_arr[i][j];
-            modifiedFields[j+1] = log2((static_cast<double>(data.PWM_data.matrix_arr[i][j]) + 0.25) / (sum + 1)) - log2(0.25);
-        }
-#ifdef DEBUG
-        size_t sz = modifiedFields.size();
-#endif
-        // TEST ME!!!
-        // TEST ME!!!
-        // TEST ME!!!
-        bestCase.push_back(findMax(modifiedFields));
-        for(int k = 1; k < Dataset::PWM::NUM_COLUMNS + 1; k++){
-            pwmHash[{data.PWM_data.matrix_arr[i][0] + 1, nucleotideStack[k - 1]}] = modifiedFields[k];
-        }
-#ifdef DEBUG
-        cout << "pwmHash size " << pwmHash.size() << endl;
-        if(sz != modifiedFields.size()){
-            cerr << "modifiedFields has changed in size!!\n\tEXITING\n";
-            exit(1);
-        }
-        if(sz == 0){
-            cerr << "modifiedFields shouldn't have size 0!!!!\n\tEXITING\n";
-            exit(1);
-        }
-#endif
-    }
-
 }

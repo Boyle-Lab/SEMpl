@@ -45,13 +45,13 @@ int main(int argc, char **argv){
         {"big_wig", required_argument, NULL, 'b'},
         {"TF_name", required_argument, NULL, 't'},
         {"output", required_argument, NULL, 'o'},
-        {"readcache", optional_argument, NULL,  'c'},
+        {"readcache", required_argument, NULL,  'c'},
         {"verbose", no_argument, NULL, 'v'},
         {0, 0, 0, 0}
     };
     char c = '\0';
-    c = static_cast<char>(getopt_long_only(argc, argv, "p:m:b:t:o:c::v", long_opts, &index));
-    do {
+    
+    while((c = static_cast<char>(getopt_long_only(argc, argv, "p:m:b:t:o:c:v", long_opts, &index))) != -1){
         switch (c) {
             case 'p':
                 data.PWM_file = optarg;
@@ -84,12 +84,17 @@ int main(int argc, char **argv){
 #endif
                 break;
             case 'c':
-            if(optarg)
+            if(optarg){
                 data.cachefile = optarg;
+            
 #ifdef DEBUG
-                cout << "\tcachefile: " << optarg << '\n';
+                cout << "\tcachefile flag: " << optarg << '\n';
 #endif
-                break;
+            }
+            else{
+                cout << "readcache, but no argument given, using default\n";
+            }
+            break;
             case 'v':
 #ifdef DEBUG
                 cout << "\tverbose\n";
@@ -100,25 +105,28 @@ int main(int argc, char **argv){
                 cout << "unknown option!" << c << '\n';
                 break;
         }
-        c = static_cast<char>(getopt_long_only(argc, argv, "p:m:b:t:o:c::v", long_opts, &index));
-    } while(c != -1);
+    } 
 
 	if(data.PWM_file.empty()){
-		cout << "No PWM file given" << '\n' << flush;
+		cout << "No PWM file given" << endl;
 		exit(1);
 	}
 
 	if(data.output_dir.empty()){
-		cout << "No output file given" << '\n' << flush;
+		cout << "No output file given" << endl;
 		exit(1);
 	}
+
+    if(data.TF_name.empty()){
+        cout << "No TF name given" << endl;
+    }
 
 // data.cachefile.empty() checks if the string is empty, not the actual file
 	if(data.cachefile.empty())  data.cachefile = data.output_dir + "/CACHE.db";
 
     vector<double> pvals(total_iterations + 1);
     pvals.push_back(0.0009765625);
-    for(int iteration = pvals.size(); iteration <= total_iterations; ++iteration){
+    for(int iteration = pvals.size() ; iteration <= total_iterations; ++iteration){
         pvals.push_back(0.0004882812);
     }
 
@@ -259,4 +267,36 @@ int main(int argc, char **argv){
     }
 
 	return 0;
+}
+
+void read_pwm(Dataset &data){
+    ifstream fin(data.PWM_file);
+    // string s = "";
+    // fin.ignore(10000, '\n');
+    // int i = 0;
+    // while(getline(fin, s)){
+    //     if(i == 0 || i == 13){
+    //         fin.ignore(10000, '\n');
+    //     }
+    //     cout << s << endl;
+    // }
+#ifdef DEBUG
+    assert(fin);
+#endif
+    fin.ignore(10000, '\n');
+    for(int i = 0; i < Dataset::PWM::NUM_ROWS; ++i){
+        // THE EXAMPLE FILE USES A TAB CHARACTER
+        fin.ignore(10000, '\t');
+        for(int j = 0; j < Dataset::PWM::NUM_COLUMNS; ++j){
+            fin >> data.PWM_data.matrix_arr[i][j];
+#ifdef DEBUG
+            // cout << data.PWM_data.matrix_arr[i][j] << ' ';
+#endif
+        }
+#ifdef DEBUG
+        // cout << endl;
+#endif
+        fin.ignore(10000, '\n');
+    }
+
 }
