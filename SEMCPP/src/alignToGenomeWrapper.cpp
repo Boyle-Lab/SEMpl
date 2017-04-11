@@ -12,14 +12,17 @@ static void align_SNPs(Dataset &data, int length, const vector<string> &nucleoti
 // INFILE FROM ORIGINAL ALGORITHM IS ENUMERATED_KMER
 void alignToGenomeWrapper(Dataset &data, int iteration, string genome) {
 
-    vector<string> nucleotideStack(4);
-    nucleotideStack.push_back("A");
-    nucleotideStack.push_back("C");
-    nucleotideStack.push_back("T");
-    nucleotideStack.push_back("G");
+    vector<string> nucleotideStack{"A", "C", "G", "T"};
+    // nucleotideStack.push_back("A");
+    // nucleotideStack.push_back("C");
+    // nucleotideStack.push_back("T");
+    // nucleotideStack.push_back("G");
 
     // step 1: get the length of kmer
     int length = getLength(data);
+    #ifdef DEBUG
+    cout << "length: " << length << endl;
+    #endif
     if(data.settings.verbose){
         cout << "Aligning" << '\n';
     }
@@ -36,19 +39,26 @@ static void align_SNPs(Dataset &data, int length,
     vector<string> cache_output(nucleotideStack.size());
     string name = "";
 
-    string CWD =  "../" + data.output_dir + "/ALIGNMENT/";
+    string CWD =  "./" + data.output_dir + "ALIGNMENT/";
 
     system( string("mkdir -p " + CWD).c_str() );
+
+#ifdef DEBUG
+    // cout << string("mkdir -p " + CWD) << endl;
+#endif
+
 
     string genome = "";
 
     string fa_file = "";
 
-    string bowtie_output = "../";
+    string bowtie_output = "./";
 
     vector<string> new_kmer;
 
     bool non_zero_file_size = false;
+
+
 
     for(int position  = 0; position < length; ++position){
         for(int j = 0; j < static_cast<int>(nucleotideStack.size()); ++j){
@@ -57,16 +67,27 @@ static void align_SNPs(Dataset &data, int length,
 
             new_kmer.clear();
                                       // nucleotide
-	    string genome = "../data/hg19";
-
-            changeBase(data, position, nucleotideStack[j], new_kmer,
-                        genome);
+	        string genome = "./data/hg19";
+            try{
+                changeBase(data, position, nucleotideStack[j], new_kmer,
+                           genome);
+            }
+            catch(...){
+                cerr << "exception thrown from changeBase" << endl;
+                exit(1);
+            }
                         // CHECK THAT THIS IS CORRECT RELATIVE LOCATION
 
 // void checkCache(Dataset &data, vector<string> &in_file, vector<string> &out_cache,
 //                 const string &cachefile);
-            checkCache(data, new_kmer, cache_output, data.cachefile,
+            try{
+                checkCache(data, new_kmer, cache_output, data.cachefile,
                         Dataset::accumSummaryData::accumSummary_dest::alignment);
+            }
+            catch(...){
+                cerr << "exception thrown from checkCache" << endl;
+                exit(1);
+            }
             // pass in a sequence column, which is from output of checkCache
             // cachefile in Dataset is $cache from original algorithm!!!
 
@@ -75,7 +96,7 @@ static void align_SNPs(Dataset &data, int length,
 
             non_zero_file_size = seq_col_to_fa(cache_output, fa_file);
             if(non_zero_file_size){
-                bowtie_genome_map(length, "../data/hg19", fa_file, bowtie_output);
+                bowtie_genome_map(length, "./data/hg19", fa_file, bowtie_output);
             }
             cache_output.clear();
         }

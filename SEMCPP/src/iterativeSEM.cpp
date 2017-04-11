@@ -269,7 +269,10 @@ int main(int argc, char **argv){
 	return 0;
 }
 
-void read_pwm(Dataset &data){
+// Requires: .pwm file uses '\t' to separate fields
+// Effects: fills in PWM and returns the second field of the first line
+// in the .pwm file specified
+string read_pwm(Dataset &data){
     ifstream fin(data.PWM_file);
     // string s = "";
     // fin.ignore(10000, '\n');
@@ -283,7 +286,9 @@ void read_pwm(Dataset &data){
 #ifdef DEBUG
     assert(fin);
 #endif
-    fin.ignore(10000, '\n');
+    // fin.ignore(10000, '\n');
+    string s = "";
+    fin >> s >> s >> s;
     for(int i = 0; i < Dataset::PWM::NUM_ROWS; ++i){
         // THE EXAMPLE FILE USES A TAB CHARACTER
         fin.ignore(10000, '\t');
@@ -298,5 +303,5 @@ void read_pwm(Dataset &data){
 #endif
         fin.ignore(10000, '\n');
     }
-
+    return s;
 }

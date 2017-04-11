@@ -140,7 +140,7 @@ struct Dataset {
 	std::string output_dir = "";
 	std::string cachefile = "";
 
-    std::map<std::string, int> kmerHash;
+    std::map<std::string, double> kmerHash;
     std::vector<std::string> scramble_kmers;
 
     std::vector<std::string> filterDNaseWrapper_output;
@@ -202,6 +202,6 @@ void writeCache(Dataset &data, const std::string &cache,
 //Library converted function
 void bedtools(Dataset &data);
 
-void read_pwm(Dataset &data);
+std::string read_pwm(Dataset &data);
 
 #endif /* iterativeSEM_hpp */
