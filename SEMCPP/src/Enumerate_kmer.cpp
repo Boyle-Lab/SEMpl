@@ -200,8 +200,9 @@ static void create_kmer(const Dataset &data,
             double score = pair.second;
             int length = static_cast<int>(pair.first.size());
             double maxscore = maxScores.at(length) + score;
+	    //cout << pair.first << endl;
             try{
-                // retHash.erase(pair.first);
+                //retHash.erase(pair.first);
                 to_erase.push_back(pair.first);
             }
             catch(...){
@@ -209,7 +210,7 @@ static void create_kmer(const Dataset &data,
                 exit(1);
             }
             if(maxscore < cutoff){
-                
+               
             }
             else{
                 for(size_t j = 0; j < nucleotideStack.size(); j++){
@@ -221,12 +222,12 @@ static void create_kmer(const Dataset &data,
             }
         }
   // debug above here
-    }
-    for(auto val : to_erase){
-        retHash.erase(val);
-    }
-    for(auto pair : to_add){
-        retHash[pair.first] = pair.second;
+    	for(auto val : to_erase){
+        	retHash.erase(val);
+    	}
+    	for(auto pair : to_add){
+        	retHash[pair.first] = pair.second;
+    	}
     }
 }
 
