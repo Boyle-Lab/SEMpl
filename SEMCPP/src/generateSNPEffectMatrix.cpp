@@ -85,9 +85,6 @@ void generateSNPEffectMatrix(Dataset &data) {
 
 	//Step 2: Change one base at each location in k-mers and align to genome
     // ALSO: print output to file
-    if ( data.settings.verbose ) {
-        cout << "Aligning SNPs in kmers to the genome\n";
-    }
     align_to_genome(data);
 
     //Step 3: Filter using DNase data and finding the signal at each location

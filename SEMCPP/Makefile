@@ -2,7 +2,7 @@ CXX=g++
 
 C++FLAGS=-Wall -Werror -pedantic --std=c++11 -I. -pthread
 
-DEBUG_OR_OPTIMIZE = -DDEBUG -g3 -Wno-variadic-macros -Wno-unused-local-typedefs -Wno-enum-compare
+DEBUG_OR_OPTIMIZE = -DDEBUG -Wno-variadic-macros -Wno-unused-local-typedefs -Wno-enum-compare
 
 C++SOURCES=$(wildcard src/*.cpp)
 

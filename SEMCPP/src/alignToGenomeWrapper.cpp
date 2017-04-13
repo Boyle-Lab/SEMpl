@@ -13,10 +13,6 @@ static void align_SNPs(Dataset &data, int length, const vector<string> &nucleoti
 void alignToGenomeWrapper(Dataset &data, int iteration, string genome) {
 
     vector<string> nucleotideStack{"A", "C", "G", "T"};
-    // nucleotideStack.push_back("A");
-    // nucleotideStack.push_back("C");
-    // nucleotideStack.push_back("T");
-    // nucleotideStack.push_back("G");
 
     // step 1: get the length of kmer
     int length = getLength(data);
@@ -24,7 +20,7 @@ void alignToGenomeWrapper(Dataset &data, int iteration, string genome) {
     cout << "length: " << length << endl;
     #endif
     if(data.settings.verbose){
-        cout << "Aligning" << '\n';
+        cout << "\tAligning\n";
     }
 
   // step 2: iterate through all the positions and nucleotides,
