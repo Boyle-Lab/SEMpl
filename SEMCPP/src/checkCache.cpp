@@ -200,7 +200,7 @@ void checkCache(Dataset &data, const vector<string> &in_file, vector<string> &ou
 
         // sqlite3_stmt *build_statement = NULL;
         char *z_err_msg = NULL;
-        
+        //cout << "Creating Table kmer_cache" << endl;
         msg = "CREATE TABLE kmer_cache (kmer TEXT PRIMARY KEY NOT NULL, alignment BLOB)";
         message = sqlite3_exec(cacheDB, msg.c_str(), NULL, NULL, &z_err_msg);
         if(message != SQLITE_OK){
@@ -222,7 +222,7 @@ void checkCache(Dataset &data, const vector<string> &in_file, vector<string> &ou
         // message = sqlite3_step(build_statement);
         // checkDone(message, "build statement create table kmer_cache");
         // sqlite3_finalize(build_statement);
-
+	//cout << "Creating Unique Index kmerIDX" << endl;
         msg = "CREATE UNIQUE INDEX kmerIDX ON kmer_cache(kmer)";
         message = sqlite3_exec(cacheDB, msg.c_str(), NULL, NULL, &z_err_msg);
         if(message != SQLITE_OK){
@@ -235,7 +235,7 @@ void checkCache(Dataset &data, const vector<string> &in_file, vector<string> &ou
         // message = sqlite3_step(build_statement);
         // checkDone(message, "build statement create unique index kmer_cache");
         // sqlite3_finalize(build_statement);
-
+	//cout << "Creating Table seen_cache" << endl;
         msg = "CREATE TABLE seen_cache (kmer TEXT PRIMARY KEY NOT NULL, iter INT NOT NULL)";
         message = sqlite3_exec(cacheDB, msg.c_str(), NULL, NULL, &z_err_msg);
         if(message != SQLITE_OK){
@@ -247,7 +247,7 @@ void checkCache(Dataset &data, const vector<string> &in_file, vector<string> &ou
         // message = sqlite3_step(build_statement);
         // checkDone(message, "build statement create table seen_cache");
         // sqlite3_finalize(build_statement);
-
+	//cout << "Creating Unique Index seenIDX" << endl;
         msg = "CREATE UNIQUE INDEX seenIDX ON seen_cache(kmer)";
         message = sqlite3_exec(cacheDB, msg.c_str(), NULL, NULL, &z_err_msg);
         if(message != SQLITE_OK){
@@ -267,13 +267,14 @@ void checkCache(Dataset &data, const vector<string> &in_file, vector<string> &ou
             cerr << "staged_query shouldn't be NULL\n";
             exit(1);
         }
-
+	//cout << "Binding to cache" << endl;
         for(auto kmer : in_file){
             message = sqlite3_bind_text(staged_query, 1, kmer.c_str(),
                       static_cast<int>(kmer.size()), NULL);
             problemEncountered(message, "bind text for inserting into seen_cache");
             message = sqlite3_bind_int(staged_query, 2, data.settings.iteration);
             problemEncountered(message, "bind int for inserting into seen_cache");
+	    out_cache.push_back(kmer);
             message = sqlite3_step(staged_query);
             if(message != SQLITE_DONE){
                 cerr << "Build statement is not done!\n\tEXITING\n";
@@ -282,7 +283,7 @@ void checkCache(Dataset &data, const vector<string> &in_file, vector<string> &ou
             sqlite3_reset(staged_query);
             sqlite3_clear_bindings(staged_query);
         }
-
+	//cout << "Finalizing staged_query" << endl;
         message = sqlite3_finalize(staged_query);
         if(message != SQLITE_OK){
             cerr << "problem with finalize of staged_query" << endl;
@@ -293,7 +294,7 @@ void checkCache(Dataset &data, const vector<string> &in_file, vector<string> &ou
     }
 
 
-
+    //cout << "Closing cacheDB" << endl;
     message = sqlite3_close_v2(cacheDB);
     problemEncountered(message, "closing the connection");
 }

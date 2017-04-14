@@ -95,8 +95,10 @@ static void align_SNPs(Dataset &data, int length,
                 bowtie_genome_map(length, "./data/hg19", fa_file, bowtie_output);
             }
             cache_output.clear();
+	    //cout << "Position: " << position << endl;
         }
     }
+    //cout << "Snps aligned" << endl;
 }
 
 // getlength accesses first(?) element of kmerHash and returns the key length
