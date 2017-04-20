@@ -24,7 +24,7 @@ using namespace std;
 bool fileExists(const string &filename);
 static void problemEncountered(const int message, const string &what);
 static void isRowReady(const int message);
-static void prepareStmt(sqlite3 *db, string stmt, sqlite3_stmt *query);
+// static void prepareStmt(sqlite3 *db, string stmt, sqlite3_stmt *query);
 static void checkDone(const int message, const string &s);
 static const char* convert_to_const_char(const unsigned char* store);
 
@@ -65,22 +65,34 @@ void checkCache(Dataset &data, const vector<string> &in_file, vector<string> &ou
             cout << "Cache does exist\n";
         }
 
+//         int message = sqlite3_prepare_v2(db, stmt.c_str(), static_cast<int>(stmt.size()), &query, NULL);
+//     problemEncountered(message, stmt);
+
         msg = "SELECT count(*) FROM seen_cache WHERE kmer=? AND iter!=?";
         sqlite3_stmt* seen_query = NULL;
-        prepareStmt(cacheDB, msg, seen_query);
+        message = sqlite3_prepare_v2(cacheDB, msg.c_str(), static_cast<int>(msg.size()), &seen_query, NULL);
+        problemEncountered(message, msg);
+        // prepareStmt(cacheDB, msg, seen_query);
 
         msg = "SELECT kmer, alignment FROM kmer_cache WHERE kmer=?";
         sqlite3_stmt* data_query = NULL;
-        prepareStmt(cacheDB, msg, data_query);
+        message = sqlite3_prepare_v2(cacheDB, msg.c_str(), static_cast<int>(msg.size()), &data_query, NULL);
+        problemEncountered(message, msg);
+        // prepareStmt(cacheDB, msg, data_query);
 
         msg = "INSERT OR IGNORE INTO seen_cache VALUES(?, ?)";
         sqlite3_stmt* staged_query = NULL;
-        prepareStmt(cacheDB, msg, staged_query);
+        message = sqlite3_prepare_v2(cacheDB, msg.c_str(), static_cast<int>(msg.size()), &staged_query, NULL);
+        problemEncountered(message, msg);
+        // prepareStmt(cacheDB, msg, staged_query);
 
         // range for loop, ranges over every pair within the "map"
 
 
         for(auto kmer : in_file){
+            
+                // cout << kmer << endl;
+
 
             message = sqlite3_bind_text(data_query, 1, kmer.c_str(),
                       static_cast<int>(kmer.size()), NULL);
@@ -88,7 +100,7 @@ void checkCache(Dataset &data, const vector<string> &in_file, vector<string> &ou
 
             message = sqlite3_step(data_query);
             //problemEncountered(message, "step data_query");
-            isRowReady(message);
+            // isRowReady(message);
 
             int num_col = sqlite3_column_count(data_query);
 #ifdef DEBUG
@@ -108,8 +120,16 @@ void checkCache(Dataset &data, const vector<string> &in_file, vector<string> &ou
 
             if(num_col > 0){
                 // output.push_back(data_local);
+                // val is NULL
                 const unsigned char* val = sqlite3_column_text(data_query, 1);
-                const char* text = convert_to_const_char(val);
+                // if(!val) cerr << "val is NULL!!!\n";
+                // #ifdef DEBUG
+                //     cout << val << endl;
+                // #endif
+                // const char* text = convert_to_const_char(val);
+                // #ifdef DEBUG
+                //     cout << text << endl;
+                // #endif
                 sqlite3_free((char*)val);
 
 #ifdef DEBUG
@@ -200,7 +220,7 @@ void checkCache(Dataset &data, const vector<string> &in_file, vector<string> &ou
 
         // sqlite3_stmt *build_statement = NULL;
         char *z_err_msg = NULL;
-        
+        //cout << "Creating Table kmer_cache" << endl;
         msg = "CREATE TABLE kmer_cache (kmer TEXT PRIMARY KEY NOT NULL, alignment BLOB)";
         message = sqlite3_exec(cacheDB, msg.c_str(), NULL, NULL, &z_err_msg);
         if(message != SQLITE_OK){
@@ -208,21 +228,8 @@ void checkCache(Dataset &data, const vector<string> &in_file, vector<string> &ou
             exit(1);
         }
         sqlite3_free(z_err_msg);
-        // try{
-            
-
-        // }
-        // catch(...){
-        //     cerr << "Problem: creating TABLE kmer_cache" << endl
-        //          << '\t' << z_err_msg << endl << endl;
-        //     exit(1);
-        // }
-
-        // prepareStmt(cacheDB, msg, build_statement);
-        // message = sqlite3_step(build_statement);
-        // checkDone(message, "build statement create table kmer_cache");
-        // sqlite3_finalize(build_statement);
-
+       
+	//cout << "Creating Unique Index kmerIDX" << endl;
         msg = "CREATE UNIQUE INDEX kmerIDX ON kmer_cache(kmer)";
         message = sqlite3_exec(cacheDB, msg.c_str(), NULL, NULL, &z_err_msg);
         if(message != SQLITE_OK){
@@ -235,19 +242,19 @@ void checkCache(Dataset &data, const vector<string> &in_file, vector<string> &ou
         // message = sqlite3_step(build_statement);
         // checkDone(message, "build statement create unique index kmer_cache");
         // sqlite3_finalize(build_statement);
-
+	//cout << "Creating Table seen_cache" << endl;
         msg = "CREATE TABLE seen_cache (kmer TEXT PRIMARY KEY NOT NULL, iter INT NOT NULL)";
         message = sqlite3_exec(cacheDB, msg.c_str(), NULL, NULL, &z_err_msg);
         if(message != SQLITE_OK){
-                cerr << "\tproblem with create TABLE seen_cache\n";
-                exit(1);
+            cerr << "\tproblem with create TABLE seen_cache\n";
+            exit(1);
         }
         sqlite3_free(z_err_msg);
         // prepareStmt(cacheDB, msg, build_statement);
         // message = sqlite3_step(build_statement);
         // checkDone(message, "build statement create table seen_cache");
         // sqlite3_finalize(build_statement);
-
+	//cout << "Creating Unique Index seenIDX" << endl;
         msg = "CREATE UNIQUE INDEX seenIDX ON seen_cache(kmer)";
         message = sqlite3_exec(cacheDB, msg.c_str(), NULL, NULL, &z_err_msg);
         if(message != SQLITE_OK){
@@ -267,13 +274,14 @@ void checkCache(Dataset &data, const vector<string> &in_file, vector<string> &ou
             cerr << "staged_query shouldn't be NULL\n";
             exit(1);
         }
-
+	//cout << "Binding to cache" << endl;
         for(auto kmer : in_file){
             message = sqlite3_bind_text(staged_query, 1, kmer.c_str(),
                       static_cast<int>(kmer.size()), NULL);
             problemEncountered(message, "bind text for inserting into seen_cache");
             message = sqlite3_bind_int(staged_query, 2, data.settings.iteration);
             problemEncountered(message, "bind int for inserting into seen_cache");
+	    out_cache.push_back(kmer);
             message = sqlite3_step(staged_query);
             if(message != SQLITE_DONE){
                 cerr << "Build statement is not done!\n\tEXITING\n";
@@ -282,7 +290,7 @@ void checkCache(Dataset &data, const vector<string> &in_file, vector<string> &ou
             sqlite3_reset(staged_query);
             sqlite3_clear_bindings(staged_query);
         }
-
+	//cout << "Finalizing staged_query" << endl;
         message = sqlite3_finalize(staged_query);
         if(message != SQLITE_OK){
             cerr << "problem with finalize of staged_query" << endl;
@@ -293,16 +301,16 @@ void checkCache(Dataset &data, const vector<string> &in_file, vector<string> &ou
     }
 
 
-
+    //cout << "Closing cacheDB" << endl;
     message = sqlite3_close_v2(cacheDB);
     problemEncountered(message, "closing the connection");
 }
 
 
-static void prepareStmt(sqlite3 *db, string stmt, sqlite3_stmt *query){
-    int message = sqlite3_prepare_v2(db, stmt.c_str(), static_cast<int>(stmt.size()), &query, NULL);
-    problemEncountered(message, stmt);
-}
+// static void prepareStmt(sqlite3 *db, string stmt, sqlite3_stmt *query){
+//     int message = sqlite3_prepare_v2(db, stmt.c_str(), static_cast<int>(stmt.size()), &query, NULL);
+//     problemEncountered(message, stmt);
+// }
 
 static void problemEncountered(const int message, const string &what){
     if(message != SQLITE_OK){
@@ -321,7 +329,8 @@ static void checkDone(const int message, const string &s){
 
 static void isRowReady(const int message){
     if(message != SQLITE_ROW){
-        cerr << "Row isn't ready!!\n\tEXITING\n";
+        cerr << message << endl;
+        cerr << "Row isn't ready!!\n\tEXITING" << endl;
         exit(1);
     }
 }

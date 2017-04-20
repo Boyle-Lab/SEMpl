@@ -2,6 +2,7 @@
 #include <iostream>
 #include <sstream>
 #include <cstdlib>
+#include "src/common.hpp"
 //#include "../lib/bowtie-1.0.0/ebwt.h"
 using namespace std;
 
