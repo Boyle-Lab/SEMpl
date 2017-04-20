@@ -10,7 +10,7 @@ C++ implementation of the SEM algorithm
 1. Clone to computer, then cd into lib/libBigWig-master and run "make".
 2. cd into lib/TFM-Pvalue and run "make".
 3. cd into lib/bowtie-1.0.0 and run "make".
-4. mv all .so files into lib/\n
+4. mv all .so files into lib/
 5. There should be three .so files.
 6. mkdir obj for object files.
 7. mkdir bin and place expected binaries.
