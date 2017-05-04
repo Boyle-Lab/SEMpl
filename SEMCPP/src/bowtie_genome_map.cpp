@@ -14,6 +14,8 @@ using namespace std;
                    const vector<string>& queries,
                    const vector<string>& qualities,
                    const string& outfile);*/
+void split(std::string str, std::string splitBy, std::vector<std::string>& tokens);
+string revCompDNA(string dna);
 
 // if I understand correctly, bowtie places output in the filename specified
 // at the end of the command                              // intermediate.dat, as
@@ -40,6 +42,7 @@ void bowtie_genome_map(int length, const string& genome, const string& file, con
 
     stringstream cmd;
     cmd << "./bin/bowtie --quiet -a -v 0 " << genome << " -f " << file;
+    //cout << "Running command: " << cmd.str() << endl;
     system(cmd.str().c_str());
 
 //    try{

@@ -112,7 +112,7 @@ void checkCache(Dataset &data, const vector<string> &in_file, vector<string> &ou
                 exit(1);
             }
             if(num_col != 2) {
-                cerr << "Number of columns from data_query is 2!!\n\tEXITING" << endl;
+                cerr << "Number of columns from data_query is not 2!!\n\tEXITING" << endl;
                 exit(1);
             }
 
@@ -121,15 +121,18 @@ void checkCache(Dataset &data, const vector<string> &in_file, vector<string> &ou
             if(num_col > 0){
                 // output.push_back(data_local);
                 // val is NULL
+                #ifdef DEBUG
+                    cerr << sqlite3_column_type(data_query, 0) << endl;
+                #endif
                 const unsigned char* val = sqlite3_column_text(data_query, 1);
-                // if(!val) cerr << "val is NULL!!!\n";
-                // #ifdef DEBUG
-                //     cout << val << endl;
-                // #endif
-                // const char* text = convert_to_const_char(val);
-                // #ifdef DEBUG
-                //     cout << text << endl;
-                // #endif
+                if(!val) cerr << "val is NULL!!!\n";
+                #ifdef DEBUG
+                    cout << val << endl;
+                #endif
+                const char* text = convert_to_const_char(val);
+                #ifdef DEBUG
+                    cout << text << endl;
+                #endif
                 sqlite3_free((char*)val);
 
 #ifdef DEBUG
@@ -281,7 +284,7 @@ void checkCache(Dataset &data, const vector<string> &in_file, vector<string> &ou
             problemEncountered(message, "bind text for inserting into seen_cache");
             message = sqlite3_bind_int(staged_query, 2, data.settings.iteration);
             problemEncountered(message, "bind int for inserting into seen_cache");
-	    out_cache.push_back(kmer);
+	        out_cache.push_back(kmer);
             message = sqlite3_step(staged_query);
             if(message != SQLITE_DONE){
                 cerr << "Build statement is not done!\n\tEXITING\n";
@@ -301,7 +304,6 @@ void checkCache(Dataset &data, const vector<string> &in_file, vector<string> &ou
     }
 
 
-    //cout << "Closing cacheDB" << endl;
     message = sqlite3_close_v2(cacheDB);
     problemEncountered(message, "closing the connection");
 }
