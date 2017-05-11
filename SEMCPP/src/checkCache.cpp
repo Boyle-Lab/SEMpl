@@ -108,6 +108,7 @@ void checkCache(Dataset &data, const vector<string> &in_file, vector<string> &ou
 
 
             if(text){
+                // found (?)
                 // result is not NULL
 
                 switch (dest) {
@@ -135,7 +136,7 @@ void checkCache(Dataset &data, const vector<string> &in_file, vector<string> &ou
                 
             }
             else{
-                // cout << "done" << endl;
+                // not found (?)
                 message = sqlite3_bind_text(seen_query, 1, kmer.c_str(),
                           -1, NULL);
                 problemEncountered(message, "bind_text for seen_query");

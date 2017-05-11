@@ -14,8 +14,8 @@ C++ implementation of the SEM algorithm
 5. There should be three .so files.
 6. mkdir obj for object files.
 7. mkdir bin and place expected binaries.
-8. run "export LD_LIBRARY_PATH="/lib/x86_64-linux-gnu:/home/cmorteru/SEM_CPP/SEMCPP/lib"" so that dynamic libraries can be found
-9. Run "make" to compile everything.
+8. run "export LD_LIBRARY_PATH="/lib/x86_64-linux-gnu:/home/cmorteru/SEM_CPP/SEMCPP/lib"" without the outermost quotes so that dynamic libraries can be found.
+9. Run "make" without quotes to compile everything.
 
 # Tasks
 

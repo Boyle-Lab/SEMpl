@@ -17,9 +17,9 @@ bool seq_col_to_fa(const vector<string> &column, const string &file){
     ofstream OUTF(file);
 
     for(auto val : column){
-        // if(!val.empty()){
+        if(!val.empty()){
             OUTF << '>' << val << '\n' << val << '\n';
-        // }
+        }
     }
 
     // how to proceed?

@@ -76,6 +76,7 @@ static void align_SNPs(Dataset &data, int length,
 
 // void checkCache(Dataset &data, vector<string> &in_file, vector<string> &out_cache,
 //                 const string &cachefile);
+
             try{
                 checkCache(data, new_kmer, cache_output, data.cachefile,
                         Dataset::accumSummaryData::accumSummary_dest::alignment);

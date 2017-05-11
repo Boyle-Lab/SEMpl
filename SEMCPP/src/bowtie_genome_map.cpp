@@ -1,8 +1,7 @@
 #include "iterativeSEM.hpp"
+#include "common.hpp"
 #include <iostream>
-#include <sstream>
 #include <cstdlib>
-#include "src/common.hpp"
 //#include "../lib/bowtie-1.0.0/ebwt.h"
 using namespace std;
 
@@ -14,8 +13,7 @@ using namespace std;
                    const vector<string>& queries,
                    const vector<string>& qualities,
                    const string& outfile);*/
-void split(std::string str, std::string splitBy, std::vector<std::string>& tokens);
-string revCompDNA(string dna);
+
 
 // if I understand correctly, bowtie places output in the filename specified
 // at the end of the command                              // intermediate.dat, as
@@ -26,8 +24,10 @@ string revCompDNA(string dna);
 //int bowtie(int argc, const char **argv);
 
 
-void bowtie_genome_map(int length, const string& genome, const string& file, const string& final_output){
-    //const char *argvs[9] = {"./bin/bowtie", "--quiet", "-a", "-v 0", genome.c_str(), "-f", file.c_str(), "temp.dat" };
+void bowtie_genome_map(int length, const string& genome, const string& file, 
+                       const string& final_output){
+    //const char *argvs[9] = {"./bin/bowtie", "--quiet", "-a", "-v 0", 
+    //                        genome.c_str(), "-f", file.c_str(), "temp.dat" };
 /*
 *    argvs[0] = "./bin/bowtie\0";
 *    argvs[1] = "--quiet\0";
@@ -39,23 +39,14 @@ void bowtie_genome_map(int length, const string& genome, const string& file, con
 *    argvs[7] = "../data/hg19\0";
 *    argvs[8] = "temp.dat\0";
 */
+    string temp_file = "temp.dat";
 
-    stringstream cmd;
-    cmd << "./bin/bowtie --quiet -a -v 0 " << genome << " -f " << file;
-    //cout << "Running command: " << cmd.str() << endl;
-    system(cmd.str().c_str());
-
-//    try{
-//        // bowtie throws exceptions
-//    }
-//    catch(exception e){
-//        cerr << e.what() << '\n';
-//        exit(1);
-//    }
-//    catch(...){
-//        cerr << "Error with bowtie\n";
-//        exit(1);
-//    }
+    string cmd = "./bin/bowtie --verbose -a -v 0 hg19 -f " + file + ' ' + temp_file;
+    
+    
+    cout << "Running command: " << cmd << endl;
+    
+    system(cmd.c_str());
 
 
     ofstream OUT(final_output);
@@ -64,7 +55,7 @@ void bowtie_genome_map(int length, const string& genome, const string& file, con
         exit(1);
     }
 
-    ifstream IN(file);
+    ifstream IN(temp_file);
     if(!IN){
         cerr << "Failure to open \"" << file << "\".\n";
         exit(1);
