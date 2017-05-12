@@ -43,7 +43,7 @@ static void parse_pwm(const Dataset &data,
 // note: for now, searches for a pre-calculated cutoff
 void Enumerate_kmer(Dataset &data){
     map<pair<int, string>, int, hash_comp> pwmHash;
-    vector<string> nucleotideStack {"A", "C", "G", "T"};
+    const vector<string> nucleotideStack {"A", "C", "G", "T"};
     vector<double> bestCase;
     double cutoff = 0.0;
 
@@ -79,6 +79,9 @@ void Enumerate_kmer(Dataset &data){
             // data.kmerHash.erase(pair.first);
             to_erase.push_back(pair.first);
             // cout << "erased!";
+        }
+        else{
+            // cout << "not erased!";
         }
         // cout << endl;
     }
@@ -194,7 +197,7 @@ static void create_kmer(const Dataset &data,
 // will invalidate iterators
 
     std::vector<std::string> to_erase;
-    std::vector<std::pair<std::string, int>> to_add;
+    std::vector<std::pair<std::string, int> > to_add;
     for(size_t i = 1; i < bestCase.size(); ++i){
         for(auto pair : retHash){
             double score = pair.second;

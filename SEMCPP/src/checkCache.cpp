@@ -54,10 +54,22 @@ void checkCache(Dataset &data, const vector<string> &in_file, vector<string> &ou
     message = sqlite3_open_v2(cachefile.c_str(), &cacheDB, 
                               SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE,
                               NULL);
+    // if(message != SQLITE_OK){
+    //     cerr << '\t' << '\t' << sqlite3_errmsg(cacheDB) << endl;
+    //     ifstream test(cachefile);
+    //     cerr << '\t';
+    //     if(test){
+    //         cerr << "success";
+    //     }
+    //     else{
+    //         cerr << "failure";
+    //     }
+    //     cerr << endl << cachefile << endl;
+    //     cerr << endl;
+    // }
     problemEncountered(message, "open");
 
     string msg = "";
-    //const char* tail_msg;
 
     if(newcache){
         if(data.settings.verbose){

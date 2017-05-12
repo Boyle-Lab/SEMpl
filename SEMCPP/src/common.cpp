@@ -2,12 +2,13 @@
 using namespace std;
 
 string revCompDNA(string dna){
-  string rev = "";
-  for(int i = static_cast<int>(dna.size()) - 1; i >= 0; i++){
-    rev += dna[i];
-  }
-  rev = regex_replace(dna, regex("ACGTacgt"), "TGCAtgca");
-  return rev;
+    
+  // string rev = "";
+  // for(int i = static_cast<int>(dna.size()) - 1; i >= 0; i++){
+  //   rev += dna[i];
+  // }
+  // rev = regex_replace(dna, regex("ACGTacgt"), "TGCAtgca");
+  // return rev;
 }
 
 bool fileExists(const string &filename){

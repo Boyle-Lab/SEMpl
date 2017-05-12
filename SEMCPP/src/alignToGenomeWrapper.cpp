@@ -2,7 +2,7 @@
 #include <iostream>
 using namespace std;
 
-static int getLength(Dataset &data);
+static int getLength(const Dataset &data);
 static void align_SNPs(Dataset &data, int length, const vector<string> &nucleotideStack);
 
 //void bowtie_genome_map(Dataset &data, int length, const string& genome,
@@ -17,7 +17,7 @@ void alignToGenomeWrapper(Dataset &data, int iteration, string genome) {
     // step 1: get the length of kmer
     int length = getLength(data);
     #ifdef DEBUG
-    cout << "length: " << length << endl;
+    // cout << "length: " << length << endl;
     #endif
     if(data.settings.verbose){
         cout << "\tAligning\n";
@@ -31,17 +31,11 @@ void alignToGenomeWrapper(Dataset &data, int iteration, string genome) {
 // INFILE FROM ORIGINAL ALGORITHM IS ENUMERATED_KMER
 static void align_SNPs(Dataset &data, int length,
                        const vector<string> &nucleotideStack){
-
-    vector<string> cache_output(nucleotideStack.size());
     string name = "";
 
     string CWD =  "./" + data.output_dir + "ALIGNMENT/";
 
     system( string("mkdir -p " + CWD).c_str() );
-
-#ifdef DEBUG
-    // cout << string("mkdir -p " + CWD) << endl;
-#endif
 
 
     string genome = "";
@@ -54,7 +48,7 @@ static void align_SNPs(Dataset &data, int length,
 
     bool non_zero_file_size = false;
 
-
+    vector<string> cache_output;
 
     for(int position  = 0; position < length; ++position){
         for(int j = 0; j < static_cast<int>(nucleotideStack.size()); ++j){
@@ -96,13 +90,11 @@ static void align_SNPs(Dataset &data, int length,
                 bowtie_genome_map(length, "./data/hg19", fa_file, bowtie_output);
             }
             cache_output.clear();
-	    //cout << "Position: " << position << endl;
         }
     }
-    //cout << "Snps aligned" << endl;
 }
 
 // getlength accesses first(?) element of kmerHash and returns the key length
-static int getLength(Dataset &data){
+static int getLength(const Dataset &data){
     return static_cast<int>(data.kmerHash.begin()->first.size());
 }

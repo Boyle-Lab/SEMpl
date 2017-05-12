@@ -41,7 +41,8 @@ void bowtie_genome_map(int length, const string& genome, const string& file,
 */
     string temp_file = "temp.dat";
 
-    string cmd = "./bin/bowtie --verbose -a -v 0 hg19 -f " + file + ' ' + temp_file;
+    string cmd = "./bin/bowtie --quiet -a -v 0 ./data/hg19 -f " 
+                 + file + ' ' + temp_file;
     
     
     cout << "Running command: " << cmd << endl;
@@ -86,6 +87,8 @@ void bowtie_genome_map(int length, const string& genome, const string& file,
         OUT << dat[2] << '\t' << dat[3] << '\t'
             << atoi(dat[3].c_str()) + length
             << '\t' << DNA << '\t' << dat[1] << '\n';
+
+        dat.clear();
     }
     IN.close();
 }
