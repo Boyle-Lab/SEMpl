@@ -2,7 +2,50 @@
 using namespace std;
 
 string revCompDNA(string dna){
-    
+    string ret = "";
+    for(size_t i = 0; i < dna.length(); ++i){
+        switch(dna[i]){
+            case 'A':
+                ret += 'T';
+            break;
+
+            case 'C':
+                ret += 'G';
+            break;
+
+            case 'G':
+                ret += 'C';
+            break;
+
+            case 'T':
+                ret += 'A';
+            break;
+
+            case 'a':
+                ret += 't';
+            break;
+
+            case 'c':
+                ret += 'g';
+            break;
+
+            case 'g':
+                ret += 'c';
+            break;
+
+            case 't':
+                ret += 'a';
+            break;
+
+            default:
+                cerr << "\t error with revCompDNA" << endl;
+                exit(1);
+            break;
+        }
+    }
+
+    return ret;
+
   // string rev = "";
   // for(int i = static_cast<int>(dna.size()) - 1; i >= 0; i++){
   //   rev += dna[i];
