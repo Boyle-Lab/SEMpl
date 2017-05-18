@@ -56,7 +56,7 @@ void Enumerate_kmer(Dataset &data){
     }
   // pwmHash is now filled in, along with bestCase
     if(data.settings.verbose){
-        cout << "No cutoff defined, so earching for pre-calculated cutoff." << '\n';
+        cout << "\tNo cutoff defined, so searching for pre-calculated cutoff." << '\n';
     }
     cutoff = get_cutoff(data);
 
@@ -236,7 +236,7 @@ static void create_kmer(const Dataset &data,
 
 static double get_cutoff(const Dataset &data){
     if(data.settings.verbose){
-        cout << "Searching for pre-calculated cutoff" << '\n';
+        cout << "\tSearching for pre-calculated cutoff" << '\n';
     }
 
       string curr_line = "";
@@ -257,7 +257,7 @@ static double get_cutoff(const Dataset &data){
               double a;
               parse >> a;
               if(data.settings.verbose){
-                  cout << "Pre-calculated threshold identified as " << a << '\n';
+                  cout << "\tPre-calculated threshold identified as " << a << '\n';
               }
           IN_HANDLE.close();
           return a;

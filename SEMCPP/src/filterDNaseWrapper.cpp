@@ -12,37 +12,31 @@ static void read_in_files(Dataset &data, const string &file);
 // REQUIRES: Boost library installed
 // MEMORY: incrementally reads in output
 void filterDNaseWrapper(Dataset &data){
-   /*
-    * I have added a member variable for the output of this function
-    * The type is std::vector<std::pair<std::string, std::string > >
-    * and the name of the variable is filterDNaseWrapper_output
-    *
-    */
 
-
-    //Working on the implementation of the bedtools library
-
-    //bedtools(Dataset &data);
-
-    //See bedtools.txt for notes on how it works and an alternative for using
-    //the file in order to work with struct data
-
-
-    /*
-    *   I will make a quick implementation of this function, involving
-    *   reading in and out, just so that the function is working for now
-    *       -- Cody
-    */
-
-    //
     vector<string> files;
-    string targetDir = "../" + data.output_dir + "/ALIGNMENT/";
+    string targetDir = "./" + data.output_dir + "/ALIGNMENT/";
 
-    GetFilesInDirectory(files, "../ALIGNMENT/");
+    #ifdef DEBUG
+        // cout << "targetDir: " << targetDir << endl;
+    #endif
+
+    GetFilesInDirectory(files, targetDir);
     for(auto file : files){
-        if(file.find("pos") != string::npos){
-            string bedfile = targetDir + file + "_filtered.bed";
-            string readfile = targetDir + file + ".bed";
+        if(file.find("pos") != string::npos 
+            && file.find("filtered") == string::npos
+            && file.find("fa") == string::npos){
+
+            
+
+            string bedfile = /* targetDir + */ file + "_filtered";
+            string readfile = /* targetDir + */ file /* + ".bed" */;
+
+            #ifdef DEBUG
+                // cout << "\tfile: " << file << endl;
+                // cout << "\tbedfile: " << bedfile << endl;
+                // cout << "\treadfile: " << readfile << endl;
+            #endif
+
             ifstream IN(file);
 
             if(fileExists(readfile)){
@@ -71,9 +65,10 @@ void filterDNaseWrapper(Dataset &data){
                 system(string("touch " + bedfile).c_str());
             }
 #ifdef DEBUG
-            cout << "\tdeleting readfile\n";
+            // cout << "\tdeleting readfile\n";
 #endif
-            system(string("rm -f " + readfile).c_str());
+            // didn't mean to do rm while testing
+            // system(string("rm -f " + readfile).c_str());
 
             read_in_files(data, bedfile);
         }

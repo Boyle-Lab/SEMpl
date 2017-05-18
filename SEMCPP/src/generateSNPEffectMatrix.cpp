@@ -85,7 +85,11 @@ void generateSNPEffectMatrix(Dataset &data) {
 
 	//Step 2: Change one base at each location in k-mers and align to genome
     // ALSO: print output to file
-    align_to_genome(data);
+
+
+    // temporarily commented for testing
+    // align_to_genome(data);
+    // problem is with getfiles in directory
 
     //Step 3: Filter using DNase data and finding the signal at each location
     // ALSO: read in output of filterDNaseWrapper back to memory

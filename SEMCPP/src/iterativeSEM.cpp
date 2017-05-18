@@ -151,7 +151,13 @@ int main(int argc, char **argv){
         cerr << "Problem with generateSNPEffectMatrix!!!\n\tEXITING\n";
         exit(1);
     }
-    generatePWMfromSEM(data);
+    try{
+        generatePWMfromSEM(data);
+    }
+    catch(...){
+        cerr << "Problem with generatePWMfromSEM!!!\n\tEXITING\n";
+        exit(1);
+    }
 
 /*
 *	will change the Cmd's to functions, once the functions are implemented

@@ -46,12 +46,6 @@ string revCompDNA(string dna){
 
     return ret;
 
-  // string rev = "";
-  // for(int i = static_cast<int>(dna.size()) - 1; i >= 0; i++){
-  //   rev += dna[i];
-  // }
-  // rev = regex_replace(dna, regex("ACGTacgt"), "TGCAtgca");
-  // return rev;
 }
 
 bool fileExists(const string &filename){
@@ -59,10 +53,6 @@ bool fileExists(const string &filename){
   return (stat (filename.c_str(), &buffer) == 0);
 }
 
-// int parse_wc{
-//   string s;
-//   while(getline(s, ))
-// }
 
 // grabbed from internet
 void GetFilesInDirectory(std::vector<string> &out, const string &directory)
