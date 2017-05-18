@@ -254,7 +254,7 @@ static double get_cutoff(const Dataset &data){
               stringstream parse; // seems good
               parse << curr_line; 
               parse >> curr_line; 
-              double a;
+              double a = 0.0;
               parse >> a;
               if(data.settings.verbose){
                   cout << "\tPre-calculated threshold identified as " << a << '\n';
