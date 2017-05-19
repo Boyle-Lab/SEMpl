@@ -5,6 +5,7 @@ C++ implementation of the SEM algorithm
 1. bowtie binary in ./bin
 2. bedtools binary in ./bin
 3. argument to "-readcache" is not optional.
+4. This program has been tested on Ubuntu 16.04.2 LTS.
 
 # Compilation
 1. Clone to computer, then cd into lib/libBigWig-master and run "make".
