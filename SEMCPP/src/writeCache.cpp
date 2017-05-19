@@ -13,7 +13,7 @@ static void checkDone(const int &message, const string &s);
 // REQUIRES: accumSummary_scale is filled with the correct data
 // EFFECTS: writes output of accumSummary_scale to cache, based upon dest
 void writeCache(Dataset &data, const string &cache,
-                Dataset::accumSummaryData::accumSummary_dest dest){
+                Dataset::accumSummary_type::accumSummary_dest dest){
 
     if(data.settings.verbose){
         cout << "Building cache for processed kmers.\n";
@@ -23,17 +23,17 @@ void writeCache(Dataset &data, const string &cache,
 
     const vector<string> *ptr = nullptr;
     switch (dest) {
-        case Dataset::accumSummaryData::accumSummary_dest::none:
+        case Dataset::accumSummary_type::accumSummary_dest::none:
             cerr << "dest shouldn't be none!!!!\n";
             exit(1);
         break;
-        case Dataset::accumSummaryData::accumSummary_dest::enumerated:
+        case Dataset::accumSummary_type::accumSummary_dest::enumerated:
             ptr = &data.accumSummary_data.enum_accum_lines;
         break;
-        case Dataset::accumSummaryData::accumSummary_dest::scrambled:
+        case Dataset::accumSummary_type::accumSummary_dest::scrambled:
             ptr = &data.accumSummary_data.scramble_accum_lines;
         break;
-        case Dataset::accumSummaryData::accumSummary_dest::alignment:
+        case Dataset::accumSummary_type::accumSummary_dest::alignment:
             ptr = &data.accumSummary_data.align_accum_lines;
         break;
         default:

@@ -58,7 +58,7 @@ int count_kmer(const Dataset &data){
 // THIS MIGHT BE DEPRECATED BELOW
 /*
 int findMaximumPerRow(Dataset &data, 
-                      Dataset::accumSummaryData::accumSummary_dest dest){
+                      Dataset::accumSummary_type::accumSummary_dest dest){
 
     //Uses output from accum_Summary to do calculations
     //to ensure no large dead regions

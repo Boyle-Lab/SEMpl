@@ -35,7 +35,7 @@ static void checkDone(const int message, const string &s);
 //       out_cache is the argument given to -out_cache in the original algorithm
 //       cachefile is the argument given to -cache in the original algorithm
 void checkCache(Dataset &data, const vector<string> &in_file, vector<string> &out_cache,
-                const string &cachefile, Dataset::accumSummaryData::accumSummary_dest dest){
+                const string &cachefile, Dataset::accumSummary_type::accumSummary_dest dest){
 
     bool newcache = fileExists(cachefile);
 #ifdef DEBUG
@@ -124,16 +124,16 @@ void checkCache(Dataset &data, const vector<string> &in_file, vector<string> &ou
                 // result is not NULL
 
                 switch (dest) {
-                    case Dataset::accumSummaryData::accumSummary_dest::alignment:
+                    case Dataset::accumSummary_type::accumSummary_dest::alignment:
                         data.signal_cache.emplace_back(text);
                     break;
-                    case Dataset::accumSummaryData::accumSummary_dest::scrambled:
+                    case Dataset::accumSummary_type::accumSummary_dest::scrambled:
                         data.signal_cache_scramble.emplace_back(text);
                     break;
-                    case Dataset::accumSummaryData::accumSummary_dest::enumerated:
+                    case Dataset::accumSummary_type::accumSummary_dest::enumerated:
                         data.signal_cache_enumerate.emplace_back(text);
                     break;
-                    case Dataset::accumSummaryData::accumSummary_dest::none:
+                    case Dataset::accumSummary_type::accumSummary_dest::none:
                         cerr << "none shouldn't happen!!" << endl;
                         exit(1);
                     break;

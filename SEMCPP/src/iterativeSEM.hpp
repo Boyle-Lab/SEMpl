@@ -47,27 +47,6 @@ struct Dataset {
 	    // std::array<std::array<int, NUM_COLUMNS>, NUM_ROWS> sem_arr;
 
 	};
-    /*
-	struct DNase{
-
-	    static const int LINES_IN_FILE = 116018;
-
-	    // "chr" and the chromosome number
-	    std::array<std::string, LINES_IN_FILE> chromosome;
-	    // first two numbers given
-	    std::array<int, LINES_IN_FILE> first_num, second_num;
-	    // chromosome from above and the specific section
-	    std::array<std::string, LINES_IN_FILE> chr_section;
-	    // third number
-	    std::array<int, LINES_IN_FILE> third_num;
-	    // fourth and fifth numbers, double
-	    std::array<double, LINES_IN_FILE> fourth_num, fifth_num;
-	    // sixth and seventh number given
-	    std::array<int, LINES_IN_FILE> sixth_num, seventh_num;
-
-
-	};
-    */
 	struct TFMdata{
 		// a c g t
 		static const int LETTER_NUM = 4;
@@ -75,7 +54,7 @@ struct Dataset {
 		std::array<std::vector<int>, LETTER_NUM> letter_array;
     // should be int or char? int for now
 	};
-	struct accumSummaryData{
+	struct accumSummary_type{
 	    //Alignment summary data
         enum class accumSummary_dest{alignment, scrambled, enumerated, none};
 		// lines of output from accumSummary_scale.pl
@@ -123,7 +102,7 @@ struct Dataset {
 	// DNase DNase_data;
 	PWM PWM_data;
 	TFMdata TFM_data;
-	accumSummaryData accumSummary_data;
+	accumSummary_type accumSummary_data;
 	SettingsForSNPEffectMatrix settings;
 	MaximumAverageSignalData signal_Data;
 
@@ -166,7 +145,7 @@ void generateSNPEffectMatrix(Dataset &data);
 //src files
 void accumSummary_scale(Dataset &data, const std::string &hfile,
                         const std::string &cfile, int scale,
-                        Dataset::accumSummaryData::accumSummary_dest dest);
+                        Dataset::accumSummary_type::accumSummary_dest dest);
 // check accumSummary_scale calls in steps before find_signal
 void alignToGenomeWrapper(Dataset &data, int iteration,
                             std::string genome);
@@ -178,12 +157,12 @@ void changeBase(const Dataset &data, int position,
                             std::string const &genome);
 void checkCache(Dataset &data, const std::vector<std::string> &in_file,
                 std::vector<std::string> &out_cache, const std::string &cachefile,
-                Dataset::accumSummaryData::accumSummary_dest dest);
+                Dataset::accumSummary_type::accumSummary_dest dest);
 void combineBedFiles(Dataset &data);
 void Enumerate_kmer(Dataset &data);
 void filterDNaseWrapper(Dataset &data);
 void findMaximumAverageSignalWrapper(Dataset &data,
-                                     Dataset::accumSummaryData::accumSummary_dest dest);
+                                     Dataset::accumSummary_type::accumSummary_dest dest);
 void generatePWMfromSEM(Dataset &data);
 void generateRmeplot(Dataset &data);
 void generateRplot(Dataset &data);
@@ -198,7 +177,7 @@ void scramble_kmer(Dataset &data);
 bool seq_col_to_fa(const std::vector<std::string> &column,
                     const std::string &file);
 void writeCache(Dataset &data, const std::string &cache,
-                Dataset::accumSummaryData::accumSummary_dest dest);
+                Dataset::accumSummary_type::accumSummary_dest dest);
 //Library converted function
 void bedtools(Dataset &data);
 

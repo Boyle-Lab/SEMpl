@@ -16,25 +16,25 @@ using namespace std;
 //vector<string> split(const string &s, char delim);
                                                     // PASS scramble FOR BASELINE
 void findMaximumAverageSignalWrapper(Dataset &data,
-                                     Dataset::accumSummaryData::accumSummary_dest dest){
+                                     Dataset::accumSummary_type::accumSummary_dest dest){
 
         vector<double> *max_ptr = nullptr;
         //vector<string> *line_ptr = nullptr;
 
         switch (dest) {
-            case Dataset::accumSummaryData::accumSummary_dest::none:
+            case Dataset::accumSummary_type::accumSummary_dest::none:
                 cerr << "dest shouldn't be none!!!!\n";
                 exit(1);
             break;
-            case Dataset::accumSummaryData::accumSummary_dest::enumerated:
+            case Dataset::accumSummary_type::accumSummary_dest::enumerated:
                 max_ptr = &data.accumSummary_data.enum_accum_max;
                 //line_ptr = &data.accumSummary_data.enum_accum_lines;
             break;
-            case Dataset::accumSummaryData::accumSummary_dest::scrambled:
+            case Dataset::accumSummary_type::accumSummary_dest::scrambled:
                 max_ptr = &data.accumSummary_data.scramble_accum_max;
                 //line_ptr = &data.accumSummary_data.scramble_accum_lines;
             break;
-            case Dataset::accumSummaryData::accumSummary_dest::alignment:
+            case Dataset::accumSummary_type::accumSummary_dest::alignment:
                 max_ptr = &data.accumSummary_data.align_accum_max;
                 //line_ptr = &data.accumSummary_data.align_accum_lines;
             break;
@@ -80,23 +80,23 @@ void findMaximumAverageSignalWrapper(Dataset &data,
         sterr = stdev / pow(counter, 0.5);
 
         switch (dest) {
-            case Dataset::accumSummaryData::accumSummary_dest::none:
+            case Dataset::accumSummary_type::accumSummary_dest::none:
                 cerr << "dest shouldn't be none!!!!\n";
                 exit(1);
             break;
-            case Dataset::accumSummaryData::accumSummary_dest::enumerated:
+            case Dataset::accumSummary_type::accumSummary_dest::enumerated:
                 data.signal_Data.enumerate_maximum = mean;
                 data.signal_Data.enumerate_counter = counter;
                 data.signal_Data.enumerate_stdev = stdev;
                 data.signal_Data.enumerate_sterr = sterr;
             break;
-            case Dataset::accumSummaryData::accumSummary_dest::scrambled:
+            case Dataset::accumSummary_type::accumSummary_dest::scrambled:
                 data.signal_Data.scramble_maximum = mean;
                 data.signal_Data.scramble_counter = counter;
                 data.signal_Data.scramble_stdev = stdev;
                 data.signal_Data.scramble_sterr = sterr;
             break;
-            case Dataset::accumSummaryData::accumSummary_dest::alignment:
+            case Dataset::accumSummary_type::accumSummary_dest::alignment:
                 data.signal_Data.alignment_maximum = mean;
                 data.signal_Data.alignment_counter = counter;
                 data.signal_Data.alignment_stdev = stdev;

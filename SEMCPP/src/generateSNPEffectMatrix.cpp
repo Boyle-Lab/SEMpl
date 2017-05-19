@@ -178,7 +178,7 @@ void find_signal(Dataset &data, int length){
 
         try{
             accumSummary_scale(data, data.bigwig_file, file, length,
-                               Dataset::accumSummaryData::accumSummary_dest::alignment);
+                               Dataset::accumSummary_type::accumSummary_dest::alignment);
         }
         catch(...){
             cerr << "Problem with accumSummary_scale\n\tEXITING" << endl;
@@ -195,7 +195,7 @@ void find_signal(Dataset &data, int length){
         // write to cache
         // -in_file and -cache are built into data
         writeCache(data, data.cachefile,
-                   Dataset::accumSummaryData::accumSummary_dest::alignment);
+                   Dataset::accumSummary_type::accumSummary_dest::alignment);
 
         // SHOULD THERE BE AN ERROR CHECK IF signal_cache_enumerate IS EMPTY????
         sort(data.signal_cache.begin(),
@@ -219,7 +219,7 @@ void find_signal(Dataset &data, int length){
 
 
         findMaximumAverageSignalWrapper(data,
-                                        Dataset::accumSummaryData::accumSummary_dest::alignment);
+                                        Dataset::accumSummary_type::accumSummary_dest::alignment);
 
     }
 
@@ -252,7 +252,7 @@ void create_baselines(Dataset &data, int length){
         // scramble_kmers IS NOW SCRAMBLED!!!!                          $Cache
 
         checkCache(data, data.scramble_kmers, scramble_cache_output, data.cachefile,
-                    Dataset::accumSummaryData::accumSummary_dest::scrambled);
+                    Dataset::accumSummary_type::accumSummary_dest::scrambled);
         seq_col_to_fa(data.signal_cache_scramble,
                       data.output_dir + "/BASELINE/Scrambled_kmer.fa");
         bowtie_genome_map(length, "../data/hg19",
@@ -269,11 +269,11 @@ void create_baselines(Dataset &data, int length){
         accumSummary_scale(data, data.bigwig_file,
                            data.output_dir + "/BASELINE/Scrambled_kmer_filtered.bed",
                            length,
-                           Dataset::accumSummaryData::accumSummary_dest::scrambled);
+                           Dataset::accumSummary_type::accumSummary_dest::scrambled);
 
         if(data.settings.writecache){
             writeCache(data, data.cachefile,
-                       Dataset::accumSummaryData::accumSummary_dest::scrambled);
+                       Dataset::accumSummary_type::accumSummary_dest::scrambled);
         }
         // SHOULD THERE BE AN ERROR CHECK IF signal_cache_enumerate IS EMPTY????
         sort(data.signal_cache_scramble.begin(),
@@ -300,9 +300,9 @@ void create_baselines(Dataset &data, int length){
 
     // checkCache(Dataset &data, const std::vector<std::string> &in_file,
     //            std::vector<std::string> &out_cache, const std::string &cachefile,
-    //            Dataset::accumSummaryData::accumSummary_dest dest)
+    //            Dataset::accumSummary_type::accumSummary_dest dest)
     checkCache(data, data.scramble_kmers, data.signal_cache_enumerate, data.cachefile,
-               Dataset::accumSummaryData::accumSummary_dest::enumerated);
+               Dataset::accumSummary_type::accumSummary_dest::enumerated);
 
     if(!data.signal_cache_enumerate.empty()){
         seq_col_to_fa(data.signal_cache_enumerate,
@@ -312,10 +312,10 @@ void create_baselines(Dataset &data, int length){
                           data.output_dir + "/BASELINE/Enumerated_kmer_filtered.bed");
         accumSummary_scale(data, data.bigwig_file,
                            data.output_dir + "/BASELINE/Enumerated_kmer_filtered.bed",
-                           length, Dataset::accumSummaryData::accumSummary_dest::enumerated);
+                           length, Dataset::accumSummary_type::accumSummary_dest::enumerated);
         if(data.settings.writecache){
             writeCache(data, data.cachefile,
-                       Dataset::accumSummaryData::accumSummary_dest::enumerated);
+                       Dataset::accumSummary_type::accumSummary_dest::enumerated);
         }
     }
 
@@ -340,7 +340,7 @@ void create_baselines(Dataset &data, int length){
                 iter);
 
     findMaximumAverageSignalWrapper(data,
-                                    Dataset::accumSummaryData::accumSummary_dest::enumerated);
+                                    Dataset::accumSummary_type::accumSummary_dest::enumerated);
 
     if(data.settings.delAlignmentBed){
         system(("rm -f " + data.output_dir + "/BASELINE/Scrambled_kmer.bed").c_str());

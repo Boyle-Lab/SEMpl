@@ -20,7 +20,38 @@ using namespace std;
 
 void accumSummary_scale(Dataset &data, const string &hfile,
                         const string &cfile, int scale,
-                        Dataset::accumSummaryData::accumSummary_dest dest){
+                        Dataset::accumSummary_type::accumSummary_dest dest){
+
+// clear accum data of corresponding type
+    switch (dest) {
+            case Dataset::accumSummary_type::accumSummary_dest::none:
+                cerr << "dest shouldn't be none!!!!\n";
+                exit(1);
+            break;
+            case Dataset::accumSummary_type::accumSummary_dest::enumerated:
+                // data.accumSummary_data.enum_accum_lines.push_back(line);
+                // data.accumSummary_data.enum_accum_max.push_back(max);
+                data.accumSummary_data.enum_accum_max.clear();
+                data.accumSummary_data.enum_accum_lines.clear();
+            break;
+            case Dataset::accumSummary_type::accumSummary_dest::scrambled:
+                // data.accumSummary_data.scramble_accum_lines.push_back(line);
+                // data.accumSummary_data.scramble_accum_max.push_back(max);
+                data.accumSummary_data.scramble_accum_max.clear();
+                data.accumSummary_data.scramble_accum_lines.clear();
+            break;
+            case Dataset::accumSummary_type::accumSummary_dest::alignment: 
+                // data.accumSummary_data.align_accum_lines.push_back(line);
+                // data.accumSummary_data.align_accum_max.push_back(max);
+                data.accumSummary_data.align_accum_max.clear();
+                data.accumSummary_data.align_accum_lines.clear();
+            break;
+            default:
+                cerr << "there is no default for dest's switch statement!!!\n";
+                exit(1);
+            break;
+        }
+
 
 	// open file using library, below code is necessary
 	// because of C++ type system regarding const
@@ -38,10 +69,6 @@ void accumSummary_scale(Dataset &data, const string &hfile,
 	double max = 0.0;
 	int hitcount = 0;
 
-	// create a vector with correct size, reduce memory use as opposed to repeatedly creating a new vector in the loop below
-
-	vector<string> output(total_size);
-
 	//////////////////////////////////
 	// Read each peak location and add signal values
 	/////////////////////////////////
@@ -56,7 +83,9 @@ void accumSummary_scale(Dataset &data, const string &hfile,
 	char *chrom = nullptr;
 	string line = "", seqid = "", direction = "";
 
-	vector<string> temp, signal_array(total_size);
+	vector<string> temp;
+    vector<double> signal_array(total_size, 0.0);
+    vector<bool> signal_array_is_nan(total_size, false);
 
 	int start = 0, end = 0, counter = 0;
     int upstart = 0, upend = 0;
@@ -79,7 +108,7 @@ void accumSummary_scale(Dataset &data, const string &hfile,
 				if(temp[0][2] == 'r'){
 					seqid = temp[0];
 #ifdef DEBUG
-                    cout << "temp[0] begins with chr: " << temp[0] << '\n';
+                    // cout << "temp[0] begins with chr: " << temp[0] << '\n';
 #endif
                 }
 		}
@@ -98,10 +127,10 @@ void accumSummary_scale(Dataset &data, const string &hfile,
 		chrom = new char[seqid.length() + 1];
 		strcpy(chrom, seqid.c_str());
 
-        cout << "chrom: " << chrom << endl
-        << "upstart: " << static_cast<uint32_t>(upstart) << endl
-        << "upend: " << static_cast<uint32_t>(upend) << endl
-        << "nBins: " << static_cast<uint32_t>(upend - upstart) << endl;
+        // cout << "chrom: " << chrom << endl
+        // << "upstart: " << static_cast<uint32_t>(upstart) << endl
+        // << "upend: " << static_cast<uint32_t>(upend) << endl
+        // << "nBins: " << static_cast<uint32_t>(upend - upstart) << endl;
 
 		values = bwStats(bwFile, chrom, static_cast<uint32_t>(upstart),
                          static_cast<uint32_t>(upend),
@@ -116,7 +145,7 @@ void accumSummary_scale(Dataset &data, const string &hfile,
 		
 		for(counter = 0; counter < upend - upstart; counter++){
 			values[counter] = roundf(values[counter] * 1000) / 1000;
-			signal_array[counter] = to_string(values[counter]);
+			signal_array[counter] = values[counter];
 		}
 
         free(values);
@@ -129,11 +158,13 @@ void accumSummary_scale(Dataset &data, const string &hfile,
         try{
     		if(direction.find('+') != string::npos){
     			for(int k = 0; k < total_size; ++k){
-                    if(!isnan(stod(signal_array[k]))){
-                        output[k] = signal_array[k];
+                    if(!isnan(signal_array[k])){
+                        // output[k] = signal_array[k];
+
                     }
                     else{
-                        output[k] = "N";
+                        // output[k] = "N";
+                        signal_array_is_nan[k] = true;
                     }
                 }
             }
@@ -141,11 +172,12 @@ void accumSummary_scale(Dataset &data, const string &hfile,
                 // use reserve so I can keep the same iteration direction
                 reverse(signal_array.begin(), signal_array.end());
     			for(int k = 0; k < total_size; ++k){
-                    if(!isnan(stod(signal_array[k]))){
-                        output[k] = signal_array[k];
+                    if(!isnan(signal_array[k])){
+                        // output[k] = signal_array[k];
                     }
                     else{
-                        output[k] = "N";
+                        // output[k] = "N";
+                        signal_array_is_nan[k] = true;
                     }
                 }
             }
@@ -154,56 +186,63 @@ void accumSummary_scale(Dataset &data, const string &hfile,
             cout << "nan exception thrown" << endl;
             exit(1);
         }
-        cout << "press key:";cin.get();cout << endl;
+        // cout << "press key:";cin.get();cout << endl;
 
 		max = 0;
 		hitcount = 0;
-		for(int l = 0; l < static_cast<int>(output.size()); ++l){
-			if(stod(output[l]) > max) max = stod(output[l]);
-                                    // string to double
-			if(output[l] != string("N") ) ++hitcount;
+		for(int l = 0; l < static_cast<int>(signal_array.size()); ++l){
+			// if(stod(output[l]) > max) max = stod(output[l]);
+
+                // if(signal_array[l] > max) max = signal_array[l];
+                                        // string to double
+    			if(!signal_array_is_nan[l]){ 
+                    ++hitcount;
+                }
+                else{
+                    if(signal_array[l] > max) max = signal_array[l];
+                }
 		}
         // if max is maximum possible double value, then it is not applicable
-		if(hitcount / static_cast<double>(output.size()) < 0.9){
+		if(hitcount / static_cast<double>(signal_array.size()) < 0.9){
 			max = numeric_limits<double>::max();
         }
         switch (dest) {
-            case Dataset::accumSummaryData::accumSummary_dest::none:
+            case Dataset::accumSummary_type::accumSummary_dest::none:
                 cerr << "dest shouldn't be none!!!!\n";
                 exit(1);
             break;
-            case Dataset::accumSummaryData::accumSummary_dest::enumerated:
+            case Dataset::accumSummary_type::accumSummary_dest::enumerated:
 #ifdef DEBUG
-                if(!data.accumSummary_data.enum_accum_lines.empty() 
-                    || !data.accumSummary_data.enum_accum_max.empty()){
-                    cerr << "enum accum data should be empty!!! I think!!\n"
-                         << "\tEXITING\n";
-                         exit(1);
-                }
+                // if(!data.accumSummary_data.enum_accum_lines.empty() 
+                //     || !data.accumSummary_data.enum_accum_max.empty()){
+                //     cerr << "enum accum data should be empty!!! I think!!\n"
+                //          << "\tEXITING\n";
+                //          exit(1);
+                // }
 #endif
                 data.accumSummary_data.enum_accum_lines.push_back(line);
                 data.accumSummary_data.enum_accum_max.push_back(max);
             break;
-            case Dataset::accumSummaryData::accumSummary_dest::scrambled:
+            case Dataset::accumSummary_type::accumSummary_dest::scrambled:
 #ifdef DEBUG
-                if(!data.accumSummary_data.scramble_accum_lines.empty() 
-                    || !data.accumSummary_data.scramble_accum_max.empty()){
-                    cerr << "scramble accum data should be empty!!! I think!!\n"
-                         << "\tEXITING\n";
-                         exit(1);
-                }
+                // if(!data.accumSummary_data.scramble_accum_lines.empty() 
+                //     || !data.accumSummary_data.scramble_accum_max.empty()){
+                //     cerr << "scramble accum data should be empty!!! I think!!\n"
+                //          << "\tEXITING\n";
+                //          exit(1);
+                // }
 #endif
                 data.accumSummary_data.scramble_accum_lines.push_back(line);
                 data.accumSummary_data.scramble_accum_max.push_back(max);
             break;
-            case Dataset::accumSummaryData::accumSummary_dest::alignment:
+            case Dataset::accumSummary_type::accumSummary_dest::alignment:
 #ifdef DEBUG
-                if(!data.accumSummary_data.align_accum_lines.empty() 
-                    || !data.accumSummary_data.align_accum_max.empty()){
-                    cerr << "align accum data should be empty!!! I think!!\n"
-                         << "\tEXITING\n";
-                         exit(1);
-                }
+                // if(!data.accumSummary_data.align_accum_lines.empty() 
+                //     || !data.accumSummary_data.align_accum_max.empty()){
+                //     cerr << "align accum data should be empty!!! I think!!\n"
+                //          << "\tEXITING\n";
+                //          exit(1);
+                // }
 #endif            
                 data.accumSummary_data.align_accum_lines.push_back(line);
                 data.accumSummary_data.align_accum_max.push_back(max);

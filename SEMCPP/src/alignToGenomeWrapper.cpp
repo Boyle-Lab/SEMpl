@@ -73,7 +73,7 @@ static void align_SNPs(Dataset &data, int length,
 
             try{
                 checkCache(data, new_kmer, cache_output, data.cachefile,
-                        Dataset::accumSummaryData::accumSummary_dest::alignment);
+                        Dataset::accumSummary_type::accumSummary_dest::alignment);
             }
             catch(...){
                 cerr << "exception thrown from checkCache" << endl;
