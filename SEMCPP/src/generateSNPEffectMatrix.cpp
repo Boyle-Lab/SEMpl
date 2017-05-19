@@ -194,12 +194,17 @@ void find_signal(Dataset &data, int length){
 #endif
         // write to cache
         // -in_file and -cache are built into data
-        writeCache(data, data.cachefile,
-                   Dataset::accumSummary_type::accumSummary_dest::alignment);
+        try{
+            writeCache(data, data.cachefile,
+                       Dataset::accumSummary_type::accumSummary_dest::alignment);
+        }
+        catch(...){
+            cerr << "problem with writeCache\n\tEXITING" << endl;
+            exit(1);
+        }
 
         // SHOULD THERE BE AN ERROR CHECK IF signal_cache_enumerate IS EMPTY????
-        sort(data.signal_cache.begin(),
-             data.signal_cache.end());
+        sort(data.signal_cache.begin(), data.signal_cache.end());
         data.signal_output.resize(data.signal_cache.size()
                                 + data.accumSummary_data.align_accum_lines.size());
         // returns iterator to one past the location of the last copy
