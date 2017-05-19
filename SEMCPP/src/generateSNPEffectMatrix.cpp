@@ -176,8 +176,14 @@ void find_signal(Dataset &data, int length){
 
         // cin.get();
 
-        accumSummary_scale(data, data.bigwig_file, file, length,
-                           Dataset::accumSummaryData::accumSummary_dest::alignment);
+        try{
+            accumSummary_scale(data, data.bigwig_file, file, length,
+                               Dataset::accumSummaryData::accumSummary_dest::alignment);
+        }
+        catch(...){
+            cerr << "Problem with accumSummary_scale\n\tEXITING" << endl;
+            exit(1);
+        }
         // do not use non-useful files
 #ifdef DEBUG
         // cout << "\tDeleting " << file << '\n';

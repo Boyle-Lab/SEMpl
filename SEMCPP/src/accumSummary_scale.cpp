@@ -65,6 +65,7 @@ void accumSummary_scale(Dataset &data, const string &hfile,
 
 
 	while(getline(input, line)){
+        // cout << "press key:";cin.get();cout << endl;
 		// initialize vairables
         temp.clear();
 		chrom = nullptr;
@@ -125,35 +126,35 @@ void accumSummary_scale(Dataset &data, const string &hfile,
         // UPDATE:
         // nan IS AN ACTUAL POSSIBLE DOUBLE VALUE
         // where nan can be found by nan("") or strtod("nan")
-		if(direction.find('+') != string::npos){
-			for(int k = 0; k < total_size; ++k){
-				// need to determine how to check for definition of signal_array[k]
-
-                // checks that signal_array[k] is non-zero
-                if(stod(signal_array[k]) != nan("")){
-                    output[k] = signal_array[k];
+        try{
+    		if(direction.find('+') != string::npos){
+    			for(int k = 0; k < total_size; ++k){
+                    if(!isnan(stod(signal_array[k]))){
+                        output[k] = signal_array[k];
+                    }
+                    else{
+                        output[k] = "N";
+                    }
                 }
-                else{
-                    output[k] = "N";
+            }
+    		else{
+                // use reserve so I can keep the same iteration direction
+                reverse(signal_array.begin(), signal_array.end());
+    			for(int k = 0; k < total_size; ++k){
+                    if(!isnan(stod(signal_array[k]))){
+                        output[k] = signal_array[k];
+                    }
+                    else{
+                        output[k] = "N";
+                    }
                 }
             }
         }
-		else{
-            // use reserve so I can keep the same iteration direction
-            reverse(signal_array.begin(), signal_array.end());
-			for(int k = 0; k < total_size; ++k){
-                // need to determine how to check for definition of signal_array[k]
-
-                // checks that signal_array[k] is non-zero
-                if(stod(signal_array[k]) != nan("")){
-                    output[k] = signal_array[k];
-                }
-                else{
-                    output[k] = "N";
-                }
-            }
+        catch(...){
+            cout << "nan exception thrown" << endl;
+            exit(1);
         }
-
+        cout << "press key:";cin.get();cout << endl;
 
 		max = 0;
 		hitcount = 0;

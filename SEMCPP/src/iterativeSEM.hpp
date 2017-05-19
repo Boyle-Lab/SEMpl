@@ -143,7 +143,7 @@ struct Dataset {
     std::map<std::string, double> kmerHash;
     std::vector<std::string> scramble_kmers;
 
-    std::vector<std::string> filterDNaseWrapper_output;
+    // std::vector<std::string> filterDNaseWrapper_output;
 
     std::vector<std::string> signal_cache;
     std::vector<std::string> signal_cache_scramble;
