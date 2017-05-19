@@ -154,7 +154,6 @@ void accumSummary_scale(Dataset &data, const string &hfile,
 
         // UPDATE:
         // nan IS AN ACTUAL POSSIBLE DOUBLE VALUE
-        // where nan can be found by nan("") or strtod("nan")
         try{
     		if(direction.find('+') != string::npos){
     			for(int k = 0; k < total_size; ++k){
@@ -212,38 +211,14 @@ void accumSummary_scale(Dataset &data, const string &hfile,
                 exit(1);
             break;
             case Dataset::accumSummary_type::accumSummary_dest::enumerated:
-#ifdef DEBUG
-                // if(!data.accumSummary_data.enum_accum_lines.empty() 
-                //     || !data.accumSummary_data.enum_accum_max.empty()){
-                //     cerr << "enum accum data should be empty!!! I think!!\n"
-                //          << "\tEXITING\n";
-                //          exit(1);
-                // }
-#endif
                 data.accumSummary_data.enum_accum_lines.push_back(line);
                 data.accumSummary_data.enum_accum_max.push_back(max);
             break;
             case Dataset::accumSummary_type::accumSummary_dest::scrambled:
-#ifdef DEBUG
-                // if(!data.accumSummary_data.scramble_accum_lines.empty() 
-                //     || !data.accumSummary_data.scramble_accum_max.empty()){
-                //     cerr << "scramble accum data should be empty!!! I think!!\n"
-                //          << "\tEXITING\n";
-                //          exit(1);
-                // }
-#endif
                 data.accumSummary_data.scramble_accum_lines.push_back(line);
                 data.accumSummary_data.scramble_accum_max.push_back(max);
             break;
-            case Dataset::accumSummary_type::accumSummary_dest::alignment:
-#ifdef DEBUG
-                // if(!data.accumSummary_data.align_accum_lines.empty() 
-                //     || !data.accumSummary_data.align_accum_max.empty()){
-                //     cerr << "align accum data should be empty!!! I think!!\n"
-                //          << "\tEXITING\n";
-                //          exit(1);
-                // }
-#endif            
+            case Dataset::accumSummary_type::accumSummary_dest::alignment:          
                 data.accumSummary_data.align_accum_lines.push_back(line);
                 data.accumSummary_data.align_accum_max.push_back(max);
             break;
