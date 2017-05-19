@@ -7,7 +7,7 @@
 
 using namespace std;
 
-static void read_in_files(Dataset &data, const string &file);
+// static void read_in_files(Dataset &data, const string &file);
 
 // REQUIRES: Boost library installed
 // MEMORY: incrementally reads in output
@@ -70,24 +70,24 @@ void filterDNaseWrapper(Dataset &data){
             // didn't mean to do rm while testing
             // system(string("rm -f " + readfile).c_str());
 
-            read_in_files(data, bedfile);
+            // read_in_files(data, bedfile);
         }
 
     }
 }
 
 
-static void read_in_files(Dataset &data, const string &file){
-    ifstream fin(file);
+// static void read_in_files(Dataset &data, const string &file){
+//     ifstream fin(file);
 
-    if(!fin){
-        cerr << "unable to open " << file << " for read in\n";
-        exit(1);
-    }
+//     if(!fin){
+//         cerr << "unable to open " << file << " for read in\n";
+//         exit(1);
+//     }
 
-    string line = "";
+//     string line = "";
 
-    while(getline(fin, line, '\n')){
-        data.filterDNaseWrapper_output.push_back(line);
-    }
-}
+//     while(getline(fin, line, '\n')){
+//         data.filterDNaseWrapper_output.push_back(line);
+//     }
+// }

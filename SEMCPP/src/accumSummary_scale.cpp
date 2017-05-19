@@ -1,5 +1,5 @@
 extern "C" {
-    #include "lib/libBigWig-master/bigWig.h"
+    #include "./lib/libBigWig-master/bigWig.h"
 }
 #include "iterativeSEM.hpp"
 #include "common.hpp"
@@ -18,8 +18,6 @@ using namespace std;
 //MODIFIES: data, specifically accumsummary data
 //EFFECTS: gathers raw bigwig data (?)
 
-//Extra parameters should be passed in the struct Dataset
-
 void accumSummary_scale(Dataset &data, const string &hfile,
                         const string &cfile, int scale,
                         Dataset::accumSummaryData::accumSummary_dest dest){
@@ -29,10 +27,11 @@ void accumSummary_scale(Dataset &data, const string &hfile,
 	char *fname = new char[hfile.length() + 1];
 	strcpy(fname, hfile.c_str());
 	bigWigFile_t *bwFile = bwOpen(fname, NULL, "r");
-    	if(bwFile == NULL){
-        	cerr << "Failed to open hfile: " << hfile << '\n';
-        	exit(1);
-    	}
+    	
+    if(bwFile == NULL){
+    	cerr << "Failed to open hfile: " << hfile << '\n';
+    	exit(1);
+	}
 
 	int dist = 500;
 	int total_size = dist * 2 + scale;
@@ -52,10 +51,13 @@ void accumSummary_scale(Dataset &data, const string &hfile,
 		cout << "Failure to open cfile in accumSummary_scale.cpp\n";
 		exit(1);
 	}
+
 	const string splitBy = "\t";
 	char *chrom = nullptr;
 	string line = "", seqid = "", direction = "";
+
 	vector<string> temp, signal_array(total_size);
+
 	int start = 0, end = 0, counter = 0;
     int upstart = 0, upend = 0;
 	// pointer to hold double values from library function;
@@ -64,10 +66,7 @@ void accumSummary_scale(Dataset &data, const string &hfile,
 
 	while(getline(input, line)){
 		// initialize vairables
-		start = 0;
-		end = 0;
-		counter = 0;
-		direction = '\0';
+        temp.clear();
 		chrom = nullptr;
 		split(line, splitBy, temp);
 		seqid = temp[0];
@@ -95,58 +94,25 @@ void accumSummary_scale(Dataset &data, const string &hfile,
 		upstart = start - dist;
 		upend = end + dist;
 
-		//char *fname = new char[hfile.length() + 1];
-		//strcpy(fname, hfile.c_str());
 		chrom = new char[seqid.length() + 1];
 		strcpy(chrom, seqid.c_str());
 
-		// stats function used from library
-		//double *bwStats(bigWigFile_t *fp, char *chrom, uint32_t start,
-        //                uint32_t end, uint32_t nBins, enum bwStatsType type);
-        // should return each individual value, where the mean of a single value
-        // is that same value
+        cout << "chrom: " << chrom << endl
+        << "upstart: " << static_cast<uint32_t>(upstart) << endl
+        << "upend: " << static_cast<uint32_t>(upend) << endl
+        << "nBins: " << static_cast<uint32_t>(upend - upstart) << endl;
+
 		values = bwStats(bwFile, chrom, static_cast<uint32_t>(upstart),
                          static_cast<uint32_t>(upend),
                          static_cast<uint32_t>(upend - upstart), bwStatsType::mean);
-#ifdef DEBUG
-        // check that this is the correect value
-        double *test1 = nullptr;
-        test1 = bwStats(bwFile, chrom, static_cast<uint32_t>(upstart),
-                         static_cast<uint32_t>(upend),
-                         static_cast<uint32_t>(upend - upstart), bwStatsType::min);
-        double *test2 = nullptr;
-        test2 = bwStats(bwFile, chrom, static_cast<uint32_t>(upstart),
-                         static_cast<uint32_t>(upend),
-                         static_cast<uint32_t>(upend - upstart), bwStatsType::max);
-        for(int i = 0; i < upend - upstart; ++i){
-            if(test1[i] != test2[i]){
-                cerr << "test1 AND test2 should match!!!!!!\nIf I understand it"
-                     << " correctly\n";
-                cerr << "\ttest1 val: " << test1[i] << "\n\ttest2 val: "
-                          << test2[i] << "\n\tEXITING";
-                exit(1);
-            }
-            if(test1[i] != values[i]){
-                cerr << "test1 AND values should match!!!!!!\nIf I understand it"
-                     << " correctly\n";
-                cerr << "\ttest1 val: " << test1[i] << "\n\tvalues val: "
-                     << values[i] << "\n\tEXITING";
-                exit(1);
-            }
-        }
-        free(test2);
-        free(test1);
-#endif
+
 
         if(values == NULL){
             cerr << "Failure to use bwStats!\n\tEXITING\n";
             exit(1);
         }
 
-		counter = 0;
-        //                      I DON'T KNOW IF THIS
-        //                      IS THE RIGHT END OF INTERVAL
-        //                      UPEND - UPSTART
+		
 		for(counter = 0; counter < upend - upstart; counter++){
 			values[counter] = roundf(values[counter] * 1000) / 1000;
 			signal_array[counter] = to_string(values[counter]);
@@ -155,17 +121,16 @@ void accumSummary_scale(Dataset &data, const string &hfile,
         free(values);
 		delete [] chrom;
 
-		//output results
-        // I AM GOING TO ASSUME THAT A VALUE OF 0.0 MEANS UNDEFINED.
-        // ACCESSING SOMETHING THAT IS UNDEFINED IN C++ IS A SEGMENTATION FAULT,
-        // A RUNTIME ERROR. I DON'T KNOW IF values DOESN'T POINT TO ANY
-        // UNDEFINED DATA (0.0 as I am assuming)
+
+        // UPDATE:
+        // nan IS AN ACTUAL POSSIBLE DOUBLE VALUE
+        // where nan can be found by nan("") or strtod("nan")
 		if(direction.find('+') != string::npos){
 			for(int k = 0; k < total_size; ++k){
 				// need to determine how to check for definition of signal_array[k]
 
                 // checks that signal_array[k] is non-zero
-                if(stod(signal_array[k]) != 0.0){
+                if(stod(signal_array[k]) != nan("")){
                     output[k] = signal_array[k];
                 }
                 else{
@@ -180,7 +145,7 @@ void accumSummary_scale(Dataset &data, const string &hfile,
                 // need to determine how to check for definition of signal_array[k]
 
                 // checks that signal_array[k] is non-zero
-                if(stod(signal_array[k]) != 0.0){
+                if(stod(signal_array[k]) != nan("")){
                     output[k] = signal_array[k];
                 }
                 else{
@@ -210,7 +175,7 @@ void accumSummary_scale(Dataset &data, const string &hfile,
 #ifdef DEBUG
                 if(!data.accumSummary_data.enum_accum_lines.empty() 
                     || !data.accumSummary_data.enum_accum_max.empty()){
-                    cout << "enum accum data should be empty!!! I think!!\n"
+                    cerr << "enum accum data should be empty!!! I think!!\n"
                          << "\tEXITING\n";
                          exit(1);
                 }
@@ -222,7 +187,7 @@ void accumSummary_scale(Dataset &data, const string &hfile,
 #ifdef DEBUG
                 if(!data.accumSummary_data.scramble_accum_lines.empty() 
                     || !data.accumSummary_data.scramble_accum_max.empty()){
-                    cout << "scramble accum data should be empty!!! I think!!\n"
+                    cerr << "scramble accum data should be empty!!! I think!!\n"
                          << "\tEXITING\n";
                          exit(1);
                 }
@@ -234,7 +199,7 @@ void accumSummary_scale(Dataset &data, const string &hfile,
 #ifdef DEBUG
                 if(!data.accumSummary_data.align_accum_lines.empty() 
                     || !data.accumSummary_data.align_accum_max.empty()){
-                    cout << "align accum data should be empty!!! I think!!\n"
+                    cerr << "align accum data should be empty!!! I think!!\n"
                          << "\tEXITING\n";
                          exit(1);
                 }
@@ -247,6 +212,7 @@ void accumSummary_scale(Dataset &data, const string &hfile,
                 exit(1);
             break;
         }
+        
 	}
 	bwClose(bwFile);
 	delete [] fname;

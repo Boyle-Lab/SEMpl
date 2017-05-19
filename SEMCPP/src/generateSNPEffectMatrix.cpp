@@ -88,16 +88,21 @@ void generateSNPEffectMatrix(Dataset &data) {
 
 
     // temporarily commented for testing
+    // temporarily commented for testing
+    // temporarily commented for testing
     // align_to_genome(data);
     // problem is with getfiles in directory
 
     //Step 3: Filter using DNase data and finding the signal at each location
     // ALSO: read in output of filterDNaseWrapper back to memory
+    // writes the *_filtered files
     if(data.settings.verbose){
         cout << "Filtering using DNase data and finding the signal\n";
     }
-    filterDNaseWrapper(data);
-    // data.filterDNaseWrapper_output is filled!!!!!!
+    // temporarily commented for testing
+    // temporarily commented for testing
+    // temporarily commented for testing
+    // filterDNaseWrapper(data);
 
     //Step 4: Find the signal using chIP-seq data
     find_signal(data, length);
@@ -136,7 +141,7 @@ void align_to_genome(Dataset &data){
         cout << "Aligning SNPs in kmers to the genome\n";
     }
         // align all to genome
-    alignToGenomeWrapper(data, data.settings.iteration, "../data/hg19");
+    alignToGenomeWrapper(data, data.settings.iteration, "./data/hg19");
 }
 
 // assumes filterDNaseWrapper_output is filled from previous function
@@ -163,14 +168,23 @@ void find_signal(Dataset &data, int length){
     GetFilesInDirectory(files, data.output_dir + "/ALIGNMENT/");
 
     for(const auto &file : files){
+        if(file.find("filtered") == string::npos){
+            continue;
+        }
+
+        // cout << "\t" << file << "\n";
+
+        // cin.get();
+
         accumSummary_scale(data, data.bigwig_file, file, length,
                            Dataset::accumSummaryData::accumSummary_dest::alignment);
+        // do not use non-useful files
 #ifdef DEBUG
-        cout << "\tDeleting " << file << '\n';
-        int val = system(("rm -rf " + file).c_str());
-        assert(val == 0);
+        // cout << "\tDeleting " << file << '\n';
+        // int val = system(("rm -rf " + file).c_str());
+        // assert(val == 0);
 #else
-        system(("rm -rf " + file).c_str());
+        // system(("rm -rf " + file).c_str());
 #endif
         // write to cache
         // -in_file and -cache are built into data
