@@ -142,6 +142,7 @@ void writeCache(Dataset &data, const string &cache,
     }
 
     message = sqlite3_finalize(staged_query);
+    problemEncountered(message, "finalize staged_query");
 
     message = sqlite3_close(cacheDB);
     problemEncountered(message, "closing the connection");
