@@ -68,7 +68,7 @@ void bowtie_genome_map(int length, const string& genome, const string& file,
     vector<string> dat;
     string DNA = "";
     while(getline(IN, map_line)){
-        split(map_line, "\t", dat);
+        split_string(map_line, "\t", dat);
         if(dat[1] == "+"){
             DNA = dat[4];
         }

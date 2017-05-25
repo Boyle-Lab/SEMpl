@@ -8,8 +8,11 @@ std::string revCompDNA(std::string DNA);
 
 bool fileExists(const std::string &filename);
 
-void split(std::string str, std::string splitBy, std::vector<std::string>& tokens);
+void split_string(const std::string &str, const std::string &splitBy, 
+		   std::vector<std::string>& tokens);
 
-std::string grab_string_at_index(const std::string &str, size_t index);
+std::string grab_string_at_index(const std::string &str, const size_t index, 
+								 const std::string &split);
 
-void GetFilesInDirectory(std::vector<std::string> &out, const std::string &directory);
+void GetFilesInDirectory(std::vector<std::string> &out, 
+						 const std::string &directory);

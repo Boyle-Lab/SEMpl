@@ -86,7 +86,7 @@ void generateSEM(const Dataset &data){
     vector<string> fields1;
     const string splitBy =  "_";
     for(size_t i = 0; i < data.accumSummary_data.align_accum_lines.size(); ++i){
-        split(data.accumSummary_data.align_accum_lines[i], splitBy, fields1);
+        split_string(data.accumSummary_data.align_accum_lines[i], splitBy, fields1);
         string BP = fields1[0];
         string loc = fields1[1];
 

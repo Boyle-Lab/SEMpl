@@ -98,7 +98,7 @@ void accumSummary_scale(Dataset &data, const string &hfile,
 		// initialize vairables
         temp.clear();
 		chrom = nullptr;
-		split(line, splitBy, temp);
+		split_string(line, splitBy, temp);
 		seqid = temp[0];
         upstart = 0, upend = 0;
 

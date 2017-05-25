@@ -62,7 +62,7 @@ void generatePWMfromSEM(Dataset & data){
 
     while(getline(INF, line, '\n')){
 
-        split(line, "\t", fields_str);
+        split_string(line, "\t", fields_str);
         fields_dbl.resize(fields_str.size());
 
         for(size_t i = 1; i < 5; ++i){
@@ -165,7 +165,7 @@ static void parse_pwm(const string &pwm, map<char, vector<double> > &map){
         // if neither of those strings are present in the current line
         if( ( line.find("DE") == string::npos )
          && ( line.find("XX") == string::npos ) ){
-            split(line, "\t", fields);
+            split_string(line, "\t", fields);
 
             fields_int.push_back(-1);
 
