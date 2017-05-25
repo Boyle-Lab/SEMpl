@@ -8,3 +8,4 @@ examples
 obj/
 *.clang_complete
 *.so
+*.out
