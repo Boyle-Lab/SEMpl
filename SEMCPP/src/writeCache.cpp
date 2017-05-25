@@ -7,7 +7,7 @@ using namespace std;
 bool fileExists(const string &filename);
 static void problemEncountered(const int &message, const string &what);
 //static void isRowReady(const int &message);
-static void prepareStmt(sqlite3 *db, string stmt, sqlite3_stmt *query);
+// static void prepareStmt(sqlite3 *db, string stmt, sqlite3_stmt *query);
 // static void checkDone(const int &message, const string &s);
 
 // REQUIRES: accumSummary_scale is filled with the correct data
@@ -112,15 +112,25 @@ void writeCache(Dataset &data, const string &cache,
     }
     sqlite3_stmt *staged_query = nullptr;
     msg = "INSERT OR IGNORE INTO kmer_cache VALUES(?,?)";
-    prepareStmt(cacheDB, msg, staged_query);
+    sqlite3_prepare_v2(cacheDB, msg.c_str(), static_cast<int>(msg.size()),
+                       &staged_query, NULL);
+    problemEncountered(message, msg);
+    // prepareStmt(cacheDB, msg, staged_query);
 
 
     //stringstream ss;
-    for(auto val1 : kmers){
+    #ifdef DEBUG
+    cout << "\tkmers" << endl;
+    #endif
 
-        message = sqlite3_bind_text(staged_query, 1, val1.first.c_str(), static_cast<int>(val1.first.size()), nullptr);
+    for(auto val1 : kmers){
+        #ifdef DEBUG
+        cout << "\tkmer: " << val1.first << ' ' << val1.second << endl;
+        #endif
+
+        message = sqlite3_bind_text(staged_query, 1, val1.first.c_str(), -1, NULL);
         problemEncountered(message, "bind text 1 for staged_query, writeCache");
-        message = sqlite3_bind_text(staged_query, 2, val1.second.c_str(), static_cast<int>(val1.second.size()), nullptr);
+        message = sqlite3_bind_text(staged_query, 2, val1.second.c_str(), -1, NULL);
         problemEncountered(message, "bind text 2 for staged_query, writeCache");
         message = sqlite3_step(staged_query);
         if(message != SQLITE_DONE){
@@ -131,17 +141,19 @@ void writeCache(Dataset &data, const string &cache,
         sqlite3_clear_bindings(staged_query);
     }
 
+    message = sqlite3_finalize(staged_query);
+
     message = sqlite3_close(cacheDB);
     problemEncountered(message, "closing the connection");
 }
 
 
 
-static void prepareStmt(sqlite3 *db, string stmt, sqlite3_stmt *query){
-    //sqlite3_prepare(sqlite3 *db, const char *zSql, int nByte, sqlite3_stmt **ppStmt, const char **pzTail)
-    int message = sqlite3_prepare_v2(db, stmt.c_str(), static_cast<int>(stmt.size()), &query, nullptr);
-    problemEncountered(message, stmt);
-}
+// static void prepareStmt(sqlite3 *db, string stmt, sqlite3_stmt *query){
+//     //sqlite3_prepare(sqlite3 *db, const char *zSql, int nByte, sqlite3_stmt **ppStmt, const char **pzTail)
+//     int message = sqlite3_prepare_v2(db, stmt.c_str(), static_cast<int>(stmt.size()), &query, nullptr);
+//     problemEncountered(message, stmt);
+// }
 
 static void problemEncountered(const int &message, const string &what){
     if(message != SQLITE_OK){
