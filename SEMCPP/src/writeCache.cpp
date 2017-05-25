@@ -8,7 +8,7 @@ bool fileExists(const string &filename);
 static void problemEncountered(const int &message, const string &what);
 //static void isRowReady(const int &message);
 static void prepareStmt(sqlite3 *db, string stmt, sqlite3_stmt *query);
-static void checkDone(const int &message, const string &s);
+// static void checkDone(const int &message, const string &s);
 
 // REQUIRES: accumSummary_scale is filled with the correct data
 // EFFECTS: writes output of accumSummary_scale to cache, based upon dest
@@ -67,30 +67,48 @@ void writeCache(Dataset &data, const string &cache,
         }
     // BLOB? why is it a BLOB? I used "text" not "blob", will need to ask about this
 
-        sqlite3_stmt *build_statement = nullptr;
+        // sqlite3_stmt *build_statement = nullptr;
+
+        char *z_err_msg = NULL;
 
         msg = "CREATE TABLE kmer_cache (kmer TEXT PRIMARY KEY NOT NULL, alignment BLOB)";
-        prepareStmt(cacheDB, msg, build_statement);
-        message = sqlite3_step(build_statement);
-        checkDone(message, "build statement create table kmer_cache");
-        sqlite3_finalize(build_statement);
+        message = sqlite3_exec(cacheDB, msg.c_str(), NULL, NULL, &z_err_msg);
+        problemEncountered(message, "create unique index on seen_cache");
+        sqlite3_free(z_err_msg);
+        // message = sqlite3_exec(cacheDB, msg.c_str(), NULL, NULL, &z_err_msg);
+        // // prepareStmt(cacheDB, msg, build_statement);
+        // // message = sqlite3_step(build_statement);
+        // checkDone(message, "build statement create table kmer_cache");
+        // sqlite3_finalize(build_statement);
 
         msg = "CREATE UNIQUE INDEX kmerIDX ON kmer_cache(kmer)";
-        prepareStmt(cacheDB, msg, build_statement);
-        message = sqlite3_step(build_statement);
-        checkDone(message, "build statement create unique index kmer_cache");
-        sqlite3_finalize(build_statement);
+        message = sqlite3_exec(cacheDB, msg.c_str(), NULL, NULL, &z_err_msg);
+        problemEncountered(message, "create unique index on seen_cache");
+        sqlite3_free(z_err_msg);
+        // message = sqlite3_exec(cacheDB, msg.c_str(), NULL, NULL, &z_err_msg);
+        // // prepareStmt(cacheDB, msg, build_statement);
+        // // message = sqlite3_step(build_statement);
+        // checkDone(message, "build statement create unique index kmer_cache");
+        // sqlite3_finalize(build_statement);
 
         msg = "CREATE TABLE seen_cache (kmer TEXT PRIMARY KEY NOT NULL, iter INT NOT NULL)";
-        prepareStmt(cacheDB, msg, build_statement);
-        message = sqlite3_step(build_statement);
-        checkDone(message, "build statement create table seen_cache");
-        sqlite3_finalize(build_statement);
+        message = sqlite3_exec(cacheDB, msg.c_str(), NULL, NULL, &z_err_msg);
+        problemEncountered(message, "create unique index on seen_cache");
+        sqlite3_free(z_err_msg);
+        // message = sqlite3_exec(cacheDB, msg.c_str(), NULL, NULL, &z_err_msg);
+        // // prepareStmt(cacheDB, msg, build_statement);
+        // // message = sqlite3_step(build_statement);
+        // checkDone(message, "build statement create table seen_cache");
+        // sqlite3_finalize(build_statement);
 
         msg = "CREATE UNIQUE INDEX seenIDX ON seen_cache(kmer)";
-        prepareStmt(cacheDB, msg, build_statement);
-        message = sqlite3_step(build_statement);
-        checkDone(message, "build statement create unique index on seen_cache");
+        message = sqlite3_exec(cacheDB, msg.c_str(), NULL, NULL, &z_err_msg);
+        problemEncountered(message, "create unique index on seen_cache");
+        sqlite3_free(z_err_msg);
+        // message = sqlite3_exec(cacheDB, msg.c_str(), NULL, NULL, &z_err_msg);
+        // // prepareStmt(cacheDB, msg, build_statement);
+        // // message = sqlite3_step(build_statement);
+        // checkDone(message, "build statement create unique index on seen_cache");
     }
     sqlite3_stmt *staged_query = nullptr;
     msg = "INSERT OR IGNORE INTO kmer_cache VALUES(?,?)";
@@ -133,17 +151,17 @@ static void problemEncountered(const int &message, const string &what){
     }
 }
 
-static void checkDone(const int &message, const string &s){
-    if(message != SQLITE_DONE){
-        cerr << s << " is not done!\n\tEXITING" << endl;
-        exit(1);
-    }
-}
-/*
-* static void isRowReady(const int &message){
-*     if(message != SQLITE_ROW){
-*         cerr << "Row isn't ready!!\n\tEXITING\n";
-*         exit(1);
-*     }
-* }
-*/
+// static void checkDone(const int &message, const string &s){
+//     if(message != SQLITE_DONE){
+//         cerr << s << " is not done!\n\tEXITING" << endl;
+//         exit(1);
+//     }
+// }
+
+//  static void isRowReady(const int &message){
+//      if(message != SQLITE_ROW){
+//          cerr << "Row isn't ready!!\n\tEXITING\n";
+//          exit(1);
+//      }
+//  }
+
