@@ -149,6 +149,9 @@ void align_to_genome(Dataset &data){
 void find_signal(Dataset &data, int length){
     if(data.settings.verbose){
         cout << "Finding the average signal\n";
+        #ifdef DEBUG
+        cout << flush;
+        #endif
     }
     // this function, in the original algorithm, iterates through files, where those
     // files correspond to the length of something, then each nucleotide letter

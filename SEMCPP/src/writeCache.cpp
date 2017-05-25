@@ -45,16 +45,12 @@ void writeCache(Dataset &data, const string &cache,
     for(string line : *ptr){
 #ifdef DEBUG
         cout << "string at index 3 of string: " << line
-            << "\nis: " << grab_string_at_index(line, 3, string(" ")) << '\n';
+            << "\nis: " << grab_string_at_index(line, 3, string("\t")) << endl;
 #endif
-        kmers[grab_string_at_index(line, 3, string(" "))] = line;
+        kmers[grab_string_at_index(line, 3, string("\t"))] = line;
     }
 
-    bool newcache = false;
-
-    if(fileExists(cache)){
-        newcache = true;
-    }
+    bool newcache = fileExists(cache);
 
     sqlite3 *cacheDB;
     int message = 0;
@@ -103,10 +99,6 @@ void writeCache(Dataset &data, const string &cache,
 
     //stringstream ss;
     for(auto val1 : kmers){
-        /*
-        *   I believe the current C++ design does not
-        *   necessitate an equivalent join, as line 72 writeCache.pl
-        */
 
         message = sqlite3_bind_text(staged_query, 1, val1.first.c_str(), static_cast<int>(val1.first.size()), nullptr);
         problemEncountered(message, "bind text 1 for staged_query, writeCache");
@@ -129,7 +121,7 @@ void writeCache(Dataset &data, const string &cache,
 
 static void prepareStmt(sqlite3 *db, string stmt, sqlite3_stmt *query){
     //sqlite3_prepare(sqlite3 *db, const char *zSql, int nByte, sqlite3_stmt **ppStmt, const char **pzTail)
-    int message = sqlite3_prepare(db, stmt.c_str(), static_cast<int>(stmt.size()), &query, nullptr);
+    int message = sqlite3_prepare_v2(db, stmt.c_str(), static_cast<int>(stmt.size()), &query, nullptr);
     problemEncountered(message, stmt);
 }
 
@@ -147,10 +139,10 @@ static void checkDone(const int &message, const string &s){
     }
 }
 /*
-static void isRowReady(const int &message){
-    if(message != SQLITE_ROW){
-        cerr << "Row isn't ready!!\n\tEXITING\n";
-        exit(1);
-    }
-}
+* static void isRowReady(const int &message){
+*     if(message != SQLITE_ROW){
+*         cerr << "Row isn't ready!!\n\tEXITING\n";
+*         exit(1);
+*     }
+* }
 */

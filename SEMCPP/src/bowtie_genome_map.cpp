@@ -80,11 +80,6 @@ void bowtie_genome_map(int length, const string& genome, const string& file,
             cerr << map_line << '\n';
             exit(1);
         }
-        // bowtie_output is a vector of arrays, each array has 5 string spots
-        //              convert to int, perform addition, convert back to string
-        //data.bowtie_output.push_back({{dat[2], dat[3],
-        //                              to_string(atoi(dat[3].c_str() +  length) ),
-        //                                  DNA, dat[1]}});
 
         OUT << dat[2] << '\t' << dat[3] << '\t'
             << atoi(dat[3].c_str()) + length

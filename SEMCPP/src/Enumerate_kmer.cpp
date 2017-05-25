@@ -61,7 +61,7 @@ void Enumerate_kmer(Dataset &data){
     cutoff = get_cutoff(data);
 
     if(cutoff == 0.0){
-        cerr << "cutoff value unchanged within Enumerate_kmer.cpp\n\tEXITING\n";
+        cerr << "cutoff value unchanged within Enumerate_kmer.cpp\n\tEXITING" << endl;
         exit(1);
     }
     try{
@@ -137,11 +137,11 @@ static void parse_pwm(const Dataset &data,
         }
 #ifdef DEBUG
         if(sz != modifiedFields.size()){
-            cerr << "modifiedFields has changed in size!!\n\tEXITING\n";
+            cerr << "modifiedFields has changed in size!!\n\tEXITING" << endl;
             exit(1);
         }
         if(sz == 0){
-            cerr << "sz shouldn't be 0!!\n\tEXITING";
+            cerr << "sz shouldn't be 0!!\n\tEXITING" << endl;
             exit(1);
         }
 #endif
@@ -244,7 +244,7 @@ static double get_cutoff(const Dataset &data){
       ifstream IN_HANDLE("src/PWM_SCORES_FINAL.txt");
 
     if(!IN_HANDLE){
-        cerr << "Failure to open src/PWM_SCORES_FINAL.txt\n\tEXITING" << '\n';
+        cerr << "Failure to open src/PWM_SCORES_FINAL.txt\n\tEXITING" << endl;
         exit(1); 
     }
 
@@ -263,7 +263,7 @@ static double get_cutoff(const Dataset &data){
           return a;
         }
     }
-    cerr << "Unable to find pre-caluclated cutoff in file\n\tEXITING\n";
+    cerr << "Unable to find pre-caluclated cutoff in file\n\tEXITING" << endl;
     exit(1);
     return 0.0;
 }
