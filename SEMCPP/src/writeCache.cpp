@@ -44,8 +44,8 @@ void writeCache(Dataset &data, const string &cache,
 
     for(string line : *ptr){
 #ifdef DEBUG
-        cout << "string at index 3 of string: " << line
-            << "\nis: " << grab_string_at_index(line, 3, string("\t")) << endl;
+        // cout << "string at index 3 of string: " << line
+            // << "\nis: " << grab_string_at_index(line, 3, string("\t")) << endl;
 #endif
         kmers[grab_string_at_index(line, 3, string("\t"))] = line;
     }
