@@ -128,13 +128,14 @@ static void prepareStmt(sqlite3 *db, string stmt, sqlite3_stmt *query){
 static void problemEncountered(const int &message, const string &what){
     if(message != SQLITE_OK){
         cerr << "Problem encountered with " << what << "!\n\tEXITING\n";
+        cerr << "code: " << message << endl;
         exit(1);
     }
 }
 
 static void checkDone(const int &message, const string &s){
     if(message != SQLITE_DONE){
-        cerr << s << " is not done!\n\tEXITING\n";
+        cerr << s << " is not done!\n\tEXITING" << endl;
         exit(1);
     }
 }
