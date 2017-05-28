@@ -5,7 +5,6 @@ C++ implementation of the SEM algorithm
 1. bowtie binary in ./bin
 2. bedtools binary in ./bin
 3. argument to "-readcache" is not optional.
-4. This program has been tested on Ubuntu 16.04.2 LTS.
 
 # Compilation
 1. Clone to computer, then cd into lib/libBigWig-master and run "make".
@@ -17,6 +16,9 @@ C++ implementation of the SEM algorithm
 7. mkdir bin and place expected binaries.
 8. run "export LD_LIBRARY_PATH="/lib/x86_64-linux-gnu:/home/cmorteru/SEM_CPP/SEMCPP/lib"" without the outermost quotes so that dynamic libraries can be found.
 9. Run "make" without quotes to compile everything.
+
+# Running
+	./iterativeSEM.pl -PWM examples/MA0114.1.pwm -merge_file examples/wgEncodeOpenChromDnaseHepg2Pk.narrowPeak -big_wig examples/wgEncodeHaibTfbsHepg2Hnf4asc8987V0416101RawRep1.bigWig -TF_name HNF4A -output examples/HNF4A/
 
 # Tasks
 

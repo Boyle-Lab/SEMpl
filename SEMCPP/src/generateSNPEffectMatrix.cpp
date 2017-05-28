@@ -74,12 +74,12 @@ void generateSNPEffectMatrix(Dataset &data) {
 //---------------------------------------------------------
 
     if(data.settings.verbose){
-		cout << "\nGenerating SEM for " << data.TF_name << '\n';
+		cout << "\nGenerating SEM for " << data.TF_name << endl;
 	}
 
 	//Step 1: Generate Enumerated k-mers
-	cout << "Creating enumerated kmers from PWM file\n";
-
+	cout << "Creating enumerated kmers from PWM file" << endl;
+    cout << "\tstep one" << endl;
     int length = generate_kmers(data);
     // data.kmerHash is now filled in!!!!
 
@@ -90,6 +90,7 @@ void generateSNPEffectMatrix(Dataset &data) {
     // temporarily commented for testing
     // temporarily commented for testing
     // temporarily commented for testing
+    cout << "\tstep two" << endl;
     // align_to_genome(data);
     // problem is with getfiles in directory
 
@@ -97,31 +98,35 @@ void generateSNPEffectMatrix(Dataset &data) {
     // ALSO: read in output of filterDNaseWrapper back to memory
     // writes the *_filtered files
     if(data.settings.verbose){
-        cout << "Filtering using DNase data and finding the signal\n";
+        cout << "Filtering using DNase data and finding the signal" << endl;
     }
     // temporarily commented for testing
     // temporarily commented for testing
     // temporarily commented for testing
+    cout << "\tstep three" << endl;
     // filterDNaseWrapper(data);
 
     //Step 4: Find the signal using chIP-seq data
+    cout << "\tstep four" << endl;
     find_signal(data, length);
 
     //Step 5: Generate baselines
+    cout << "\tstep five" << endl;
     create_baselines(data, length);
 
     //Step 6: Create R plot(s) and a SEM output
+    cout << "\tstep six" << endl;
     generate_output(data);
 
     if(data.settings.verbose){
-        cout << "The SNP Effect Matrix has been completed  for " << data.TF_name << '\n';
+        cout << "The SNP Effect Matrix has been completed  for " << data.TF_name << endl;
     }
 
 }
 
 int generate_kmers(Dataset &data){
     if(data.settings.verbose){
-        cout << "Creating enumerated kmers\n";
+        cout << "Creating enumerated kmers" << endl;
     }
 
     Enumerate_kmer(data);
@@ -174,6 +179,7 @@ void find_signal(Dataset &data, int length){
         if(file.find("filtered") == string::npos){
             continue;
         }
+        cout << '\t' << file << endl;
 
         // cout << "\t" << file << "\n";
 
@@ -207,27 +213,36 @@ void find_signal(Dataset &data, int length){
         }
 
         // SHOULD THERE BE AN ERROR CHECK IF signal_cache_enumerate IS EMPTY????
-        sort(data.signal_cache.begin(), data.signal_cache.end());
-        data.signal_output.resize(data.signal_cache.size()
-                                + data.accumSummary_data.align_accum_lines.size());
-        // returns iterator to one past the location of the last copy
-        auto iter = copy(data.accumSummary_data.align_accum_lines.begin(),
-                         data.accumSummary_data.align_accum_lines.end(),
-                         data.signal_output.begin());
+        try{
+            sort(data.signal_cache.begin(), data.signal_cache.end());
+            data.signal_output.resize(data.signal_cache.size()
+                                    + data.accumSummary_data.align_accum_lines.size());
+            // returns iterator to one past the location of the last copy
+            auto iter = copy(data.accumSummary_data.align_accum_lines.begin(),
+                             data.accumSummary_data.align_accum_lines.end(),
+                             data.signal_output.begin());
 
-        // CHANGE REQUIRED REGARDING WHAT IS IN DATA.SIGNAL_ENUMERATE..._OUTPUT
-        // CHANGE REQUIRED REGARDING WHAT IS IN DATA.SIGNAL_ENUMERATE..._OUTPUT
-        // CHANGE REQUIRED REGARDING WHAT IS IN DATA.SIGNAL_ENUMERATE..._OUTPUT
-        // and corresponding other data
+            // CHANGE REQUIRED REGARDING WHAT IS IN DATA.SIGNAL_ENUMERATE..._OUTPUT
+            // CHANGE REQUIRED REGARDING WHAT IS IN DATA.SIGNAL_ENUMERATE..._OUTPUT
+            // CHANGE REQUIRED REGARDING WHAT IS IN DATA.SIGNAL_ENUMERATE..._OUTPUT
+            // and corresponding other data
 
-        //  FILLS data.signal_enumerate_output !!!!!!!!!!!!
-        unique_copy(data.signal_cache_enumerate.begin(),
-                    data.signal_cache_enumerate.end(),
-                    iter);
-
-
-        findMaximumAverageSignalWrapper(data,
-                                        Dataset::accumSummary_type::accumSummary_dest::alignment);
+            //  FILLS data.signal_enumerate_output !!!!!!!!!!!!
+            unique_copy(data.signal_cache_enumerate.begin(),
+                        data.signal_cache_enumerate.end(),
+                        iter);
+        }
+        catch(...){
+            cerr << "problem with algorithm usage" << endl;
+            exit(1);
+        }
+        try{
+            findMaximumAverageSignalWrapper(data,
+                                            Dataset::accumSummary_type::accumSummary_dest::alignment);
+        }
+        catch(...){
+            cerr << "problem with findMaximumAverageSignalWrapper(args)" << endl;
+        }
 
     }
 
@@ -235,7 +250,7 @@ void find_signal(Dataset &data, int length){
 
 void create_baselines(Dataset &data, int length){
     if (data.settings.verbose){
-        cout << "Creating directory BASELINE\n";
+        cout << "Creating directory BASELINE" << endl;
     }
     string cmd = "rm -rf " + data.output_dir + "/BASELINE";
 
@@ -249,7 +264,7 @@ void create_baselines(Dataset &data, int length){
     // grab keys of kmerHash
 
 
-    std::vector<string> scramble_cache_output;
+    vector<string> scramble_cache_output;
 
     for(const auto &pair : data.kmerHash){
         data.scramble_kmers.push_back(pair.first);
@@ -257,7 +272,7 @@ void create_baselines(Dataset &data, int length){
 
     if(!data.settings.fastrun){
         scramble_kmer(data);
-        // scramble_kmers IS NOW SCRAMBLED!!!!                          $Cache
+        // scramble_kmers IS NOW SCRAMBLED!!!!
 
         checkCache(data, data.scramble_kmers, scramble_cache_output, data.cachefile,
                     Dataset::accumSummary_type::accumSummary_dest::scrambled);
@@ -370,7 +385,7 @@ void create_baselines(Dataset &data, int length){
 
 void generate_output(Dataset &data){
     if (data.settings.verbose){
-        cout << "Generating Output\n";
+        cout << "Generating Output" << endl;
     }
 
     generateSEM(data);

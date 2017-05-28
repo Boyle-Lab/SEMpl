@@ -73,7 +73,7 @@ void checkCache(Dataset &data, const vector<string> &in_file, vector<string> &ou
 
     if(newcache){
         if(data.settings.verbose){
-            cout << "Cache does exist\n";
+            // cout << "Cache does exist\n";
         }
 
         msg = "SELECT count(*) FROM seen_cache WHERE kmer=? AND iter!=?";
@@ -279,7 +279,7 @@ void checkCache(Dataset &data, const vector<string> &in_file, vector<string> &ou
 static void problemEncountered(const int message, const string &what){
     if(message != SQLITE_OK){
         cerr << "Problem encountered with " << what << " !\n\tEXITING\n";
-        cout << "\tError code: " << message << endl;
+        cerr << "\tError code: " << message << endl;
         exit(1);
     }
 }

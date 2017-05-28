@@ -21,6 +21,7 @@ void writeCache(Dataset &data, const string &cache,
     // wants the third space, indexed from 0
     map<string, string> kmers;
 
+    // points to an output vector from running accumSummary_scale(args)
     const vector<string> *ptr = nullptr;
     switch (dest) {
         case Dataset::accumSummary_type::accumSummary_dest::none:
@@ -42,6 +43,7 @@ void writeCache(Dataset &data, const string &cache,
         break;
     }
 
+    // points to an output vector from running accumSummary_scale(args)
     for(string line : *ptr){
 #ifdef DEBUG
         // cout << "string at index 3 of string: " << line
@@ -120,12 +122,12 @@ void writeCache(Dataset &data, const string &cache,
 
     //stringstream ss;
     #ifdef DEBUG
-    cout << "\tkmers" << endl;
+    // cout << "\tkmers" << endl;
     #endif
 
     for(auto val1 : kmers){
         #ifdef DEBUG
-        cout << "\tkmer: " << val1.first << ' ' << val1.second << endl;
+        // cout << "\tkmer: " << val1.first << ' ' << val1.second << endl;
         #endif
 
         message = sqlite3_bind_text(staged_query, 1, val1.first.c_str(), -1, NULL);
