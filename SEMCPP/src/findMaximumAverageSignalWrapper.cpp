@@ -60,7 +60,8 @@ void findMaximumAverageSignalWrapper(Dataset &data,
 
         for(size_t i = 0; i < max_ptr->size(); ++i){
             // checks if the value corresponds to "NA"
-            if(max_ptr->at(i) != numeric_limits<double>::max()){
+            // if(max_ptr->at(i) != numeric_limits<double>::max()){
+            if( !isnan( max_ptr->at(i) ) ) {
                 sum += max_ptr->at(i);
                 ++counter;
             }
@@ -110,16 +111,3 @@ void findMaximumAverageSignalWrapper(Dataset &data,
 
 
 }
-
-//Function used for parsing lines by a delimiter.
-/*
-vector<string> split(const string &str, char delim) {
-    stringstream stream(str);
-    string temp;
-    vector<string> contents;
-    while (getline(stream, temp, delim)) {
-        contents.push_back(temp);
-    }
-    return contents;
-}
-*/

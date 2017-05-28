@@ -179,15 +179,17 @@ void find_signal(Dataset &data, int length){
         if(file.find("filtered") == string::npos){
             continue;
         }
-        cout << '\t' << file << endl;
+        cout << '\t' << "file: " << file << endl;
 
         // cout << "\t" << file << "\n";
 
         // cin.get();
 
         try{
+            cout << "\taccumSummary_scale(args) is running..." << flush;
             accumSummary_scale(data, data.bigwig_file, file, length,
                                Dataset::accumSummary_type::accumSummary_dest::alignment);
+            cout << "FINISH" << endl;
         }
         catch(...){
             cerr << "Problem with accumSummary_scale\n\tEXITING" << endl;
@@ -204,8 +206,10 @@ void find_signal(Dataset &data, int length){
         // write to cache
         // -in_file and -cache are built into data
         try{
+            cout << "\twriteCache(args) is running..." << flush;
             writeCache(data, data.cachefile,
                        Dataset::accumSummary_type::accumSummary_dest::alignment);
+            cout << "FINISH" << endl;
         }
         catch(...){
             cerr << "problem with writeCache\n\tEXITING" << endl;
@@ -214,13 +218,17 @@ void find_signal(Dataset &data, int length){
 
         // SHOULD THERE BE AN ERROR CHECK IF signal_cache_enumerate IS EMPTY????
         try{
+            cout << "\tsorting..." << flush;
             sort(data.signal_cache.begin(), data.signal_cache.end());
+            cout << "FINISH" << endl;
             data.signal_output.resize(data.signal_cache.size()
                                     + data.accumSummary_data.align_accum_lines.size());
             // returns iterator to one past the location of the last copy
+            cout << "\tcopying..." << flush; 
             auto iter = copy(data.accumSummary_data.align_accum_lines.begin(),
                              data.accumSummary_data.align_accum_lines.end(),
                              data.signal_output.begin());
+            cout << "FINISH" << endl;
 
             // CHANGE REQUIRED REGARDING WHAT IS IN DATA.SIGNAL_ENUMERATE..._OUTPUT
             // CHANGE REQUIRED REGARDING WHAT IS IN DATA.SIGNAL_ENUMERATE..._OUTPUT
@@ -228,17 +236,21 @@ void find_signal(Dataset &data, int length){
             // and corresponding other data
 
             //  FILLS data.signal_enumerate_output !!!!!!!!!!!!
+            cout << "\tunique copying..." << flush;
             unique_copy(data.signal_cache_enumerate.begin(),
                         data.signal_cache_enumerate.end(),
                         iter);
+            cout << "FINISH" << endl;
         }
         catch(...){
             cerr << "problem with algorithm usage" << endl;
             exit(1);
         }
         try{
+            cout << "\tfinding findMaximumAverageSignal..." << flush;
             findMaximumAverageSignalWrapper(data,
                                             Dataset::accumSummary_type::accumSummary_dest::alignment);
+            cout << "FINISH" << endl;
         }
         catch(...){
             cerr << "problem with findMaximumAverageSignalWrapper(args)" << endl;
@@ -365,21 +377,21 @@ void create_baselines(Dataset &data, int length){
     findMaximumAverageSignalWrapper(data,
                                     Dataset::accumSummary_type::accumSummary_dest::enumerated);
 
-    if(data.settings.delAlignmentBed){
-        system(("rm -f " + data.output_dir + "/BASELINE/Scrambled_kmer.bed").c_str());
-        system(("rm -f " + data.output_dir + "/BASELINE/Enumerated_kmer.bed").c_str());
-    }
-    if(data.settings.delFilteredBed){
-        system(("rm -f " + data.output_dir + "/BASELINE/Scrambled_kmer_filtered.bed").c_str());
-        system(("rm -f " + data.output_dir + "/BASELINE/Enumerated_kmer_filtered.bed").c_str());
-    }
-    if(data.settings.delSNPList){
-        system(("rm -f  " + data.output_dir + "/BASELINE/*.scrambled").c_str());
-		system(("rm -f  " + data.output_dir + "/BASELINE/*.fa").c_str());
-		system(("rm -f  " + data.output_dir + "/BASELINE/*.sm.txt").c_str());
-		system(("rm -f  " + data.output_dir + "/BASELINE/*.cache").c_str());
-		system(("rm -f  " + data.output_dir + "/BASELINE/Enumerated_kmer.txt").c_str());
-    }
+  //   if(data.settings.delAlignmentBed){
+  //       system(("rm -f " + data.output_dir + "/BASELINE/Scrambled_kmer.bed").c_str());
+  //       system(("rm -f " + data.output_dir + "/BASELINE/Enumerated_kmer.bed").c_str());
+  //   }
+  //   if(data.settings.delFilteredBed){
+  //       system(("rm -f " + data.output_dir + "/BASELINE/Scrambled_kmer_filtered.bed").c_str());
+  //       system(("rm -f " + data.output_dir + "/BASELINE/Enumerated_kmer_filtered.bed").c_str());
+  //   }
+  //   if(data.settings.delSNPList){
+  //       system(("rm -f  " + data.output_dir + "/BASELINE/*.scrambled").c_str());
+		// system(("rm -f  " + data.output_dir + "/BASELINE/*.fa").c_str());
+		// system(("rm -f  " + data.output_dir + "/BASELINE/*.sm.txt").c_str());
+		// system(("rm -f  " + data.output_dir + "/BASELINE/*.cache").c_str());
+		// system(("rm -f  " + data.output_dir + "/BASELINE/Enumerated_kmer.txt").c_str());
+  //   }
 
 }
 

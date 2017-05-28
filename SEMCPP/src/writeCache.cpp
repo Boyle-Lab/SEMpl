@@ -15,9 +15,9 @@ static void problemEncountered(const int &message, const string &what);
 void writeCache(Dataset &data, const string &cache,
                 Dataset::accumSummary_type::accumSummary_dest dest){
 
-    if(data.settings.verbose){
-        cout << "Building cache for processed kmers.\n";
-    }
+    // if(data.settings.verbose){
+    //     cout << "Building cache for processed kmers.\n";
+    // }
     // wants the third space, indexed from 0
     map<string, string> kmers;
 

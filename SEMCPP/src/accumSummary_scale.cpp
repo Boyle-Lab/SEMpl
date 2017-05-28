@@ -16,7 +16,7 @@ using namespace std;
 			// contains all data, contains bigwig filename, region file, scale
 //REQUIRES: data is valid Dataset, receives bigwig file, file containing regions to center, and scale size
 //MODIFIES: data, specifically accumsummary data
-//EFFECTS: gathers raw bigwig data (?)
+//EFFECTS: fills appropriate accumSummary_data vectors
 
 void accumSummary_scale(Dataset &data, const string &hfile,
                         const string &cfile, int scale,
@@ -89,7 +89,7 @@ void accumSummary_scale(Dataset &data, const string &hfile,
 
 	int start = 0, end = 0, counter = 0;
     int upstart = 0, upend = 0;
-	// pointer to hold double values from library function;
+	// pointer to hold double values from bigwig library function;
 	double *values = nullptr;
 
 
@@ -134,7 +134,8 @@ void accumSummary_scale(Dataset &data, const string &hfile,
 
 		values = bwStats(bwFile, chrom, static_cast<uint32_t>(upstart),
                          static_cast<uint32_t>(upend),
-                         static_cast<uint32_t>(upend - upstart), bwStatsType::mean);
+                         static_cast<uint32_t>(upend - upstart), 
+                         bwStatsType::mean);
 
 
         if(values == NULL){
@@ -154,6 +155,7 @@ void accumSummary_scale(Dataset &data, const string &hfile,
 
         // UPDATE:
         // nan IS AN ACTUAL POSSIBLE DOUBLE VALUE
+        // use isnan(double) to check if NaN
         try{
     		if(direction.find('+') != string::npos){
     			for(int k = 0; k < total_size; ++k){
@@ -198,7 +200,9 @@ void accumSummary_scale(Dataset &data, const string &hfile,
                     ++hitcount;
                 }
                 else{
-                    if(signal_array[l] > max) max = signal_array[l];
+                    if(signal_array[l] > max){ 
+                        max = signal_array[l];
+                    }
                 }
 		}
         // if max is maximum possible double value, then it is not applicable
