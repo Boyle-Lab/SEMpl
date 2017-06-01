@@ -23,9 +23,7 @@ using namespace std;
 bool fileExists(const string &filename);
 static void problemEncountered(const int message, const string &what);
 static void isRowReady(const int message);
-// static void prepareStmt(sqlite3 *db, string stmt, sqlite3_stmt *query);
 static void checkDone(const int message, const string &s);
-// static const char* convert_to_const_char(const unsigned char* store);
 
 
 // MODIFIES: adds appropriate kmers to the specific output_cache
@@ -44,6 +42,8 @@ void checkCache(Dataset &data, const vector<string> &in_file, vector<string> &ou
     // else cout << " exists";
     // cout << '\n';
 #endif
+
+    out_cache.clear();
 
     if(data.settings.verbose){
         cout << "Querying cache for processed kmers\n";

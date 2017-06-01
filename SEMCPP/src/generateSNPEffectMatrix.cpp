@@ -346,6 +346,7 @@ void create_baselines(Dataset &data, int length){
 
     for(const auto &pair : data.kmerHash){
         data.scramble_kmers.push_back(pair.first);
+        cout << "first: " << pair.first << endl << "second: " << pair.second << endl;
     }
 
     if(!data.settings.fastrun){
