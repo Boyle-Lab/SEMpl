@@ -77,7 +77,7 @@ void bowtie_genome_map(int length, const string& genome, const string& file,
         }
         else{
             cerr << "unknown strand!\n";
-            cerr << map_line << '\n';
+            cerr << map_line << endl;
             exit(1);
         }
 

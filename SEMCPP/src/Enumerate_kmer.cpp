@@ -40,12 +40,16 @@ static void parse_pwm(const Dataset &data,
 
 // REQUIRES: within data, PWM_data is filled in
 // EFFECTS: created enumerated kmers using a cutoff and a PWM matrix, returns the map
+//          the result is data.kmerHash
 // note: for now, searches for a pre-calculated cutoff
 void Enumerate_kmer(Dataset &data){
     map<pair<int, string>, int, hash_comp> pwmHash;
     const vector<string> nucleotideStack {"A", "C", "G", "T"};
     vector<double> bestCase;
     double cutoff = 0.0;
+
+    // clear data.kmerHash
+    data.kmerHash.clear();
 
     try{
         parse_pwm(data, pwmHash, nucleotideStack, bestCase);
