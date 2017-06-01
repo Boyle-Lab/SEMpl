@@ -176,8 +176,8 @@ void find_signal(Dataset &data, int length){
     GetFilesInDirectory(files, data.output_dir + "/ALIGNMENT/");
 
     char bp = '\0';
-    const char *pos = '\0';
-    const char *end = '\0';
+    const char *pos = nullptr;
+    const char *end = nullptr;
 
     // clear data.sig_deets*
     data.sig_deets_maximum.clear();
@@ -185,7 +185,7 @@ void find_signal(Dataset &data, int length){
     data.sig_deets_stdev.clear();
     data.sig_deets_sterr.clear();
 
-    char* arr = '\0';
+    char* arr = nullptr;
     int val = 0;
 
     for(const string &file : files){
