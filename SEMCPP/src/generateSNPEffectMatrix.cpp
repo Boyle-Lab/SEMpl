@@ -33,12 +33,12 @@ my $iteration = -1;
 //     -TF_name $tf -output $output -threshold $threshold -iteration $iterID
 //     -writecache -readcache $CACHE -verbose";
 
-#include "src/iterativeSEM.hpp"
+#include "./src/iterativeSEM.hpp"
 #include <iostream>
 #include <cstdlib>
 #include <string>
 #include <cstring>
-#include "src/common.hpp"
+#include "./src/common.hpp"
 using namespace std;
 
 void find_signal(Dataset &data, int length);
@@ -49,7 +49,8 @@ int generate_kmers(Dataset &data);
 void Enumerate_kmer(Dataset &data);
 
 void generateSNPEffectMatrix(Dataset &data) {
-	// default options are built into settings within data
+	// default options are built into settings within data 
+    // in iterativeSEM.hpp
   //
   // f(data.output_dir.empty()){
   // data.output_dir = "results/" + data.TF_name + "/";
@@ -67,7 +68,6 @@ void generateSNPEffectMatrix(Dataset &data) {
 
 	if(data.cachefile.empty()){
 		data.cachefile = data.output_dir + "/CACHE.db";
-
 	}
 
 // main script content
@@ -92,7 +92,6 @@ void generateSNPEffectMatrix(Dataset &data) {
     // temporarily commented for testing
     cout << "\tstep two" << endl;
     // align_to_genome(data);
-    // problem is with getfiles in directory
 
     //Step 3: Filter using DNase data and finding the signal at each location
     // ALSO: read in output of filterDNaseWrapper back to memory
@@ -119,7 +118,7 @@ void generateSNPEffectMatrix(Dataset &data) {
     generate_output(data);
 
     if(data.settings.verbose){
-        cout << "The SNP Effect Matrix has been completed  for " << data.TF_name << endl;
+        cout << "The SNP Effect Matrix has been completed for " << data.TF_name << endl;
     }
 
 }
@@ -151,12 +150,13 @@ void align_to_genome(Dataset &data){
 
 // assumes filterDNaseWrapper_output is filled from previous function
 // and that the output is sorted, and contains only unique string values
+
+// NOTE: iteratively constructs the output from 
+//       findMaximumAverageSignalWrapper(args),
+//       as opposed to aggregately, as done in the original algorithm
 void find_signal(Dataset &data, int length){
     if(data.settings.verbose){
-        cout << "Finding the average signal\n";
-        #ifdef DEBUG
-        cout << flush;
-        #endif
+        cout << "Finding the average signal" << endl;
     }
     // this function, in the original algorithm, iterates through files, where those
     // files correspond to the length of something, then each nucleotide letter
@@ -175,11 +175,22 @@ void find_signal(Dataset &data, int length){
 
     GetFilesInDirectory(files, data.output_dir + "/ALIGNMENT/");
 
+    char bp = '\0', pos = '\0';
+
+    // clear data.sig_deets*
+    data.sig_deets_maximum.clear();
+    data.sig_deets_counter.clear();
+    data.sig_deets_stdev.clear();
+    data.sig_deets_sterr.clear();
+
     for(const auto &file : files){
         if(file.find("filtered") == string::npos){
             continue;
         }
-        cout << '\t' << "file: " << file << endl;
+        cout << "\tfile: " << file << endl;
+
+        bp = file[0];
+        pos = file[5];
 
         // cout << "\t" << file << "\n";
 
@@ -195,7 +206,7 @@ void find_signal(Dataset &data, int length){
             cerr << "Problem with accumSummary_scale\n\tEXITING" << endl;
             exit(1);
         }
-        // do not use non-useful files
+        // do not use N/A files
 #ifdef DEBUG
         // cout << "\tDeleting " << file << '\n';
         // int val = system(("rm -rf " + file).c_str());
@@ -246,16 +257,45 @@ void find_signal(Dataset &data, int length){
             cerr << "problem with algorithm usage" << endl;
             exit(1);
         }
+
         try{
             cout << "\tfinding findMaximumAverageSignal..." << flush;
             findMaximumAverageSignalWrapper(data,
                                             Dataset::accumSummary_type::accumSummary_dest::alignment);
             cout << "FINISH" << endl;
+            // filled Signal_data data for appropriate type,
+            // (alignment, scrambled, or enumerated)
+            auto iter = data.sig_deets_maximum.insert( { {bp, pos}, 
+                                                data.Signal_data.alignment_maximum} );
+            if(!iter.second){
+                cerr << "duplicate inserted into sig_deets_maximum" << endl;
+                exit(1);
+            }
+            auto iter1 = data.sig_deets_counter.insert( { {bp, pos}, 
+                                                data.Signal_data.alignment_counter} );
+            if(!iter1.second){
+                cerr << "duplicate inserted into sig_deets_counter" << endl;
+                exit(1);
+            }
+            iter = data.sig_deets_stdev.insert( { {bp, pos}, 
+                                                data.Signal_data.alignment_stdev} );
+            if(!iter.second){
+                cerr << "duplicate inserted into sig_deets_counter" << endl;
+                exit(1);
+            }
+            iter = data.sig_deets_sterr.insert( { {bp, pos}, 
+                                                data.Signal_data.alignment_sterr} );
+            if(!iter.second){
+                cerr << "duplicate inserted into sig_deets_counter" << endl;
+                exit(1);
+            }
+
         }
         catch(...){
             cerr << "problem with findMaximumAverageSignalWrapper(args)" << endl;
+            exit(1);
         }
-
+        
     }
 
 }

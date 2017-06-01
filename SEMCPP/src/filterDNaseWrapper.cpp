@@ -29,7 +29,7 @@ void filterDNaseWrapper(Dataset &data){
             
 
             string bedfile = /* targetDir + */ file + "_filtered";
-            string readfile = /* targetDir + */ file /* + ".bed" */;
+            string &readfile = /* targetDir + */ file /* + ".bed" */;
 
             #ifdef DEBUG
                 // cout << "\tfile: " << file << endl;

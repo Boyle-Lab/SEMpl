@@ -28,7 +28,7 @@ void generatePWMfromSEM(Dataset & data){
     string rawInput = data.output_dir + "/" + data.TF_name + ".sem";
     string pwmOutput = data.output_dir + "/" + data.TF_name + ".pwm";
 
-    double avgScore = data.signal_Data.enumerate_maximum;
+    double avgScore = data.Signal_data.enumerate_maximum;
     avgScore = avgScore * avgScore;
     if(avgScore == 0){
         cerr << "avgScore shouldn't be 0!!!!!!\n\tEXITING\n";

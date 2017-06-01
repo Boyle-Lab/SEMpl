@@ -144,7 +144,7 @@ void accumSummary_scale(Dataset &data, const string &hfile,
         }
 
 		
-		for(counter = 0; counter < upend - upstart; counter++){
+		for(counter = 0; counter < upend - upstart; ++counter){
 			values[counter] = roundf(values[counter] * 1000) / 1000;
 			signal_array[counter] = values[counter];
 		}
@@ -157,11 +157,11 @@ void accumSummary_scale(Dataset &data, const string &hfile,
         // nan IS AN ACTUAL POSSIBLE DOUBLE VALUE
         // use isnan(double) to check if NaN
         try{
+            // '+' is found
     		if(direction.find('+') != string::npos){
     			for(int k = 0; k < total_size; ++k){
                     if(!isnan(signal_array[k])){
                         // output[k] = signal_array[k];
-
                     }
                     else{
                         // output[k] = "N";
@@ -169,6 +169,7 @@ void accumSummary_scale(Dataset &data, const string &hfile,
                     }
                 }
             }
+            // '-' must be present
     		else{
                 // use reserve so I can keep the same iteration direction
                 reverse(signal_array.begin(), signal_array.end());
@@ -194,16 +195,16 @@ void accumSummary_scale(Dataset &data, const string &hfile,
 		for(int l = 0; l < static_cast<int>(signal_array.size()); ++l){
 			// if(stod(output[l]) > max) max = stod(output[l]);
 
-                // if(signal_array[l] > max) max = signal_array[l];
-                                        // string to double
-    			if(!signal_array_is_nan[l]){ 
-                    ++hitcount;
+            // if(signal_array[l] > max) max = signal_array[l];
+                                    // string to double
+			if(!signal_array_is_nan[l]){ 
+                ++hitcount;
+            }
+            else{
+                if(signal_array[l] > max){ 
+                    max = signal_array[l];
                 }
-                else{
-                    if(signal_array[l] > max){ 
-                        max = signal_array[l];
-                    }
-                }
+            }
 		}
         // if max is maximum possible double value, then it is not applicable
 		if(hitcount / static_cast<double>(signal_array.size()) < 0.9){

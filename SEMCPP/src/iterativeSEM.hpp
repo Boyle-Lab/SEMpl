@@ -58,7 +58,10 @@ struct Dataset {
 	    //Alignment summary data
         enum class accumSummary_dest{alignment, scrambled, enumerated, none};
 		// lines of output from accumSummary_scale.pl
-		std::vector<std::string> align_accum_lines;
+        // making change to support storing all accum_summary_data
+		// std::vector<std::string> align_accum_lines;
+        std::vector<std::string> align_accum_lines;
+
 		// max of output from accumSummary_scale.pl
 		std::vector<double> align_accum_max;
 
@@ -99,12 +102,17 @@ struct Dataset {
         double enumerate_sterr = 0;
 	};
 
+    std::map< std::pair<char, char>, double> sig_deets_maximum;
+    std::map< std::pair<char, char>, int> sig_deets_counter;
+    std::map< std::pair<char, char>, double> sig_deets_stdev;
+    std::map< std::pair<char, char>, double> sig_deets_sterr;
+
 	// DNase DNase_data;
 	PWM PWM_data;
 	TFMdata TFM_data;
 	accumSummary_type accumSummary_data;
 	SettingsForSNPEffectMatrix settings;
-	MaximumAverageSignalData signal_Data;
+	MaximumAverageSignalData Signal_data;
 
   // name of original command passed in
 	std::string command = "";

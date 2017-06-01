@@ -1,6 +1,6 @@
-#include "iterativeSEM.hpp"
+#include "./src/iterativeSEM.hpp"
 #include <cmath>
-#include "common.hpp"
+#include "./src/common.hpp"
 #include <vector>
 #include <cstring>
 #include <map>
@@ -26,29 +26,29 @@ void generateSEM(const Dataset &data){
     // output from running findMaximumAverageSignalWrapper on enumerated
 
 #ifdef DEBUG
-    if(data.accumSummary_data.align_accum_lines.empty()){
-        cout << "\tdata.accumSummary_data.align_accum_lines shouldn't be\n"
-             << "\tempty!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n";
-        exit(1);
-    }
+    // if(data.accumSummary_data.align_accum_lines.empty()){
+    //     cout << "\tdata.accumSummary_data.align_accum_lines shouldn't be\n"
+    //          << "\tempty!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << endl;
+    //     exit(1);
+    // }
 
-    if(data.accumSummary_data.enum_accum_lines.empty()){
-        cout << "\tdata.accumSummary_data.enum_accum_lines shouldn't be\n"
-             << "\tempty!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n";
-        exit(1);
-    }
+    // if(data.accumSummary_data.enum_accum_lines.empty()){
+    //     cout << "\tdata.accumSummary_data.enum_accum_lines shouldn't be\n"
+    //          << "\tempty!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << endl;
+    //     exit(1);
+    // }
 
-    if(data.accumSummary_data.enum_accum_max.empty()){
-        cout << "\tdata.accumSummary_data.enum_accum_max shouldn't be\n"
-             << "\tempty!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n";
-        exit(1);
-    }
+    // if(data.accumSummary_data.enum_accum_max.empty()){
+    //     cout << "\tdata.accumSummary_data.enum_accum_max shouldn't be\n"
+    //          << "\tempty!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << endl;
+    //     exit(1);
+    // }
 
-    if(data.accumSummary_data.align_accum_max.empty()){
-        cout << "\tdata.accumSummary_data.align_accum_max shouldn't be\n"
-             << "\tempty!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n";
-        exit(1);
-    }
+    // if(data.accumSummary_data.align_accum_max.empty()){
+    //     cout << "\tdata.accumSummary_data.align_accum_max shouldn't be\n"
+    //          << "\tempty!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << endl;
+    //     exit(1);
+    // }
 
 #endif
 
@@ -65,11 +65,11 @@ void generateSEM(const Dataset &data){
 // print OUT_HANDLE "$file\t$maximum\t$count\t$stdev\t$sterr\n";
 // use to translate indexes in this file's Perl equivalent
 
-    double enum_ = data.signal_Data.enumerate_maximum;
-    //double enum_err = data.signal_Data.enumerate_sterr;
+    double enum_ = data.Signal_data.enumerate_maximum;
+    //double enum_err = data.Signal_data.enumerate_sterr;
 
-    double score = data.signal_Data.alignment_maximum;
-    double st_err = data.signal_Data.alignment_sterr;
+    double score = data.Signal_data.alignment_maximum;
+    double st_err = data.Signal_data.alignment_sterr;
 
     double maximum = 0.0;
 
@@ -79,8 +79,10 @@ void generateSEM(const Dataset &data){
     // will need to address the splitting of @fields, which would be the first
     // thing printed on a given line in the output from findMaximumAverageSignalWrapper.
 
-    //I believe the first first line of output would normally be the line from accum_summary
-    //which is held in the struct and should be utilized as seen below.
+    // I believe the first first line of output would 
+    // normally be the line from accum_summary
+    // which is held in the struct and should be 
+    // utilized as seen below.
 
 
     vector<string> fields1;

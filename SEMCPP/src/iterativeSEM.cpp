@@ -190,7 +190,7 @@ int main(int argc, char **argv){
 
     map <string, int> kmers, kmers_2;
 
-    for (int iteration = 1; iteration < total_iterations; iteration++){
+    for (int iteration = 1; iteration < total_iterations; ++iteration){
 	    data.settings.fastrun = false;
 //      iterID = rand() % 16777216;
         ofstream outFile(data.output_dir + "/kmer_similarity.out");
@@ -233,7 +233,7 @@ int main(int argc, char **argv){
             outFile << iteration << "\t" << converge << "\t" << same << "\t" << diff << "\n";
             cout << "---Iteration " << iteration << "---"<< '\n';
             ostringstream newOutput;
-            newOutput << data.output_dir<< "/" << "it" << iteration << "/";
+            newOutput << data.output_dir << "/" << "it" << iteration << "/";
             if (converge == 9){
 		        data.settings.fastrun = true;
                 final_run = newOutput.str();
@@ -276,7 +276,7 @@ int main(int argc, char **argv){
 }
 
 // Requires: .pwm file uses '\t' to separate fields
-// Effects: fills in PWM and returns the second field of the first line
+// Effects: fills in PWM_data and returns the second field of the first line
 // in the .pwm file specified
 string read_pwm(Dataset &data){
     ifstream fin(data.PWM_file);
