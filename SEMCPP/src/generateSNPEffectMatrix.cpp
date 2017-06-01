@@ -175,7 +175,9 @@ void find_signal(Dataset &data, int length){
 
     GetFilesInDirectory(files, data.output_dir + "/ALIGNMENT/");
 
-    char bp = '\0', pos = '\0';
+    char bp = '\0';
+    const char *pos = '\0';
+    const char *end = '\0';
 
     // clear data.sig_deets*
     data.sig_deets_maximum.clear();
@@ -183,14 +185,26 @@ void find_signal(Dataset &data, int length){
     data.sig_deets_stdev.clear();
     data.sig_deets_sterr.clear();
 
-    for(const auto &file : files){
+    char* arr = '\0';
+    int val = 0;
+
+    for(const string &file : files){
         if(file.find("filtered") == string::npos){
             continue;
         }
         cout << "\tfile: " << file << endl;
 
         bp = file[0];
-        pos = file[5];
+        pos = file.c_str() + 5;
+        end = pos;
+        while(*end != '.'){
+            ++end;
+        }
+
+        arr = new char[end - pos + 1];
+        arr[end - pos] = '\0';
+        strncpy(arr, file.c_str() + 5, end - pos);
+        val = atoi(arr);
 
         // cout << "\t" << file << "\n";
 
@@ -263,30 +277,42 @@ void find_signal(Dataset &data, int length){
             findMaximumAverageSignalWrapper(data,
                                             Dataset::accumSummary_type::accumSummary_dest::alignment);
             cout << "FINISH" << endl;
+
+            // iteratively fills sig_deets
+
+
             // filled Signal_data data for appropriate type,
             // (alignment, scrambled, or enumerated)
-            auto iter = data.sig_deets_maximum.insert( { {bp, pos}, 
+
+            // first pair type
+
+#ifdef DEBUG
+            cout << "\tpos: " << val << "  bp: " << bp << endl;
+#endif
+
+            auto iter = data.sig_deets_maximum.insert( { {val, bp}, 
                                                 data.Signal_data.alignment_maximum} );
             if(!iter.second){
-                cerr << "duplicate inserted into sig_deets_maximum" << endl;
+                cerr << "duplicate key inserted into sig_deets_maximum" << endl;
                 exit(1);
             }
-            auto iter1 = data.sig_deets_counter.insert( { {bp, pos}, 
+            // second pair type
+            auto iter1 = data.sig_deets_counter.insert( { {val, bp}, 
                                                 data.Signal_data.alignment_counter} );
             if(!iter1.second){
-                cerr << "duplicate inserted into sig_deets_counter" << endl;
+                cerr << "duplicate key inserted into sig_deets_counter" << endl;
                 exit(1);
             }
-            iter = data.sig_deets_stdev.insert( { {bp, pos}, 
+            iter = data.sig_deets_stdev.insert( { {val, bp}, 
                                                 data.Signal_data.alignment_stdev} );
             if(!iter.second){
-                cerr << "duplicate inserted into sig_deets_counter" << endl;
+                cerr << "duplicate key inserted into sig_deets_stdev" << endl;
                 exit(1);
             }
-            iter = data.sig_deets_sterr.insert( { {bp, pos}, 
+            iter = data.sig_deets_sterr.insert( { {val, bp}, 
                                                 data.Signal_data.alignment_sterr} );
             if(!iter.second){
-                cerr << "duplicate inserted into sig_deets_counter" << endl;
+                cerr << "duplicate key inserted into sig_deets_sterr" << endl;
                 exit(1);
             }
 
@@ -295,7 +321,7 @@ void find_signal(Dataset &data, int length){
             cerr << "problem with findMaximumAverageSignalWrapper(args)" << endl;
             exit(1);
         }
-        
+        free(arr);    
     }
 
 }

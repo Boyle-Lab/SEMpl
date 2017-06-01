@@ -102,10 +102,10 @@ struct Dataset {
         double enumerate_sterr = 0;
 	};
 
-    std::map< std::pair<char, char>, double> sig_deets_maximum;
-    std::map< std::pair<char, char>, int> sig_deets_counter;
-    std::map< std::pair<char, char>, double> sig_deets_stdev;
-    std::map< std::pair<char, char>, double> sig_deets_sterr;
+    std::map< std::pair<int, char>, double> sig_deets_maximum;
+    std::map< std::pair<int, char>, int> sig_deets_counter;
+    std::map< std::pair<int, char>, double> sig_deets_stdev;
+    std::map< std::pair<int, char>, double> sig_deets_sterr;
 
 	// DNase DNase_data;
 	PWM PWM_data;
