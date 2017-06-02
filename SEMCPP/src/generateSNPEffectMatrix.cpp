@@ -186,7 +186,7 @@ void find_signal(Dataset &data, int length){
     data.sig_deets_sterr.clear();
 
     char* arr = nullptr;
-    int val = 0;
+    int value = 0;
 
     for(const string &file : files){
         if(file.find("filtered") == string::npos){
@@ -194,17 +194,29 @@ void find_signal(Dataset &data, int length){
         }
         cout << "\tfile: " << file << endl;
 
-        bp = file[0];
-        pos = file.c_str() + 5;
-        end = pos;
-        while(*end != '.'){
-            ++end;
+        size_t val = file.find("_pos");
+        if(val == string::npos){
+            cerr << "\"_pos\" not found within file\n\tEXITING";
+            exit(1);
         }
 
-        arr = new char[end - pos + 1];
-        arr[end - pos] = '\0';
-        strncpy(arr, file.c_str() + 5, end - pos);
-        val = atoi(arr);
+        try{
+            bp = file[val - 1];
+            pos = file.c_str() + val - 1 + 5;
+            end = pos;
+            while(*end != '.'){
+                ++end;
+            }
+
+            arr = new char[end - pos + 1];
+            arr[end - pos] = '\0';
+            strncpy(arr, file.c_str() + val - 1 + 5, end - pos);
+            value = atoi(arr);
+        }
+        catch(...){
+            cerr << "pointer errors likely\n\tEXITING" << endl;
+            exit(1);
+        }
 
         // cout << "\t" << file << "\n";
 
@@ -287,29 +299,29 @@ void find_signal(Dataset &data, int length){
             // first pair type
 
 #ifdef DEBUG
-            cout << "\tpos: " << val << "  bp: " << bp << endl;
+            cout << "\tpos: " << value << "  bp: " << bp << endl;
 #endif
 
-            auto iter = data.sig_deets_maximum.insert( { {val, bp}, 
+            auto iter = data.sig_deets_maximum.insert( { {value, bp}, 
                                                 data.Signal_data.alignment_maximum} );
             if(!iter.second){
                 cerr << "duplicate key inserted into sig_deets_maximum" << endl;
                 exit(1);
             }
             // second pair type
-            auto iter1 = data.sig_deets_counter.insert( { {val, bp}, 
+            auto iter1 = data.sig_deets_counter.insert( { {value, bp}, 
                                                 data.Signal_data.alignment_counter} );
             if(!iter1.second){
                 cerr << "duplicate key inserted into sig_deets_counter" << endl;
                 exit(1);
             }
-            iter = data.sig_deets_stdev.insert( { {val, bp}, 
+            iter = data.sig_deets_stdev.insert( { {value, bp}, 
                                                 data.Signal_data.alignment_stdev} );
             if(!iter.second){
                 cerr << "duplicate key inserted into sig_deets_stdev" << endl;
                 exit(1);
             }
-            iter = data.sig_deets_sterr.insert( { {val, bp}, 
+            iter = data.sig_deets_sterr.insert( { {value, bp}, 
                                                 data.Signal_data.alignment_sterr} );
             if(!iter.second){
                 cerr << "duplicate key inserted into sig_deets_sterr" << endl;
