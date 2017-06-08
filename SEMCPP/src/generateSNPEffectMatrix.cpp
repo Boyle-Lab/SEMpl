@@ -91,7 +91,7 @@ void generateSNPEffectMatrix(Dataset &data) {
     // temporarily commented for testing
     // temporarily commented for testing
     cout << "\tstep two" << endl;
-    // align_to_genome(data);
+    align_to_genome(data);
 
     //Step 3: Filter using DNase data and finding the signal at each location
     // ALSO: read in output of filterDNaseWrapper back to memory
@@ -103,7 +103,7 @@ void generateSNPEffectMatrix(Dataset &data) {
     // temporarily commented for testing
     // temporarily commented for testing
     cout << "\tstep three" << endl;
-    // filterDNaseWrapper(data);
+    filterDNaseWrapper(data);
 
     //Step 4: Find the signal using chIP-seq data
     cout << "\tstep four" << endl;
@@ -356,34 +356,42 @@ void create_baselines(Dataset &data, int length){
 
     vector<string> scramble_cache_output;
 
+    data.scramble_kmers.clear();
+    
     for(const auto &pair : data.kmerHash){
         data.scramble_kmers.push_back(pair.first);
-        cout << "first: " << pair.first << endl << "second: " << pair.second << endl;
+        // cout << "first: " << pair.first << endl << "second: " << pair.second << endl;
     }
 
     if(!data.settings.fastrun){
-        scramble_kmer(data);
+        for(auto it = data.scramble_kmers.begin(); 
+            it != data.scramble_kmers.end(); 
+            ++it){
+            random_shuffle(it->begin(), it->end());
+        }
         // scramble_kmers IS NOW SCRAMBLED!!!!
 
         checkCache(data, data.scramble_kmers, scramble_cache_output, data.cachefile,
                     Dataset::accumSummary_type::accumSummary_dest::scrambled);
-        seq_col_to_fa(data.signal_cache_scramble,
+        seq_col_to_fa(scramble_cache_output,
                       data.output_dir + "/BASELINE/Scrambled_kmer.fa");
         bowtie_genome_map(length, "../data/hg19",
                           data.output_dir + "/BASELINE/Scrambled_kmer.fa",
                           data.output_dir + "/BASELINE/Scrambled_kmer.bed");
 
         // NEED TO CHECK THAT THIS IS THE RIGHT RELATIVE DIRECTORY
-        cmd = "./lib/bedtools intersect -a " + data.output_dir
+        cmd = "./bin/bedtools intersect -a " + data.output_dir
                 + "/BASELINE/Scrambled_kmer.bed -b "
                 + data.DNase_file + " -wa -u > "+ data.output_dir
                 + "/BASELINE/Scrambled_kmer_filtered.bed";
         system(cmd.c_str());
 
+        cout << "\tRunning accumSummary_scale(args)..." << flush;
         accumSummary_scale(data, data.bigwig_file,
                            data.output_dir + "/BASELINE/Scrambled_kmer_filtered.bed",
                            length,
                            Dataset::accumSummary_type::accumSummary_dest::scrambled);
+        cout << "FINISH" << endl;
 
         if(data.settings.writecache){
             writeCache(data, data.cachefile,
@@ -434,6 +442,9 @@ void create_baselines(Dataset &data, int length){
     }
 
     // SHOULD THERE BE AN ERROR CHECK IF signal_cache_enumerate IS EMPTY????
+    if(data.signal_cache_enumerate.empty()){
+        cout << "\tdata.signal_cache_enumerate is empty!!!! IDK" << endl;
+    }
     sort(data.signal_cache_enumerate.begin(),
          data.signal_cache_enumerate.end());
     data.signal_enumerate_output.resize(data.signal_cache_enumerate.size()

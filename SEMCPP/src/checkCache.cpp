@@ -32,6 +32,7 @@ static void checkDone(const int message, const string &s);
 // NOTE: THE NAMING SCHEME IS CONFUSING
 //       out_cache is the argument given to -out_cache in the original algorithm
 //       cachefile is the argument given to -cache in the original algorithm
+//       -out_file is built into the function within the switch statements
 void checkCache(Dataset &data, const vector<string> &in_file, vector<string> &out_cache,
                 const string &cachefile, Dataset::accumSummary_type::accumSummary_dest dest){
 
@@ -47,6 +48,26 @@ void checkCache(Dataset &data, const vector<string> &in_file, vector<string> &ou
 
     if(data.settings.verbose){
         cout << "Querying cache for processed kmers\n";
+    }
+    // should this be here?
+    switch (dest) {
+        case Dataset::accumSummary_type::accumSummary_dest::alignment:
+            data.signal_cache.clear();
+        break;
+        case Dataset::accumSummary_type::accumSummary_dest::scrambled:
+            data.signal_cache_scramble.clear();
+        break;
+        case Dataset::accumSummary_type::accumSummary_dest::enumerated:
+            data.signal_cache_enumerate.clear();
+        break;
+        case Dataset::accumSummary_type::accumSummary_dest::none:
+            cerr << "none shouldn't happen!!" << endl;
+            exit(1);
+        break;
+        default:
+            cerr << "default shouldn't happen!!" << endl;
+            exit(1);
+        break;
     }
 
     sqlite3 *cacheDB = NULL;
@@ -78,20 +99,28 @@ void checkCache(Dataset &data, const vector<string> &in_file, vector<string> &ou
 
         msg = "SELECT count(*) FROM seen_cache WHERE kmer=? AND iter!=?";
         sqlite3_stmt* seen_query = NULL;
-        message = sqlite3_prepare_v2(cacheDB, msg.c_str(), static_cast<int>(msg.size()), &seen_query, NULL);
+        message = sqlite3_prepare_v2(cacheDB, msg.c_str(), 
+                                     static_cast<int>(msg.size()), 
+                                     &seen_query, NULL);
         problemEncountered(message, msg);
 
         msg = "SELECT kmer, alignment FROM kmer_cache WHERE kmer=?";
         sqlite3_stmt* data_query = NULL;
-        message = sqlite3_prepare_v2(cacheDB, msg.c_str(), static_cast<int>(msg.size()), &data_query, NULL);
+        message = sqlite3_prepare_v2(cacheDB, msg.c_str(), 
+                                     static_cast<int>(msg.size()), 
+                                     &data_query, NULL);
         problemEncountered(message, msg);
 
         msg = "INSERT OR IGNORE INTO seen_cache VALUES(?, ?)";
         sqlite3_stmt* staged_query = NULL;
-        message = sqlite3_prepare_v2(cacheDB, msg.c_str(), static_cast<int>(msg.size()), &staged_query, NULL);
+        message = sqlite3_prepare_v2(cacheDB, msg.c_str(), 
+                                     static_cast<int>(msg.size()), 
+                                     &staged_query, NULL);
         problemEncountered(message, msg);
 
-        for(string kmer : in_file){
+        int num_col = 0;
+
+        for(const string &kmer : in_file){
             // cout << kmer.c_str() << endl;
             message = sqlite3_bind_text(data_query, 1, kmer.c_str(),
                       -1, NULL);
@@ -99,7 +128,7 @@ void checkCache(Dataset &data, const vector<string> &in_file, vector<string> &ou
 
             message = sqlite3_step(data_query);
 
-            int num_col = sqlite3_column_count(data_query);
+            num_col = sqlite3_column_count(data_query);
 #ifdef DEBUG
             // cout << "There are " << num_col << " columns in data_query\n";
             if(num_col < 0) {
@@ -111,15 +140,17 @@ void checkCache(Dataset &data, const vector<string> &in_file, vector<string> &ou
                 exit(1);
             }
 #endif
-            // if(num_col > 0) {
             // CHECKING THE NUMBER OF COLS WORKS ONLY FOR THE PERL API
             // I BELIEVE THIS API RETURNS A NULL IF SOMETHING DOESN'T EXIST
-            // if(message == SQLITE_ROW){
 
             const char* text = (char*)sqlite3_column_text(data_query, 1);
-
+            
 
             if(text){
+                // debug output
+                #ifdef DEBUG
+                    // cout << "text: " << text << endl;
+                #endif
                 // found (?)
                 // result is not NULL
 
@@ -193,7 +224,6 @@ void checkCache(Dataset &data, const vector<string> &in_file, vector<string> &ou
                 sqlite3_reset(seen_query);
                 sqlite3_clear_bindings(seen_query);
             }
-
 
             sqlite3_reset(seen_query);
             sqlite3_clear_bindings(seen_query);

@@ -108,10 +108,7 @@ static void parse_pwm(const Dataset &data,
   // in original implementation, fields[0] contains number of row
   // first row with numbers is indexed from 0, thus the last row is 12
   // but there are 13 total rows
-
-#ifdef DEBUG
-    cout << "\tparse_pwm!" << endl;
-#endif
+    
 
     // cout << Dataset::PWM::NUM_ROWS << ' ' << Dataset::PWM::NUM_COLUMNS << endl;
 

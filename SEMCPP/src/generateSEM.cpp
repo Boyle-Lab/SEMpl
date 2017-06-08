@@ -104,28 +104,29 @@ void generateSEM(const Dataset &data){
         STDErr [make_pair(strtol(loc.c_str(), 0, 10), BP)]= st_err/enum_;
         fields1.clear();
     }
+    
+    ofstream sem_file(data.output_dir + "/" + data.TF_name + ".sem");
+    ofstream sterr_file(data.output_dir + "/" + data.TF_name + ".sterr");
 
-    //Constructing Output File
-    stringstream output1;
-    stringstream output2;
-    output1 << data.output_dir << "/" << data.TF_name << ".sem";
-    output2 << data.output_dir << "/" << data.TF_name << ".sterr";
-    ofstream sem_file;
-    ofstream sterr_file;
-    sem_file.open(output1.str());
-    sterr_file.open(output2.str());
+    if(!sem_file){
+        cerr << "unable to open sem_file\n\tEXITING" << endl;
+        exit(1);
+    }
+    if(!sterr_file){
+        cerr << "unable to open sterr_file\n\tEXITING" << endl;
+        exit(1);
+    }
 
     //Making output files for the .sem and .sterr
     sem_file << data.TF_name << "\tA\tC\tG\tT\n";
     sterr_file << data.TF_name << "\tA\tC\tG\tT\n";
     for (int j = 0; j <= maximum; j++){
-        int p = j+1;
-        sem_file << p << "\t" << SNPEffect[make_pair(j, "A")]
+        sem_file << j + 1 << "\t" << SNPEffect[make_pair(j, "A")]
                  << "\t" << SNPEffect[make_pair(j, "C")]
                  << "\t" << SNPEffect[make_pair(j, "G")]
                  << "\t" << SNPEffect[make_pair(j, "T")]
                  << "\n";
-        sterr_file << p << "\t" << STDErr[make_pair(j, "A")]
+        sterr_file << j + 1 << "\t" << STDErr[make_pair(j, "A")]
                    << "\t" << STDErr[make_pair(j, "C")]
                    << "\t" << STDErr[make_pair(j, "G")]
                    << "\t" << STDErr[make_pair(j, "T")]

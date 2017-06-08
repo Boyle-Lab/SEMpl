@@ -41,6 +41,10 @@ void split_string(const string &str, const string &splitBy, vector<string>& toke
 // REQUIRES: index is within str
 string grab_string_at_index(const string &str, const size_t index, 
                             const string &split){
+    if(index >= str.size()){
+        cerr << "grab_string_at_index bad arguments!\n\tEXITING";
+        exit(1);
+    }
     std::vector<std::string> tokens;
 
     split_string(str, split, tokens);
