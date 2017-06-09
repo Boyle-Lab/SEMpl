@@ -29,20 +29,14 @@ void accumSummary_scale(Dataset &data, const string &hfile,
                 exit(1);
             break;
             case Dataset::accumSummary_type::accumSummary_dest::enumerated:
-                // data.accumSummary_data.enum_accum_lines.push_back(line);
-                // data.accumSummary_data.enum_accum_max.push_back(max);
                 data.accumSummary_data.enum_accum_max.clear();
                 data.accumSummary_data.enum_accum_lines.clear();
             break;
             case Dataset::accumSummary_type::accumSummary_dest::scrambled:
-                // data.accumSummary_data.scramble_accum_lines.push_back(line);
-                // data.accumSummary_data.scramble_accum_max.push_back(max);
                 data.accumSummary_data.scramble_accum_max.clear();
                 data.accumSummary_data.scramble_accum_lines.clear();
             break;
             case Dataset::accumSummary_type::accumSummary_dest::alignment: 
-                // data.accumSummary_data.align_accum_lines.push_back(line);
-                // data.accumSummary_data.align_accum_max.push_back(max);
                 data.accumSummary_data.align_accum_max.clear();
                 data.accumSummary_data.align_accum_lines.clear();
             break;
@@ -50,7 +44,7 @@ void accumSummary_scale(Dataset &data, const string &hfile,
                 cerr << "there is no default for dest's switch statement!!!\n";
                 exit(1);
             break;
-        }
+    }
 
 
 	// open file using library, below code is necessary

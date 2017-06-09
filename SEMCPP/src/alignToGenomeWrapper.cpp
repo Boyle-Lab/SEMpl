@@ -5,9 +5,6 @@ using namespace std;
 static int getLength(const Dataset &data);
 static void align_SNPs(Dataset &data, int length, const vector<string> &nucleotideStack);
 
-//void bowtie_genome_map(Dataset &data, int length, const string& genome,
-//                                                     const string& file);
-
 // default genome is "hg19"
 // INFILE FROM ORIGINAL ALGORITHM IS ENUMERATED_KMER
 void alignToGenomeWrapper(Dataset &data, int iteration, string genome) {
@@ -87,7 +84,8 @@ static void align_SNPs(Dataset &data, int length,
 
             non_zero_file_size = seq_col_to_fa(cache_output, fa_file);
             if(non_zero_file_size){
-                bowtie_genome_map(length, "./data/hg19", fa_file, bowtie_output);
+                bowtie_genome_map(length, "./data/hg19", fa_file, bowtie_output,
+                                  data.settings.verbose);
             }
             cache_output.clear();
         }

@@ -192,7 +192,9 @@ void find_signal(Dataset &data, int length){
         if(file.find("filtered") == string::npos){
             continue;
         }
-        cout << "\tfile: " << file << endl;
+        if(data.settings.verbose){
+            cout << "\tfile: " << file << endl;
+        }
 
         size_t val = file.find("_pos");
         if(val == string::npos){
@@ -223,10 +225,14 @@ void find_signal(Dataset &data, int length){
         // cin.get();
 
         try{
-            cout << "\taccumSummary_scale(args) is running..." << flush;
+            if(data.settings.verbose){
+                cout << "\taccumSummary_scale(args) is running..." << flush;
+            }
             accumSummary_scale(data, data.bigwig_file, file, length,
                                Dataset::accumSummary_type::accumSummary_dest::alignment);
-            cout << "FINISH" << endl;
+            if(data.settings.verbose){
+                cout << "FINISH" << endl;
+            }
         }
         catch(...){
             cerr << "Problem with accumSummary_scale\n\tEXITING" << endl;
@@ -243,10 +249,14 @@ void find_signal(Dataset &data, int length){
         // write to cache
         // -in_file and -cache are built into data
         try{
-            cout << "\twriteCache(args) is running..." << flush;
+            if(data.settings.verbose){
+                cout << "\twriteCache(args) is running..." << flush;
+            }
             writeCache(data, data.cachefile,
                        Dataset::accumSummary_type::accumSummary_dest::alignment);
-            cout << "FINISH" << endl;
+            if(data.settings.verbose){
+                cout << "FINISH" << endl;
+            }
         }
         catch(...){
             cerr << "problem with writeCache\n\tEXITING" << endl;
@@ -255,17 +265,25 @@ void find_signal(Dataset &data, int length){
 
         // SHOULD THERE BE AN ERROR CHECK IF signal_cache_enumerate IS EMPTY????
         try{
-            cout << "\tsorting..." << flush;
+            if(data.settings.verbose){
+                cout << "\tsorting..." << flush;
+            }
             sort(data.signal_cache.begin(), data.signal_cache.end());
-            cout << "FINISH" << endl;
+            if(data.settings.verbose){
+                cout << "FINISH" << endl;
+            }
             data.signal_output.resize(data.signal_cache.size()
                                     + data.accumSummary_data.align_accum_lines.size());
             // returns iterator to one past the location of the last copy
-            cout << "\tcopying..." << flush; 
+            if(data.settings.verbose){
+                cout << "\tcopying..." << flush; 
+            }
             auto iter = copy(data.accumSummary_data.align_accum_lines.begin(),
                              data.accumSummary_data.align_accum_lines.end(),
                              data.signal_output.begin());
-            cout << "FINISH" << endl;
+            if(data.settings.verbose){
+                cout << "FINISH" << endl;
+            }
 
             // CHANGE REQUIRED REGARDING WHAT IS IN DATA.SIGNAL_ENUMERATE..._OUTPUT
             // CHANGE REQUIRED REGARDING WHAT IS IN DATA.SIGNAL_ENUMERATE..._OUTPUT
@@ -273,11 +291,15 @@ void find_signal(Dataset &data, int length){
             // and corresponding other data
 
             //  FILLS data.signal_enumerate_output !!!!!!!!!!!!
-            cout << "\tunique copying..." << flush;
+            if(data.settings.verbose){
+                cout << "\tunique copying..." << flush;
+            }
             unique_copy(data.signal_cache_enumerate.begin(),
                         data.signal_cache_enumerate.end(),
                         iter);
-            cout << "FINISH" << endl;
+            if(data.settings.verbose){
+                cout << "FINISH" << endl;
+            }
         }
         catch(...){
             cerr << "problem with algorithm usage" << endl;
@@ -285,10 +307,14 @@ void find_signal(Dataset &data, int length){
         }
 
         try{
-            cout << "\tfinding findMaximumAverageSignal..." << flush;
+            if(data.settings.verbose){
+                cout << "\tfinding findMaximumAverageSignal..." << flush;
+            }
             findMaximumAverageSignalWrapper(data,
                                             Dataset::accumSummary_type::accumSummary_dest::alignment);
-            cout << "FINISH" << endl;
+            if(data.settings.verbose){
+                cout << "FINISH" << endl;
+            }
 
             // iteratively fills sig_deets
 
@@ -299,7 +325,9 @@ void find_signal(Dataset &data, int length){
             // first pair type
 
 #ifdef DEBUG
-            cout << "\tpos: " << value << "  bp: " << bp << endl;
+            if(data.settings.verbose){
+                cout << "\tpos: " << value << "  bp: " << bp << endl;
+            }
 #endif
 
             auto iter = data.sig_deets_maximum.insert( { {value, bp}, 
@@ -377,7 +405,8 @@ void create_baselines(Dataset &data, int length){
                       data.output_dir + "/BASELINE/Scrambled_kmer.fa");
         bowtie_genome_map(length, "../data/hg19",
                           data.output_dir + "/BASELINE/Scrambled_kmer.fa",
-                          data.output_dir + "/BASELINE/Scrambled_kmer.bed");
+                          data.output_dir + "/BASELINE/Scrambled_kmer.bed",
+                          data.settings.verbose);
 
         // NEED TO CHECK THAT THIS IS THE RIGHT RELATIVE DIRECTORY
         cmd = "./bin/bedtools intersect -a " + data.output_dir
@@ -386,12 +415,16 @@ void create_baselines(Dataset &data, int length){
                 + "/BASELINE/Scrambled_kmer_filtered.bed";
         system(cmd.c_str());
 
-        cout << "\tRunning accumSummary_scale(args)..." << flush;
+        if(data.settings.verbose){
+            cout << "\tRunning accumSummary_scale(args)..." << flush;
+        }
         accumSummary_scale(data, data.bigwig_file,
                            data.output_dir + "/BASELINE/Scrambled_kmer_filtered.bed",
                            length,
                            Dataset::accumSummary_type::accumSummary_dest::scrambled);
-        cout << "FINISH" << endl;
+        if(data.settings.verbose){
+            cout << "FINISH" << endl;
+        }
 
         if(data.settings.writecache){
             writeCache(data, data.cachefile,
@@ -431,7 +464,8 @@ void create_baselines(Dataset &data, int length){
                       data.output_dir + "/BASELINE/Enumerated_kmer.fa");
         bowtie_genome_map(length,
                           "../data/hg19", data.output_dir + "/BASELINE/Enumerated_kmer.fa",
-                          data.output_dir + "/BASELINE/Enumerated_kmer_filtered.bed");
+                          data.output_dir + "/BASELINE/Enumerated_kmer_filtered.bed",
+                          data.settings.verbose);
         accumSummary_scale(data, data.bigwig_file,
                            data.output_dir + "/BASELINE/Enumerated_kmer_filtered.bed",
                            length, Dataset::accumSummary_type::accumSummary_dest::enumerated);

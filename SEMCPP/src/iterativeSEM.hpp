@@ -158,7 +158,8 @@ void accumSummary_scale(Dataset &data, const std::string &hfile,
 void alignToGenomeWrapper(Dataset &data, int iteration,
                             std::string genome);
 void bowtie_genome_map(int length, const std::string& genome,
-                        const std::string& file, const std::string& final_output);
+                        const std::string& file, const std::string& final_output,
+                        bool verbose);
 void changeBase(const Dataset &data, int position,
                             std::string nucleotide,
                             std::vector<std::string> &new_kmer_vec,

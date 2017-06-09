@@ -25,7 +25,7 @@ using namespace std;
 
 
 void bowtie_genome_map(int length, const string& genome, const string& file, 
-                       const string& final_output){
+                       const string& final_output, bool verbose){
     //const char *argvs[9] = {"./bin/bowtie", "--quiet", "-a", "-v 0", 
     //                        genome.c_str(), "-f", file.c_str(), "temp.dat" };
 /*
@@ -45,11 +45,15 @@ void bowtie_genome_map(int length, const string& genome, const string& file,
                  + file + ' ' + temp_file;
     
     
-    cout << "Running command: " << cmd << "\n\tRunning...." << flush;
+    if(verbose){
+        cout << "Running command: " << cmd << "\n\tRunning...." << flush;
+    }
     
     system(cmd.c_str());
 
-    cout << "FINISH" << endl;
+    if(verbose){
+        cout << "FINISH" << endl;
+    }
 
 
     ofstream OUT(final_output);
