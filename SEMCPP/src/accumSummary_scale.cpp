@@ -88,7 +88,6 @@ void accumSummary_scale(Dataset &data, const string &hfile,
 
 
 	while(getline(input, line)){
-        // cout << "press key:";cin.get();cout << endl;
 		// initialize vairables
         temp.clear();
 		chrom = nullptr;
@@ -133,7 +132,7 @@ void accumSummary_scale(Dataset &data, const string &hfile,
 
 
         if(values == NULL){
-            cerr << "Failure to use bwStats!\n\tEXITING\n";
+            cerr << "Failure to use bwStats!\n\tEXITING" << endl;
             exit(1);
         }
 
@@ -144,6 +143,7 @@ void accumSummary_scale(Dataset &data, const string &hfile,
 		}
 
         free(values);
+
 		delete [] chrom;
 
 
@@ -182,7 +182,6 @@ void accumSummary_scale(Dataset &data, const string &hfile,
             cout << "nan exception thrown" << endl;
             exit(1);
         }
-        // cout << "press key:";cin.get();cout << endl;
 
 		max = 0;
 		hitcount = 0;

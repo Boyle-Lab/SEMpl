@@ -91,7 +91,7 @@ void generateSNPEffectMatrix(Dataset &data) {
     // temporarily commented for testing
     // temporarily commented for testing
     cout << "\tstep two" << endl;
-    align_to_genome(data);
+    // align_to_genome(data);
 
     //Step 3: Filter using DNase data and finding the signal at each location
     // ALSO: read in output of filterDNaseWrapper back to memory
@@ -103,11 +103,11 @@ void generateSNPEffectMatrix(Dataset &data) {
     // temporarily commented for testing
     // temporarily commented for testing
     cout << "\tstep three" << endl;
-    filterDNaseWrapper(data);
+    // filterDNaseWrapper(data);
 
     //Step 4: Find the signal using chIP-seq data
     cout << "\tstep four" << endl;
-    find_signal(data, length);
+    // find_signal(data, length);
 
     //Step 5: Generate baselines
     cout << "\tstep five" << endl;

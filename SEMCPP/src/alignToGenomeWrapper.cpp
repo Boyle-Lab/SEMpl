@@ -7,7 +7,7 @@ static void align_SNPs(Dataset &data, int length, const vector<string> &nucleoti
 
 // default genome is "hg19"
 // INFILE FROM ORIGINAL ALGORITHM IS ENUMERATED_KMER
-void alignToGenomeWrapper(Dataset &data, int iteration, string genome) {
+void alignToGenomeWrapper(Dataset &data, int iteration, const string genome) {
 
     vector<string> nucleotideStack{"A", "C", "G", "T"};
 
@@ -94,5 +94,9 @@ static void align_SNPs(Dataset &data, int length,
 
 // getlength accesses first(?) element of kmerHash and returns the key length
 static int getLength(const Dataset &data){
+    if(data.kmerHash.empty()){
+        cerr << "data.kmerHash is empty!!!!\n\tEXITING" << endl;
+        exit(1);
+    }
     return static_cast<int>(data.kmerHash.begin()->first.size());
 }
