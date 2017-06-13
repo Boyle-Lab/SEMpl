@@ -160,10 +160,10 @@ void alignToGenomeWrapper(Dataset &data, int iteration,
 void bowtie_genome_map(int length, const std::string& genome,
                         const std::string& file, const std::string& final_output,
                         bool verbose);
-void changeBase(const Dataset &data, int position,
-                            std::string nucleotide,
-                            std::vector<std::string> &new_kmer_vec,
-                            std::string const &genome);
+void changeBase(const Dataset &data, 
+                int position, const std::string &nucleotide, 
+                std::vector<std::string> &new_kmer_vec, 
+                const std::string &genome);
 void checkCache(Dataset &data, const std::vector<std::string> &in_file,
                 std::vector<std::string> &out_cache, const std::string &cachefile,
                 Dataset::accumSummary_type::accumSummary_dest dest);

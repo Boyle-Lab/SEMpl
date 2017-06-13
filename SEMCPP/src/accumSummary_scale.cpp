@@ -25,7 +25,7 @@ void accumSummary_scale(Dataset &data, const string &hfile,
 // clear accum data of corresponding type
     switch (dest) {
             case Dataset::accumSummary_type::accumSummary_dest::none:
-                cerr << "dest shouldn't be none!!!!\n";
+                cerr << "dest shouldn't be none!!!!" << endl;;
                 exit(1);
             break;
             case Dataset::accumSummary_type::accumSummary_dest::enumerated:
@@ -41,7 +41,7 @@ void accumSummary_scale(Dataset &data, const string &hfile,
                 data.accumSummary_data.align_accum_lines.clear();
             break;
             default:
-                cerr << "there is no default for dest's switch statement!!!\n";
+                cerr << "there is no default for dest's switch statement!!!" << endl;
                 exit(1);
             break;
     }
@@ -54,7 +54,7 @@ void accumSummary_scale(Dataset &data, const string &hfile,
 	bigWigFile_t *bwFile = bwOpen(fname, NULL, "r");
     	
     if(bwFile == NULL){
-    	cerr << "Failed to open hfile: " << hfile << '\n';
+    	cerr << "Failed to open hfile: " << hfile << endl;
     	exit(1);
 	}
 
@@ -69,7 +69,7 @@ void accumSummary_scale(Dataset &data, const string &hfile,
 
 	ifstream input(cfile);
 	if(!input){
-		cout << "Failure to open cfile in accumSummary_scale.cpp\n";
+		cout << "Failure to open cfile in accumSummary_scale.cpp" << endl;
 		exit(1);
 	}
 
@@ -125,11 +125,24 @@ void accumSummary_scale(Dataset &data, const string &hfile,
         // << "upend: " << static_cast<uint32_t>(upend) << endl
         // << "nBins: " << static_cast<uint32_t>(upend - upstart) << endl;
 
-		values = bwStats(bwFile, chrom, static_cast<uint32_t>(upstart),
-                         static_cast<uint32_t>(upend),
-                         static_cast<uint32_t>(upend - upstart), 
-                         bwStatsType::mean);
+        try{
+            #ifdef DEBUG
+            cout << "bwFile: " << bwFile << endl
+                 << "chrom: " << chrom << endl
+                 << "upstart: " << upstart << endl
+                 << "upend: " << upend << endl
+                 << "upend - upstart: " << upend - upstart << endl;
 
+            #endif
+    		values = bwStats(bwFile, chrom, static_cast<uint32_t>(upstart),
+                             static_cast<uint32_t>(upend),
+                             static_cast<uint32_t>(upend - upstart), 
+                             bwStatsType::mean);
+        }
+        catch(...){
+            cerr << "problem with bwStats\n\tEXITING" << endl;
+            exit(1);
+        }
 
         if(values == NULL){
             cerr << "Failure to use bwStats!\n\tEXITING" << endl;
@@ -179,7 +192,7 @@ void accumSummary_scale(Dataset &data, const string &hfile,
             }
         }
         catch(...){
-            cout << "nan exception thrown" << endl;
+            cerr << "nan exception thrown" << endl;
             exit(1);
         }
 
@@ -205,7 +218,7 @@ void accumSummary_scale(Dataset &data, const string &hfile,
         }
         switch (dest) {
             case Dataset::accumSummary_type::accumSummary_dest::none:
-                cerr << "dest shouldn't be none!!!!\n";
+                cerr << "dest shouldn't be none!!!!" << endl;
                 exit(1);
             break;
             case Dataset::accumSummary_type::accumSummary_dest::enumerated:
@@ -221,7 +234,7 @@ void accumSummary_scale(Dataset &data, const string &hfile,
                 data.accumSummary_data.align_accum_max.push_back(max);
             break;
             default:
-                cerr << "there is no default for dest's switch statement!!!\n";
+                cerr << "there is no default for dest's switch statement!!!" << endl;
                 exit(1);
             break;
         }

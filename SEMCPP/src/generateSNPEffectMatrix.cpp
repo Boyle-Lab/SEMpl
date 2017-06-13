@@ -418,17 +418,29 @@ void create_baselines(Dataset &data, int length){
         if(data.settings.verbose){
             cout << "\tRunning accumSummary_scale(args)..." << flush;
         }
-        accumSummary_scale(data, data.bigwig_file,
-                           data.output_dir + "/BASELINE/Scrambled_kmer_filtered.bed",
-                           length,
-                           Dataset::accumSummary_type::accumSummary_dest::scrambled);
+        try{
+            accumSummary_scale(data, data.bigwig_file,
+                               data.output_dir + "/BASELINE/Scrambled_kmer_filtered.bed",
+                               length,
+                               Dataset::accumSummary_type::accumSummary_dest::scrambled);
+        }
+        catch(...){
+            cerr << "problem with scrambled accumSummary_scale(args)\n\tEXITING" << endl;
+            exit(1);
+        }
         if(data.settings.verbose){
             cout << "FINISH" << endl;
         }
 
         if(data.settings.writecache){
+            if(data.settings.verbose){
+                cout << "\twriting to cache..." << flush;
+            }
             writeCache(data, data.cachefile,
                        Dataset::accumSummary_type::accumSummary_dest::scrambled);
+            if(data.settings.verbose){
+                cout << "FINISH" << endl;
+            }
         }
         // SHOULD THERE BE AN ERROR CHECK IF signal_cache_enumerate IS EMPTY????
         sort(data.signal_cache_scramble.begin(),
