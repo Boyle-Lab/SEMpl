@@ -127,17 +127,24 @@ void accumSummary_scale(Dataset &data, const string &hfile,
 
         try{
             #ifdef DEBUG
-            cout << "bwFile: " << bwFile << endl
-                 << "chrom: " << chrom << endl
+            cout << "chrom: " << chrom << endl
                  << "upstart: " << upstart << endl
                  << "upend: " << upend << endl
                  << "upend - upstart: " << upend - upstart << endl;
 
             #endif
+
+            #ifdef DEBUG
+                 cout << "running bwStats(args)..." << flush;
+            #endif
     		values = bwStats(bwFile, chrom, static_cast<uint32_t>(upstart),
                              static_cast<uint32_t>(upend),
                              static_cast<uint32_t>(upend - upstart), 
                              bwStatsType::mean);
+            #ifdef DEBUG
+                cout << "FINISH" << endl;
+                // segmentation fault somewhere below here
+            #endif
         }
         catch(...){
             cerr << "problem with bwStats\n\tEXITING" << endl;
@@ -155,24 +162,27 @@ void accumSummary_scale(Dataset &data, const string &hfile,
 			signal_array[counter] = values[counter];
 		}
 
+        cout << "\tfreed values" << endl;
         free(values);
 
+        cout << "\tdeleted chrom" << endl;
 		delete [] chrom;
 
 
         // UPDATE:
         // nan IS AN ACTUAL POSSIBLE DOUBLE VALUE
         // use isnan(double) to check if NaN
+
         try{
             // '+' is found
     		if(direction.find('+') != string::npos){
     			for(int k = 0; k < total_size; ++k){
-                    if(!isnan(signal_array[k])){
+                    if(!isnan(signal_array.at(k))){
                         // output[k] = signal_array[k];
                     }
                     else{
                         // output[k] = "N";
-                        signal_array_is_nan[k] = true;
+                        signal_array_is_nan.at(k) = true;
                     }
                 }
             }
@@ -181,12 +191,12 @@ void accumSummary_scale(Dataset &data, const string &hfile,
                 // use reserve so I can keep the same iteration direction
                 reverse(signal_array.begin(), signal_array.end());
     			for(int k = 0; k < total_size; ++k){
-                    if(!isnan(signal_array[k])){
+                    if(!isnan(signal_array.at(k))){
                         // output[k] = signal_array[k];
                     }
                     else{
                         // output[k] = "N";
-                        signal_array_is_nan[k] = true;
+                        signal_array_is_nan.at(k) = true;
                     }
                 }
             }
@@ -203,12 +213,12 @@ void accumSummary_scale(Dataset &data, const string &hfile,
 
             // if(signal_array[l] > max) max = signal_array[l];
                                     // string to double
-			if(!signal_array_is_nan[l]){ 
+			if(!signal_array_is_nan.at(l)){ 
                 ++hitcount;
             }
             else{
-                if(signal_array[l] > max){ 
-                    max = signal_array[l];
+                if(signal_array.at(l) > max){ 
+                    max = signal_array.at(l);
                 }
             }
 		}
