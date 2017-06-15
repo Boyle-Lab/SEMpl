@@ -133,22 +133,22 @@ void accumSummary_scale(Dataset &data, const string &hfile,
 
         try{
             #ifdef DEBUG
-            cout << "chrom: " << chrom << endl
-                 << "upstart: " << upstart << endl
-                 << "upend: " << upend << endl
-                 << "upend - upstart: " << upend - upstart << endl;
+            // cout << "chrom: " << chrom << endl
+            //      << "upstart: " << upstart << endl
+            //      << "upend: " << upend << endl
+            //      << "upend - upstart: " << upend - upstart << endl;
 
             #endif
 
             #ifdef DEBUG
-                 cout << "running bwStats(args)..." << flush;
+                 // cout << "running bwStats(args)..." << flush;
             #endif
     		values = bwStats(bwFile, chrom, static_cast<uint32_t>(upstart),
                              static_cast<uint32_t>(upend),
                              static_cast<uint32_t>(upend - upstart), 
                              bwStatsType::mean);
             #ifdef DEBUG
-                cout << "FINISH" << endl;
+                // cout << "FINISH" << endl;
             #endif
         }
         catch(...){
@@ -177,10 +177,10 @@ void accumSummary_scale(Dataset &data, const string &hfile,
             exit(1);
         }
 
-        cout << "\tfreed values" << endl;
+        // cout << "\tfreed values" << endl;
         free(values);
 
-        cout << "\tdeleted chrom" << endl;
+        // cout << "\tdeleted chrom" << endl;
 		delete [] chrom;
 
 
@@ -194,7 +194,7 @@ void accumSummary_scale(Dataset &data, const string &hfile,
 
         try{
             // '+' is found
-            cout << "\tline 179" << endl;
+            // cout << "\tline 179" << endl;
     		if(direction.find('+') != string::npos){
     			for(int k = 0; k < total_size; ++k){
                     if(!isnan(signal_array.at(k))){
@@ -228,7 +228,7 @@ void accumSummary_scale(Dataset &data, const string &hfile,
 
 		max = 0;
 		hitcount = 0;
-        cout << "\tline 213" << endl;
+        // cout << "\tline 213" << endl;
 		for(int l = 0; l < static_cast<int>(signal_array.size()); ++l){
 			// if(stod(output[l]) > max) max = stod(output[l]);
 
@@ -247,7 +247,7 @@ void accumSummary_scale(Dataset &data, const string &hfile,
 		if(hitcount / static_cast<double>(signal_array.size()) < 0.9){
 			max = numeric_limits<double>::max();
         }
-        cout << "\tline 232" << endl;
+        // cout << "\tline 232" << endl;
         switch (dest) {
             case Dataset::accumSummary_type::accumSummary_dest::none:
                 cerr << "dest shouldn't be none!!!!" << endl;

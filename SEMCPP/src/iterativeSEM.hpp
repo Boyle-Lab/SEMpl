@@ -128,7 +128,7 @@ struct Dataset {
 	std::string cachefile = "";
 
     std::map<std::string, double> kmerHash;
-    std::vector<std::string> scramble_kmers;
+    // std::vector<std::string> scramble_kmers;
 
     // std::vector<std::string> filterDNaseWrapper_output;
 

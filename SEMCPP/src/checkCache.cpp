@@ -20,7 +20,6 @@ using namespace std;
 
 // EFFECTS: returns true if file already exists in current directory,
 //          false otherwise
-bool fileExists(const string &filename);
 static void problemEncountered(const int message, const string &what);
 static void isRowReady(const int message);
 static void checkDone(const int message, const string &s);
@@ -37,12 +36,6 @@ void checkCache(Dataset &data, const vector<string> &in_file, vector<string> &ou
                 const string &cachefile, Dataset::accumSummary_type::accumSummary_dest dest){
 
     bool newcache = fileExists(cachefile);
-#ifdef DEBUG
-    // cout << "\tDEBUG: " << cachefile;
-    // if(newcache) cout << " does not exist";
-    // else cout << " exists";
-    // cout << '\n';
-#endif
 
     out_cache.clear();
 
@@ -75,19 +68,6 @@ void checkCache(Dataset &data, const vector<string> &in_file, vector<string> &ou
     message = sqlite3_open_v2(cachefile.c_str(), &cacheDB, 
                               SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE,
                               NULL);
-    // if(message != SQLITE_OK){
-    //     cerr << '\t' << '\t' << sqlite3_errmsg(cacheDB) << endl;
-    //     ifstream test(cachefile);
-    //     cerr << '\t';
-    //     if(test){
-    //         cerr << "success";
-    //     }
-    //     else{
-    //         cerr << "failure";
-    //     }
-    //     cerr << endl << cachefile << endl;
-    //     cerr << endl;
-    // }
     problemEncountered(message, "open");
 
     string msg = "";

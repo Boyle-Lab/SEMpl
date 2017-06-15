@@ -382,24 +382,36 @@ void create_baselines(Dataset &data, int length){
     // grab keys of kmerHash
 
 
-    vector<string> scramble_cache_output;
 
-    data.scramble_kmers.clear();
+    // scrambled kmers
+    vector<string> scramble_kmers;
+    scramble_kmers.reserve(data.kmerHash.size());
+
+    // enumerated kmers
+    vector<string> enumerate_kmers;
+
+    // final output from processing scrambled kmer data
+    vector<string> scramble_cache_output;
+    // final output from processing enumerated kmer data
+    vector<string> enumerate_cache_output;
+
     
     for(const auto &pair : data.kmerHash){
-        data.scramble_kmers.push_back(pair.first);
+        scramble_kmers.push_back(pair.first);
         // cout << "first: " << pair.first << endl << "second: " << pair.second << endl;
     }
+    enumerate_kmers = scramble_kmers;
+    // scramble_kmers and enumerate_kmers have same elements
 
     if(!data.settings.fastrun){
-        for(auto it = data.scramble_kmers.begin(); 
-            it != data.scramble_kmers.end(); 
+        for(auto it = scramble_kmers.begin(); 
+            it != scramble_kmers.end(); 
             ++it){
             random_shuffle(it->begin(), it->end());
         }
         // scramble_kmers IS NOW SCRAMBLED!!!!
 
-        checkCache(data, data.scramble_kmers, scramble_cache_output, data.cachefile,
+        checkCache(data, scramble_kmers, scramble_cache_output, data.cachefile,
                     Dataset::accumSummary_type::accumSummary_dest::scrambled);
         seq_col_to_fa(scramble_cache_output,
                       data.output_dir + "/BASELINE/Scrambled_kmer.fa");
@@ -449,21 +461,21 @@ void create_baselines(Dataset &data, int length){
             }
         }
         // SHOULD THERE BE AN ERROR CHECK IF signal_cache_enumerate IS EMPTY????
+        // SIGNAL CACHE SCRAMBLE DOES NOT EXIST OMG
+
+        data.signal_scramble_output.clear();
+
         sort(data.signal_cache_scramble.begin(),
              data.signal_cache_scramble.end());
-        data.signal_enumerate_output.resize(data.signal_cache_scramble.size()
+        data.signal_scramble_output.resize(data.signal_cache_scramble.size()
                                           + data.accumSummary_data.scramble_accum_lines.size());
         // returns iterator to one past the location of the last copy
         auto iter = copy(data.accumSummary_data.scramble_accum_lines.begin(),
                          data.accumSummary_data.scramble_accum_lines.end(),
                          data.signal_scramble_output.begin());
-
-        // CHANGE REQUIRED REGARDING WHAT IS IN DATA.SIGNAL_ENUMERATE..._OUTPUT
-        // CHANGE REQUIRED REGARDING WHAT IS IN DATA.SIGNAL_ENUMERATE..._OUTPUT
-        // CHANGE REQUIRED REGARDING WHAT IS IN DATA.SIGNAL_ENUMERATE..._OUTPUT
-        // and corresponding other data
-
-        //  FILLS data.signal_enumerate_output !!!!!!!!!!!!
+        //  FILLS data.signal_scramble_output !!!!!!!!!!!!
+        // iter is the next position to have a value inserted at of
+        // data.signal_scramble_output
         unique_copy(data.signal_cache_scramble.begin(),
                     data.signal_cache_scramble.end(),
                     iter);
@@ -474,14 +486,15 @@ void create_baselines(Dataset &data, int length){
     // checkCache(Dataset &data, const std::vector<std::string> &in_file,
     //            std::vector<std::string> &out_cache, const std::string &cachefile,
     //            Dataset::accumSummary_type::accumSummary_dest dest)
-    checkCache(data, data.scramble_kmers, data.signal_cache_enumerate, data.cachefile,
+
+    checkCache(data, enumerate_kmers, enumerate_cache_output, data.cachefile,
                Dataset::accumSummary_type::accumSummary_dest::enumerated);
 
-    if(!data.signal_cache_enumerate.empty()){
-        seq_col_to_fa(data.signal_cache_enumerate,
+    if(!enumerate_cache_output.empty()){
+        seq_col_to_fa(enumerate_cache_output,
                       data.output_dir + "/BASELINE/Enumerated_kmer.fa");
-        bowtie_genome_map(length,
-                          "../data/hg19", data.output_dir + "/BASELINE/Enumerated_kmer.fa",
+        bowtie_genome_map(length, "../data/hg19", 
+                          data.output_dir + "/BASELINE/Enumerated_kmer.fa",
                           data.output_dir + "/BASELINE/Enumerated_kmer_filtered.bed",
                           data.settings.verbose);
         accumSummary_scale(data, data.bigwig_file,
@@ -506,11 +519,6 @@ void create_baselines(Dataset &data, int length){
                      data.accumSummary_data.enum_accum_lines.end(),
                      data.signal_enumerate_output.begin());
 
-    // CHANGE REQUIRED REGARDING WHAT IS IN DATA.SIGNAL_ENUMERATE..._OUTPUT
-    // CHANGE REQUIRED REGARDING WHAT IS IN DATA.SIGNAL_ENUMERATE..._OUTPUT
-    // CHANGE REQUIRED REGARDING WHAT IS IN DATA.SIGNAL_ENUMERATE..._OUTPUT
-    // and corresponding other data
-
     //  FILLS data.signal_enumerate_output !!!!!!!!!!!!
     unique_copy(data.signal_cache_enumerate.begin(),
                 data.signal_cache_enumerate.end(),
@@ -518,22 +526,6 @@ void create_baselines(Dataset &data, int length){
 
     findMaximumAverageSignalWrapper(data,
                                     Dataset::accumSummary_type::accumSummary_dest::enumerated);
-
-  //   if(data.settings.delAlignmentBed){
-  //       system(("rm -f " + data.output_dir + "/BASELINE/Scrambled_kmer.bed").c_str());
-  //       system(("rm -f " + data.output_dir + "/BASELINE/Enumerated_kmer.bed").c_str());
-  //   }
-  //   if(data.settings.delFilteredBed){
-  //       system(("rm -f " + data.output_dir + "/BASELINE/Scrambled_kmer_filtered.bed").c_str());
-  //       system(("rm -f " + data.output_dir + "/BASELINE/Enumerated_kmer_filtered.bed").c_str());
-  //   }
-  //   if(data.settings.delSNPList){
-  //       system(("rm -f  " + data.output_dir + "/BASELINE/*.scrambled").c_str());
-		// system(("rm -f  " + data.output_dir + "/BASELINE/*.fa").c_str());
-		// system(("rm -f  " + data.output_dir + "/BASELINE/*.sm.txt").c_str());
-		// system(("rm -f  " + data.output_dir + "/BASELINE/*.cache").c_str());
-		// system(("rm -f  " + data.output_dir + "/BASELINE/Enumerated_kmer.txt").c_str());
-  //   }
 
 }
 
