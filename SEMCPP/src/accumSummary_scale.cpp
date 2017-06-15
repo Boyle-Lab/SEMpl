@@ -63,6 +63,12 @@ void accumSummary_scale(Dataset &data, const string &hfile,
 	double max = 0.0;
 	int hitcount = 0;
 
+    // FOR FIXING OUT OF RANGE ERROR WHEN RUNNING ACCUMSUMMARY_SCALE(ARGS)
+    // ON SCRAMBLED DATA
+    ++total_size;
+    // FIX DONE
+
+
 	//////////////////////////////////
 	// Read each peak location and add signal values
 	/////////////////////////////////
@@ -143,7 +149,6 @@ void accumSummary_scale(Dataset &data, const string &hfile,
                              bwStatsType::mean);
             #ifdef DEBUG
                 cout << "FINISH" << endl;
-                // segmentation fault somewhere below here
             #endif
         }
         catch(...){
@@ -156,11 +161,21 @@ void accumSummary_scale(Dataset &data, const string &hfile,
             exit(1);
         }
 
-		
-		for(counter = 0; counter < upend - upstart; ++counter){
-			values[counter] = roundf(values[counter] * 1000) / 1000;
-			signal_array[counter] = values[counter];
-		}
+		try{
+    		for(counter = 0; counter < upend - upstart; ++counter){
+    			values[counter] = roundf(values[counter] * 1000) / 1000;
+    			signal_array.at(counter) = values[counter];
+    		}
+        }
+        catch(...){
+            cerr << "problem with line 159!!" << endl
+                 << "parameters:\n\t counter: " << counter << endl
+                 << "\tscale: " << scale << endl
+                 << "\tupend - upstart: " << upend - upstart << endl
+                 << "\ttotal_size: " << total_size << endl;
+
+            exit(1);
+        }
 
         cout << "\tfreed values" << endl;
         free(values);
@@ -169,12 +184,17 @@ void accumSummary_scale(Dataset &data, const string &hfile,
 		delete [] chrom;
 
 
+        // segmentation fault somewhere below here
+        // last run triggered an exception to be thrown when running
+        // on scrambled
+
         // UPDATE:
         // nan IS AN ACTUAL POSSIBLE DOUBLE VALUE
         // use isnan(double) to check if NaN
 
         try{
             // '+' is found
+            cout << "\tline 179" << endl;
     		if(direction.find('+') != string::npos){
     			for(int k = 0; k < total_size; ++k){
                     if(!isnan(signal_array.at(k))){
@@ -208,6 +228,7 @@ void accumSummary_scale(Dataset &data, const string &hfile,
 
 		max = 0;
 		hitcount = 0;
+        cout << "\tline 213" << endl;
 		for(int l = 0; l < static_cast<int>(signal_array.size()); ++l){
 			// if(stod(output[l]) > max) max = stod(output[l]);
 
@@ -226,6 +247,7 @@ void accumSummary_scale(Dataset &data, const string &hfile,
 		if(hitcount / static_cast<double>(signal_array.size()) < 0.9){
 			max = numeric_limits<double>::max();
         }
+        cout << "\tline 232" << endl;
         switch (dest) {
             case Dataset::accumSummary_type::accumSummary_dest::none:
                 cerr << "dest shouldn't be none!!!!" << endl;

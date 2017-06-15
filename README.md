@@ -2,8 +2,8 @@
 C++ implementation of the SEM algorithm
 
 # Expectations
-1. bowtie binary in ./bin
-2. bedtools binary in ./bin
+1. bowtie binary in ./SEMCPP/bin
+2. bedtools binary in ./SEMCPP/bin
 3. argument to "-readcache" is not optional.
 
 # Compilation
@@ -19,6 +19,7 @@ C++ implementation of the SEM algorithm
 
 # Running
 	./iterativeSEM -PWM examples/MA0114.1.pwm -merge_file examples/wgEncodeOpenChromDnaseHepg2Pk.narrowPeak -big_wig examples/wgEncodeHaibTfbsHepg2Hnf4asc8987V0416101RawRep1.bigWig -TF_name HNF4A -output results/HNF4A
+This command would be run from inside SEMCPP folder.
 
 # Tasks
 

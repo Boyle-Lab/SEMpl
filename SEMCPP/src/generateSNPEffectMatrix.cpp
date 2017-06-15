@@ -429,15 +429,21 @@ void create_baselines(Dataset &data, int length){
             exit(1);
         }
         if(data.settings.verbose){
-            cout << "FINISH" << endl;
+            cout << "FINISHed running accumSummary_scale(args) on scrambled" << endl;
         }
 
         if(data.settings.writecache){
             if(data.settings.verbose){
                 cout << "\twriting to cache..." << flush;
             }
-            writeCache(data, data.cachefile,
-                       Dataset::accumSummary_type::accumSummary_dest::scrambled);
+            try{
+                writeCache(data, data.cachefile,
+                           Dataset::accumSummary_type::accumSummary_dest::scrambled);
+            }
+            catch(...){
+                cerr << "problem with writeCache(args)\n\tEXITING" << endl;
+                exit(1);
+            }
             if(data.settings.verbose){
                 cout << "FINISH" << endl;
             }
