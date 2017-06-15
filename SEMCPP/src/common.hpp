@@ -16,3 +16,5 @@ std::string grab_string_at_index(const std::string &str, const size_t index,
 
 void GetFilesInDirectory(std::vector<std::string> &out, 
 						 const std::string &directory);
+
+int getLength(const Dataset &data);

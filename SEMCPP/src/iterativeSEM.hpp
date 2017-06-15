@@ -16,6 +16,8 @@
 #include <cassert>
 #include <map>
 
+#include <iostream>
+
 /*
  example execution from command line
  "./iterativeSEM.pl -PWM examples/MA0114.1.pwm
@@ -27,6 +29,10 @@
 // overview
 // a struct to contain an instance of PWM data and DNase data
 // data members made public for ease of access, otherwise wouldn't, given more time
+
+
+#define ENUM_BP 'E'
+#define SCRAM_BP 'S'
 
 struct Dataset {
 
@@ -84,22 +90,22 @@ struct Dataset {
 	// contains data from findMaximumAverageSignalWrapper
 	struct MaximumAverageSignalData{
         //baseline signal data
-        double scramble_maximum = 0;
+        double scramble_maximum = 0.0;
         int scramble_counter = 0;
-        double scramble_stdev = 0;
-        double scramble_sterr = 0;
+        double scramble_stdev = 0.0;
+        double scramble_sterr = 0.0;
 
         //alignment signal data, name may need to be changed
-        double alignment_maximum = 0;
+        double alignment_maximum = 0.0;
         int alignment_counter = 0;
-        double alignment_stdev = 0;
-        double alignment_sterr = 0;
+        double alignment_stdev = 0.0;
+        double alignment_sterr = 0.0;
 
         //enumerate signal data, name may need to be changed
-        double enumerate_maximum = 0;
+        double enumerate_maximum = 0.0;
         int enumerate_counter = 0;
-        double enumerate_stdev = 0;
-        double enumerate_sterr = 0;
+        double enumerate_stdev = 0.0;
+        double enumerate_sterr = 0.0;
 	};
 
     std::map< std::pair<int, char>, double> sig_deets_maximum;

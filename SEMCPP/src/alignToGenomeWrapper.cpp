@@ -1,8 +1,8 @@
-#include "iterativeSEM.hpp"
+#include "src/iterativeSEM.hpp"
+#include "src/common.hpp"
 #include <iostream>
 using namespace std;
 
-static int getLength(const Dataset &data);
 static void align_SNPs(Dataset &data, int length, const vector<string> &nucleotideStack);
 
 // default genome is "hg19"
@@ -90,13 +90,4 @@ static void align_SNPs(Dataset &data, int length,
             cache_output.clear();
         }
     }
-}
-
-// getlength accesses first(?) element of kmerHash and returns the key length
-static int getLength(const Dataset &data){
-    if(data.kmerHash.empty()){
-        cerr << "data.kmerHash is empty!!!!\n\tEXITING" << endl;
-        exit(1);
-    }
-    return static_cast<int>(data.kmerHash.begin()->first.size());
 }

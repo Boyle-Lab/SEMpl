@@ -14,7 +14,8 @@ using namespace std;
 
 
 			// contains all data, contains bigwig filename, region file, scale
-//REQUIRES: data is valid Dataset, receives bigwig file, file containing regions to center, and scale size
+//REQUIRES: data is valid Dataset, receives bigwig file, 
+//          file containing regions to center, and scale size
 //MODIFIES: data, specifically accumsummary data
 //EFFECTS: fills appropriate accumSummary_data vectors
 
@@ -230,10 +231,6 @@ void accumSummary_scale(Dataset &data, const string &hfile,
 		hitcount = 0;
         // cout << "\tline 213" << endl;
 		for(int l = 0; l < static_cast<int>(signal_array.size()); ++l){
-			// if(stod(output[l]) > max) max = stod(output[l]);
-
-            // if(signal_array[l] > max) max = signal_array[l];
-                                    // string to double
 			if(!signal_array_is_nan.at(l)){ 
                 ++hitcount;
             }

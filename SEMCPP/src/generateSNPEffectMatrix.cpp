@@ -526,6 +526,27 @@ void create_baselines(Dataset &data, int length){
 
     findMaximumAverageSignalWrapper(data,
                                     Dataset::accumSummary_type::accumSummary_dest::enumerated);
+    findMaximumAverageSignalWrapper(data,
+                                    Dataset::accumSummary_type::accumSummary_dest::scrambled);
+    // actual processing occurs in generateSEM(args)
+    
+    // data.sig_deets_maximum.insert( {-1, ENUM_BP}, 
+    //                                 data.Signal_data.enumerate_maximum );
+    // data.sig_deets_maximum.insert( {-1, SCRAM_BP}, 
+    //                                 data.Signal_data.scramble_maximum );
+    // data.sig_deets_counter.insert( {-1, ENUM_BP}, 
+    //                                 data.Signal_data.enumerate_counter );
+    // data.sig_deets_counter.insert( {-1, SCRAM_BP}, 
+    //                                 data.Signal_data.scramble_counter );
+    // data.sig_deets_stdev.insert( {-1, ENUM_BP},
+    //                                 data.Signal_data.enumerate_stdev );
+    // data.sig_deets_stdev.insert( {-1, SCRAM_BP},
+    //                                 data.Signal_data.scramble_stdev );
+    // data.sig_deets_sterr.insert( {-1, ENUM_BP},
+    //                                 data.Signal_data.enumerate_sterr );
+    // data.sig_deets_sterr.insert( {-1, SCRAM_BP},
+    //                                 data.Signal_data.scramble_sterr );
+
 
 }
 

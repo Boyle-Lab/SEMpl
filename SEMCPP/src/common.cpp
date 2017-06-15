@@ -171,3 +171,12 @@ bool fileExists(const string &filename){
   struct stat buffer;
   return (stat (filename.c_str(), &buffer) == 0);
 }
+
+// getlength accesses first(?) element of kmerHash and returns the key length
+int getLength(const Dataset &data){
+    if(data.kmerHash.empty()){
+        std::cerr << "data.kmerHash is empty!!!!\n\tEXITING" << std::endl;
+        exit(1);
+    }
+    return static_cast<int>(data.kmerHash.begin()->first.size());
+}
