@@ -1,3 +1,6 @@
+#ifndef COMMON_HPP
+#define COMMON_HPP
+
 #include "iterativeSEM.hpp"
 #include <iostream>
 #include <regex>
@@ -18,3 +21,5 @@ void GetFilesInDirectory(std::vector<std::string> &out,
 						 const std::string &directory);
 
 int getLength(const Dataset &data);
+
+#endif /* COMMON_HPP */

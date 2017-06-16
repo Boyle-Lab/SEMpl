@@ -50,11 +50,15 @@ void generateSEM(const Dataset &data){
 
     int length = getLength(data);
 
+    int loc = 0;
+    char bp = '\0';
+
     // print OUT_HANDLE "$file\t$maximum\t$count\t$stdev\t$sterr\n";
     // use to translate indexes in this file's Perl equivalent
     try{
-        for(int loc = 0; loc < length; ++loc){
-            for(char bp : iterate_over){
+        for(loc = 0; loc < length; ++loc){
+            for(char ch : iterate_over){
+                bp = ch;
                 score = data.sig_deets_maximum.at( {loc, bp} );
                 sterr = data.sig_deets_sterr.at( {loc, bp} );
 
@@ -67,8 +71,14 @@ void generateSEM(const Dataset &data){
             }
         }
     }
+    catch(const out_of_range &e){
+        cerr << "bp: " << bp << "\tloc: " << loc << endl
+             << "\tout of range error: " << e.what() << "\n\tEXITING" << endl;
+        exit(1);
+    }
     catch(...){
-        cerr << "problem with data in generateSEM(args)!!\n\tEXITING" << endl;
+        cerr << "bp: " << bp << "\tloc: " << loc << endl
+             << "problem with data in generateSEM(args)!!\n\tEXITING" << endl;
         exit(1);
     }
 

@@ -15,6 +15,7 @@
 #include <vector>
 #include <cassert>
 #include <map>
+#include <exception>
 
 #include <iostream>
 
@@ -30,9 +31,6 @@
 // a struct to contain an instance of PWM data and DNase data
 // data members made public for ease of access, otherwise wouldn't, given more time
 
-
-#define ENUM_BP 'E'
-#define SCRAM_BP 'S'
 
 struct Dataset {
 

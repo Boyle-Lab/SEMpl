@@ -524,6 +524,8 @@ void create_baselines(Dataset &data, int length){
                 data.signal_cache_enumerate.end(),
                 iter);
 
+    
+
     findMaximumAverageSignalWrapper(data,
                                     Dataset::accumSummary_type::accumSummary_dest::enumerated);
     findMaximumAverageSignalWrapper(data,
