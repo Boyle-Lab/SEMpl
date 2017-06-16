@@ -91,7 +91,7 @@ void generateSNPEffectMatrix(Dataset &data) {
     // temporarily commented for testing
     // temporarily commented for testing
     cout << "\tstep two" << endl;
-    // align_to_genome(data);
+    align_to_genome(data);
 
     //Step 3: Filter using DNase data and finding the signal at each location
     // ALSO: read in output of filterDNaseWrapper back to memory
@@ -103,11 +103,11 @@ void generateSNPEffectMatrix(Dataset &data) {
     // temporarily commented for testing
     // temporarily commented for testing
     cout << "\tstep three" << endl;
-    // filterDNaseWrapper(data);
+    filterDNaseWrapper(data);
 
     //Step 4: Find the signal using chIP-seq data
     cout << "\tstep four" << endl;
-    // find_signal(data, length);
+    find_signal(data, length);
 
     //Step 5: Generate baselines
     cout << "\tstep five" << endl;
@@ -508,7 +508,7 @@ void create_baselines(Dataset &data, int length){
 
     // SHOULD THERE BE AN ERROR CHECK IF signal_cache_enumerate IS EMPTY????
     if(data.signal_cache_enumerate.empty()){
-        cout << "\tdata.signal_cache_enumerate is empty!!!! IDK" << endl;
+        cerr << "\tdata.signal_cache_enumerate is empty!!!! IDK" << endl;
     }
     sort(data.signal_cache_enumerate.begin(),
          data.signal_cache_enumerate.end());
@@ -524,7 +524,7 @@ void create_baselines(Dataset &data, int length){
                 data.signal_cache_enumerate.end(),
                 iter);
 
-    
+
 
     findMaximumAverageSignalWrapper(data,
                                     Dataset::accumSummary_type::accumSummary_dest::enumerated);

@@ -32,8 +32,11 @@ static void align_SNPs(Dataset &data, int length,
 
     string CWD =  "./" + data.output_dir + "ALIGNMENT/";
 
-    system( string("mkdir -p " + CWD).c_str() );
-
+    if(system( string("mkdir -p " + CWD).c_str() ) != 0){
+        cerr << "problem running mkdir -p " << CWD << endl;
+        exit(1);
+    }
+    
 
     string genome = "";
 

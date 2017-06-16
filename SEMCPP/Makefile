@@ -2,8 +2,10 @@ CXX=g++
 
 C++FLAGS=-Wall -Werror -pedantic --std=c++11 -I. -pthread
 
-#DEBUG_OR_OPTIMIZE = -DDEBUG -Wno-variadic-macros -Wno-unused-local-typedefs -Wno-enum-compare
-DEBUG_OR_OPTIMIZE = -g0 -DDEBUG -Wno-variadic-macros -Wno-unused-local-typedefs -Wno-enum-compare -g
+DEBUG_OR_OPTIMIZE = -O3 
+#DEBUG_OR_OPTIMIZE = -g0 -g -DDEBUG 
+
+DISABLE_WARNINGS = -Wno-variadic-macros -Wno-unused-local-typedefs -Wno-enum-compare -Wno-unused-result
 
 C++SOURCES=$(wildcard src/*.cpp)
 
@@ -42,11 +44,11 @@ $(EXECUTABLE): $(C++OBJ) $(SQLITEOBJ)
 		$(CXX) $(C++FLAGS) $(LIBLOC) -o $(EXECUTABLE) $(C++OBJ) $(SQLITEOBJ) $(TFMLIB) $(BIGWIGLIB) -ldl
 
 obj/%.o : lib/TFM-Pvalue/%.cpp
-		$(CXX) $(C++FLAGS) $(DEBUG_OR_OPTIMIZE) -c $< -o $@
+		$(CXX) $(C++FLAGS) $(DEBUG_OR_OPTIMIZE) $(DISABLE_WARNINGS) -c $< -o $@
 obj/%.o : src/%.cpp												#pre-requisite   #target
-		$(CXX) $(C++FLAGS) $(DEBUG_OR_OPTIMIZE) -c $< -o $@
+		$(CXX) $(C++FLAGS) $(DEBUG_OR_OPTIMIZE) $(DISABLE_WARNINGS) -c $< -o $@
 obj/%.o : lib/sqlite3/%.c
-		gcc -Wall -Werror -pedantic $(DEBUG_OR_OPTIMIZE) -c $< -o $@
+		gcc -Wall -Werror -pedantic $(DEBUG_OR_OPTIMIZE) $(DISABLE_WARNINGS) -c $< -o $@
 
 clean:
 		rm -f obj/*.o

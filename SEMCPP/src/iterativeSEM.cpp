@@ -260,7 +260,10 @@ int main(int argc, char **argv){
             ostringstream newOutput;
             newOutput << data.output_dir << "/final/";
             string cmd = "ln -s " + final_run + " " + data.output_dir + " " + newOutput.str();
-            system(cmd.c_str());
+            if(system(cmd.c_str()) != 0){
+                cerr << "problem running " << cmd << endl;
+                exit(1);
+            }
             double diff_t;
             time_t endTime;
             time(&endTime);

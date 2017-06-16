@@ -49,7 +49,10 @@ void bowtie_genome_map(int length, const string& genome, const string& file,
         cout << "Running command: " << cmd << "\n\tRunning...." << flush;
     }
     
-    system(cmd.c_str());
+    if(system(cmd.c_str()) != 0){
+        cerr << "problem running " << cmd << endl;
+        exit(1);
+    }
 
     if(verbose){
         cout << "FINISH" << endl;

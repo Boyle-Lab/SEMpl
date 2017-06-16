@@ -51,7 +51,7 @@ int count_kmer(const Dataset &data){
     }
 #endif
 
-    return static_cast<int>(data.size_of_kmerHash);
+    return static_cast<int>(data.kmerHash.size());
 
 }
 

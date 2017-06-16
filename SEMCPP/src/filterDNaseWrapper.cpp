@@ -55,14 +55,20 @@ void filterDNaseWrapper(Dataset &data){
                 int val = system(bed_cmd.c_str());
                 assert(val == 0);
 #else
-                system(bed_cmd.c_str());
+                if(system(bed_cmd.c_str()) != 0){
+                    cerr << "problem running " << bed_cmd << endl;
+                    exit(1);
+                }
 #endif
                 //I believe this is the correct implementation of the call
                 // to bedtools with the binary file
                 // located within lib
             }
             else{
-                system(string("touch " + bedfile).c_str());
+                if(system(string("touch " + bedfile).c_str()) != 0){
+                    cerr << "problem running touch " << bedfile << endl;
+                    exit(1);
+                }
             }
 #ifdef DEBUG
             // cout << "\tdeleting readfile\n";
