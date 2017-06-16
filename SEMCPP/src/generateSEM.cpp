@@ -90,7 +90,8 @@ void generateSEM(const Dataset &data){
     //Making output files for the .sem and .sterr
     sem_file << data.TF_name << "\tA\tC\tG\tT\n";
     sterr_file << data.TF_name << "\tA\tC\tG\tT\n";
-    for (int j = 0; j <= max; ++j){
+    // for (int j = 0; j <= max; ++j){
+    for (int j = 0; j < max; ++j){
         sem_file << j + 1 << "\t" << SNPEffect[{j, 'A'}]
                  << "\t" << SNPEffect[{j, 'C'}]
                  << "\t" << SNPEffect[{j, 'G'}]
