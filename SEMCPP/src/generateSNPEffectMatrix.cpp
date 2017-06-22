@@ -91,7 +91,7 @@ void generateSNPEffectMatrix(Dataset &data) {
     // temporarily commented for testing
     // temporarily commented for testing
     cout << "\tstep two" << endl;
-    align_to_genome(data);
+    // align_to_genome(data);
 
     //Step 3: Filter using DNase data and finding the signal at each location
     // ALSO: read in output of filterDNaseWrapper back to memory
@@ -332,6 +332,9 @@ void find_signal(Dataset &data, int length){
 
             auto iter = data.sig_deets_maximum.insert( { {value, bp}, 
                                                 data.Signal_data.alignment_maximum} );
+            
+                // cout << '\t' << data.Signal_data.alignment_maximum << "  max inserted" << endl;
+            
             if(!iter.second){
                 cerr << "duplicate key inserted into sig_deets_maximum" << endl;
                 exit(1);
@@ -339,12 +342,14 @@ void find_signal(Dataset &data, int length){
             // second pair type
             auto iter1 = data.sig_deets_counter.insert( { {value, bp}, 
                                                 data.Signal_data.alignment_counter} );
+                // cout << '\t' << data.Signal_data.alignment_counter << "  counter inserted" << endl;
             if(!iter1.second){
                 cerr << "duplicate key inserted into sig_deets_counter" << endl;
                 exit(1);
             }
             iter = data.sig_deets_stdev.insert( { {value, bp}, 
                                                 data.Signal_data.alignment_stdev} );
+                // cout << '\t' << data.Signal_data.alignment_stdev << "  stdev inserted" << endl;
             if(!iter.second){
                 cerr << "duplicate key inserted into sig_deets_stdev" << endl;
                 exit(1);

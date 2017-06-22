@@ -39,6 +39,13 @@ void generateSEM(const Dataset &data){
     double enum_ = data.Signal_data.enumerate_maximum;
     double enum_err = data.Signal_data.enumerate_sterr;
 
+    // debug
+        cout << "\tenum_: " << enum_ << endl
+             << "\tenum_err: " << enum_err << endl;
+
+
+    // end debug
+
     double score = 0.0, sterr = 0.0;
     int max = 0;
 
@@ -61,6 +68,12 @@ void generateSEM(const Dataset &data){
                 bp = ch;
                 score = data.sig_deets_maximum.at( {loc, bp} );
                 sterr = data.sig_deets_sterr.at( {loc, bp} );
+
+                // debug
+                cout << "score (maximum) for " << loc << ' ' << bp << ": " 
+                     << score << '\t' << " and sterr: " << sterr << endl;
+
+                // end debug
 
                 SNPEffect[ {loc, bp} ] = log2(score / enum_);
                 STDErr[ {loc, bp} ] = sterr / enum_;

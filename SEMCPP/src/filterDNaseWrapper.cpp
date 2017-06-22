@@ -11,7 +11,8 @@ using namespace std;
 
 // REQUIRES: Boost library installed
 // MEMORY: incrementally reads in output
-void filterDNaseWrapper(Dataset &data){
+// UNSURE OF ABOVE LINE UPDATE
+void filterDNaseWrapper(const Dataset &data){
 
     vector<string> files;
     string targetDir = "./" + data.output_dir + "/ALIGNMENT/";

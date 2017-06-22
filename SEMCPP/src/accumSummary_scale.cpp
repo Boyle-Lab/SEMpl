@@ -147,7 +147,7 @@ void accumSummary_scale(Dataset &data, const string &hfile,
     		values = bwStats(bwFile, chrom, static_cast<uint32_t>(upstart),
                              static_cast<uint32_t>(upend),
                              static_cast<uint32_t>(upend - upstart), 
-                             bwStatsType::mean);
+                             bwStatsType::max);
             #ifdef DEBUG
                 // cout << "FINISH" << endl;
             #endif
@@ -162,9 +162,11 @@ void accumSummary_scale(Dataset &data, const string &hfile,
             exit(1);
         }
 
+        // cout << "chrom: " << chrom << endl;
 		try{
     		for(counter = 0; counter < upend - upstart; ++counter){
     			values[counter] = roundf(values[counter] * 1000) / 1000;
+                // cout << "value at values[" << counter << "]: " << values[counter] << endl;
     			signal_array.at(counter) = values[counter];
     		}
         }
@@ -241,8 +243,8 @@ void accumSummary_scale(Dataset &data, const string &hfile,
             }
 		}
         // if max is maximum possible double value, then it is not applicable
-		if(hitcount / static_cast<double>(signal_array.size()) < 0.9){
-			max = numeric_limits<double>::max();
+		if( ( hitcount / static_cast<double>( signal_array.size() ) ) < 0.9){
+			max = NAN_VALUE;
         }
         // cout << "\tline 232" << endl;
         switch (dest) {
@@ -267,7 +269,6 @@ void accumSummary_scale(Dataset &data, const string &hfile,
                 exit(1);
             break;
         }
-        
 	}
 	bwClose(bwFile);
 	delete [] fname;

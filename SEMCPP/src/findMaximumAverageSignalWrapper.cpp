@@ -61,15 +61,21 @@ void findMaximumAverageSignalWrapper(Dataset &data,
         for(size_t i = 0; i < max_ptr->size(); ++i){
             // checks if the value corresponds to "NA"
             // if(max_ptr->at(i) != numeric_limits<double>::max()){
-            if( !isnan( max_ptr->at(i) ) ) {
+            // if( !isnan( max_ptr->at(i) ) ) {
+            if( max_ptr->at(i) != NAN_VALUE ) {
                 sum += max_ptr->at(i);
                 ++counter;
             }
+
+            // cout << "value at " << i << ": " << max_ptr->at(i) << endl;
         }
 
         if(counter > 0){
             mean = sum / counter;
         }
+        // cout << "max_ptr->size(): " << max_ptr->size() << endl;
+        // cout << "mean: " << mean << endl << "sum: " << sum << endl 
+        //      << "counter: " << counter << endl;
 
         // The following is the calculations for the standard deviation
         // and standard error.
@@ -77,7 +83,7 @@ void findMaximumAverageSignalWrapper(Dataset &data,
         for (size_t i = 0; i < max_ptr->size(); i++){
             sqtotal += pow((mean - max_ptr->at(i)), 2.0);
         }
-        stdev = pow( (sqtotal / (max_ptr->size()-1) ), 0.5);
+        stdev = pow( (sqtotal / ( max_ptr->size() - 1) ), 0.5);
         sterr = stdev / pow(counter, 0.5);
 
         // print OUT_HANDLE "$file\t$maximum\t$count\t$stdev\t$sterr\n";
