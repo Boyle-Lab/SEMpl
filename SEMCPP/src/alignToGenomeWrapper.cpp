@@ -9,7 +9,7 @@ static void align_SNPs(Dataset &data, int length, const vector<string> &nucleoti
 // INFILE FROM ORIGINAL ALGORITHM IS ENUMERATED_KMER
 void alignToGenomeWrapper(Dataset &data, int iteration, const string genome) {
 
-    vector<string> nucleotideStack{"A", "C", "G", "T"};
+    const vector<string> nucleotideStack{"A", "C", "G", "T"};
 
     // step 1: get the length of kmer
     int length = getLength(data);

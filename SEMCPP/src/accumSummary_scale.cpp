@@ -61,8 +61,8 @@ void accumSummary_scale(Dataset &data, const string &hfile,
 
 	int dist = 500;
 	int total_size = dist * 2 + scale;
-	double max = 0.0;
-	int hitcount = 0;
+	float max = 0.0;
+	// int hitcount = 0;
 
     // FOR FIXING OUT OF RANGE ERROR WHEN RUNNING ACCUMSUMMARY_SCALE(ARGS)
     // ON SCRAMBLED DATA
@@ -85,13 +85,14 @@ void accumSummary_scale(Dataset &data, const string &hfile,
 	string line = "", seqid = "", direction = "";
 
 	vector<string> temp;
-    vector<double> signal_array(total_size, 0.0);
-    vector<bool> signal_array_is_nan(total_size, false);
+    // vector<float> signal_array(total_size, 0.0);
+    // vector<bool> signal_array_is_nan(total_size, false);
 
-	int start = 0, end = 0, counter = 0;
+	int start = 0, end = 0;
+     // counter = 0;
     int upstart = 0, upend = 0;
 	// pointer to hold double values from bigwig library function;
-	double *values = nullptr;
+	// double *values = nullptr;
 
 
 	while(getline(input, line)){
@@ -132,94 +133,101 @@ void accumSummary_scale(Dataset &data, const string &hfile,
         // << "upend: " << static_cast<uint32_t>(upend) << endl
         // << "nBins: " << static_cast<uint32_t>(upend - upstart) << endl;
 
-        try{
-            #ifdef DEBUG
-            // cout << "chrom: " << chrom << endl
-            //      << "upstart: " << upstart << endl
-            //      << "upend: " << upend << endl
-            //      << "upend - upstart: " << upend - upstart << endl;
+  //       try{
+  //           #ifdef DEBUG
+  //           // cout << "chrom: " << chrom << endl
+  //           //      << "upstart: " << upstart << endl
+  //           //      << "upend: " << upend << endl
+  //           //      << "upend - upstart: " << upend - upstart << endl;
 
-            #endif
+  //           #endif
 
-            #ifdef DEBUG
-                 // cout << "running bwStats(args)..." << flush;
-            #endif
-    		values = bwStats(bwFile, chrom, static_cast<uint32_t>(upstart),
-                             static_cast<uint32_t>(upend),
-                             static_cast<uint32_t>(upend - upstart), 
-                             bwStatsType::max);
-            #ifdef DEBUG
-                // cout << "FINISH" << endl;
-            #endif
-        }
-        catch(...){
-            cerr << "problem with bwStats\n\tEXITING" << endl;
-            exit(1);
-        }
+  //           #ifdef DEBUG
+  //                // cout << "running bwStats(args)..." << flush;
+  //           #endif
+  //   		values = bwStats(bwFile, chrom, static_cast<uint32_t>(upstart),
+  //                            static_cast<uint32_t>(upend),
+  //                            static_cast<uint32_t>(upend - upstart), 
+  //                            bwStatsType::mean);
+  //           #ifdef DEBUG
+  //               // cout << "FINISH" << endl;
+  //           // cout << "upend: " << upend << endl << "upstart: " << upstart << endl;
+  //           #endif
+  //       }
+  //       catch(...){
+  //           cerr << "problem with bwStats\n\tEXITING" << endl;
+  //           exit(1);
+  //       }
 
-        if(values == NULL){
-            cerr << "Failure to use bwStats!\n\tEXITING" << endl;
-            exit(1);
-        }
+  //       if(values == NULL){
+  //           cerr << "Failure to use bwStats!\n\tEXITING" << endl;
+  //           exit(1);
+  //       }
 
-        // cout << "chrom: " << chrom << endl;
-		try{
-    		for(counter = 0; counter < upend - upstart; ++counter){
-    			values[counter] = roundf(values[counter] * 1000) / 1000;
-                // cout << "value at values[" << counter << "]: " << values[counter] << endl;
-    			signal_array.at(counter) = values[counter];
-    		}
-        }
-        catch(...){
-            cerr << "problem with line 159!!" << endl
-                 << "parameters:\n\t counter: " << counter << endl
-                 << "\tscale: " << scale << endl
-                 << "\tupend - upstart: " << upend - upstart << endl
-                 << "\ttotal_size: " << total_size << endl;
+  //       // cout << "chrom: " << chrom << endl;
+		// try{
+  //   		for(counter = 0; counter < upend - upstart; ++counter){
+  //   			values[counter] = roundf(values[counter] * 1000) / 1000;
+  //               // cout << "value at values[" << counter << "]: " << values[counter] << endl;
+  //   			signal_array.at(counter) = values[counter];
+  //   		}
+  //       }
+  //       catch(...){
+  //           cerr << "problem with line about 5 lines above!!" << endl
+  //                << "parameters:\n\t counter: " << counter << endl
+  //                << "\tscale: " << scale << endl
+  //                << "\tupend - upstart: " << upend - upstart << endl
+  //                << "\ttotal_size: " << total_size << endl;
 
-            exit(1);
-        }
+  //           exit(1);
+  //       }
 
-        // cout << "\tfreed values" << endl;
-        free(values);
+  //       // cout << "\tfreed values" << endl;
+  //       free(values);
 
+        bwOverlappingIntervals_t *ptr = bwGetValues(bwFile, chrom, 
+                                   static_cast<uint32_t>(upstart),
+                                   static_cast<uint32_t>(upend),
+                                   1);
+
+        // cout << "\t for chrom: " << seqid << endl;
         // cout << "\tdeleted chrom" << endl;
 		delete [] chrom;
 
 
-        // segmentation fault somewhere below here
-        // last run triggered an exception to be thrown when running
-        // on scrambled
-
-        // UPDATE:
-        // nan IS AN ACTUAL POSSIBLE DOUBLE VALUE
-        // use isnan(double) to check if NaN
+        int nan_count = 0;
 
         try{
             // '+' is found
             // cout << "\tline 179" << endl;
     		if(direction.find('+') != string::npos){
-    			for(int k = 0; k < total_size; ++k){
-                    if(!isnan(signal_array.at(k))){
+    			for(int k = 0; k < static_cast<int>(ptr->l); ++k){
+                    ptr->value[k] = roundf(ptr->value[k] * 1000.0) / 1000.0;
+                    if(!isnan( ptr->value[k] )){
                         // output[k] = signal_array[k];
+                        if(ptr->value[k] > max){
+                            max = ptr->value[k];
+                        }
                     }
                     else{
                         // output[k] = "N";
-                        signal_array_is_nan.at(k) = true;
+                        // signal_array_is_nan.at(k) = true;
+                        ++nan_count;
                     }
                 }
             }
-            // '-' must be present
     		else{
-                // use reserve so I can keep the same iteration direction
-                reverse(signal_array.begin(), signal_array.end());
-    			for(int k = 0; k < total_size; ++k){
-                    if(!isnan(signal_array.at(k))){
+    			for(int k = static_cast<int>(ptr->l) - 1; k >= 0; --k){
+                    if(!isnan( ptr->value[k] )){
+                        ptr->value[k] = roundf(ptr->value[k] * 1000.0) / 1000.0;
                         // output[k] = signal_array[k];
+                        if(ptr->value[k] > max){
+                            max = ptr->value[k];
+                        }
                     }
                     else{
                         // output[k] = "N";
-                        signal_array_is_nan.at(k) = true;
+                        ++nan_count;
                     }
                 }
             }
@@ -229,23 +237,35 @@ void accumSummary_scale(Dataset &data, const string &hfile,
             exit(1);
         }
 
-		max = 0;
-		hitcount = 0;
-        // cout << "\tline 213" << endl;
-		for(int l = 0; l < static_cast<int>(signal_array.size()); ++l){
-			if(!signal_array_is_nan.at(l)){ 
-                ++hitcount;
-            }
-            else{
-                if(signal_array.at(l) > max){ 
-                    max = signal_array.at(l);
-                }
-            }
-		}
-        // if max is maximum possible double value, then it is not applicable
-		if( ( hitcount / static_cast<double>( signal_array.size() ) ) < 0.9){
-			max = NAN_VALUE;
+
+        free(ptr->start);
+        free(ptr->end);
+        free(ptr->value);
+        free(ptr);
+		// max = 0;
+		// hitcount = 0;
+  //       // cout << "\tline 213" << endl;
+		// for(int l = 0; l < static_cast<int>(signal_array.size()); ++l){
+		// 	if(!signal_array_is_nan.at(l)){ 
+  //               ++hitcount;
+  //           }
+  //           else{
+  //               if(signal_array.at(l) > max){ 
+  //                   max = signal_array.at(l);
+  //               }
+  //           }
+		// }
+        // cout << "\tupend: " << upend 
+        //      << "\n\tupstart: " << upstart << "\n\thitcount / upend - upstart: "
+        //      << 1.0 - ( static_cast<float>(nan_count) / static_cast<float>(ptr->l) ) 
+        //      << endl;
+        if(static_cast<float>(nan_count) / static_cast<float>(ptr->l) > 0.10){
+            max = NAN_VALUE;
         }
+        // if max is maximum possible double value, then it is not applicable
+		// if( ( hitcount / static_cast<double>( signal_array.size() ) ) < 0.9){
+		// 	max = NAN_VALUE;
+  //       }
         // cout << "\tline 232" << endl;
         switch (dest) {
             case Dataset::accumSummary_type::accumSummary_dest::none:

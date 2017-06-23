@@ -15,6 +15,7 @@ using namespace std;
 //          containing the maximum, count, stdev, and sterr
 
 // NOTE: PASS scramble FOR BASELINE
+//              MAYBE
 void findMaximumAverageSignalWrapper(Dataset &data,
                                      Dataset::accumSummary_type::accumSummary_dest dest){
 
@@ -39,15 +40,18 @@ void findMaximumAverageSignalWrapper(Dataset &data,
                 //line_ptr = &data.accumSummary_data.align_accum_lines;
             break;
             default:
-                cerr << "there is no default for dest's switch statement!!!\n";
+                cerr << "there is no default for dest's switch statement!!!" 
+                     << endl;
                 exit(1);
             break;
         }
 
-        if(max_ptr->empty()){
-            cerr << "corresponding accumSummary max data is missing!!!!\n";
+        if(max_ptr == nullptr || max_ptr->empty()){
+            cerr << "corresponding accumSummary max data is missing!!!!"
+                 << endl;
             exit(1);
         }
+
 
         double sum = 0.0;
         int counter = 0;
@@ -81,7 +85,7 @@ void findMaximumAverageSignalWrapper(Dataset &data,
         // and standard error.
         double sqtotal = 0.0;
         for (size_t i = 0; i < max_ptr->size(); i++){
-            sqtotal += pow((mean - max_ptr->at(i)), 2.0);
+            sqtotal += pow( (mean - max_ptr->at(i)), 2.0);
         }
         stdev = pow( (sqtotal / ( max_ptr->size() - 1) ), 0.5);
         sterr = stdev / pow(counter, 0.5);

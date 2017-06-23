@@ -19,6 +19,10 @@
 
 #include <iostream>
 
+
+
+#define NAN_VALUE -28.0
+
 /*
  example execution from command line
  "./iterativeSEM.pl -PWM examples/MA0114.1.pwm
@@ -173,12 +177,12 @@ void checkCache(Dataset &data, const std::vector<std::string> &in_file,
                 Dataset::accumSummary_type::accumSummary_dest dest);
 void combineBedFiles(Dataset &data);
 void Enumerate_kmer(Dataset &data);
-void filterDNaseWrapper(Dataset &data);
+void filterDNaseWrapper(const Dataset &data);
 void findMaximumAverageSignalWrapper(Dataset &data,
                                      Dataset::accumSummary_type::accumSummary_dest dest);
 void generatePWMfromSEM(Dataset &data);
 void generateRmeplot(Dataset &data);
-void generateRplot(Dataset &data);
+void generateRplot(const Dataset &data);
 void generateSelfInfo(Dataset &data);
 void generateSEM(const Dataset &data);
 void generateSignalMethylTable(Dataset &data);
