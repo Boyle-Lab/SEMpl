@@ -195,8 +195,6 @@ bool seq_col_to_fa(const std::vector<std::string> &column,
                     const std::string &file);
 void writeCache(Dataset &data, const std::string &cache,
                 Dataset::accumSummary_type::accumSummary_dest dest);
-//Library converted function
-void bedtools(Dataset &data);
 
 std::string read_pwm(Dataset &data);
 

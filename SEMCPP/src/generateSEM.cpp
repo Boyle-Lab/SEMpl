@@ -18,7 +18,7 @@ using namespace std;
 */
 
 // TF_name and output_dir are contained in data!!!!
-void generateSEM(const Dataset &data){
+void generateSEM(const Dataset &data) {
 
 
 // I don't think it's necessary to check that Enumerated is in $line
@@ -32,17 +32,24 @@ void generateSEM(const Dataset &data){
 
 
 
+#ifdef DEBUG
+    ofstream debug_out("signal.maximums");
 
+#endif
 
 
 
     double enum_ = data.Signal_data.enumerate_maximum;
     double enum_err = data.Signal_data.enumerate_sterr;
 
+
+#ifdef DEBUG
+
+
     // debug
         cout << "\tenum_: " << enum_ << endl
              << "\tenum_err: " << enum_err << endl;
-
+#endif
 
     // end debug
 
@@ -68,6 +75,14 @@ void generateSEM(const Dataset &data){
                 bp = ch;
                 score = data.sig_deets_maximum.at( {loc, bp} );
                 sterr = data.sig_deets_sterr.at( {loc, bp} );
+
+#ifdef DEBUG
+                debug_out << loc << bp << ' ' << data.sig_deets_maximum.at({loc, bp})
+                          << ' ' << data.sig_deets_counter.at({loc, bp})
+                          << ' ' << data.sig_deets_stdev.at({loc, bp}) 
+                          << ' ' << data.sig_deets_sterr.at({loc, bp})
+                          << endl;        
+#endif
 
                 // debug
                 cout << "score (maximum) for " << loc << ' ' << bp << ": " 
