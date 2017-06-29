@@ -181,8 +181,7 @@ static void create_kmer(const Dataset &data,
         try{
             // DO NOT USE to_string(args) on char!!!!!!
             temp = nucleotideStack[i];
-            retHash[ temp ]
-                    = pwmHash.at( {1, nucleotideStack[i] } );
+            retHash[ temp ] = pwmHash.at( {1, nucleotideStack[i] } );
         }
         catch(...){
             cerr << "line 184 Enumerate_kmer.cpp " << i << ' ' 
@@ -201,10 +200,6 @@ static void create_kmer(const Dataset &data,
         cerr << "line 207 or 205 out of range error" << endl;
         exit(1);
     }
-
-// modifying object while iterating through
-// will invalidate iterators
-
     std::vector<std::string> to_erase;
     std::vector<std::pair<std::string, double> > to_add;
     
@@ -213,7 +208,6 @@ static void create_kmer(const Dataset &data,
     string key = "";
 
     for(size_t i = 1; i < bestCase.size(); ++i){
-        // for(auto pair : retHash){
         for(auto iter = retHash.begin(); iter != retHash.end(); /*++iter*/){
             key = iter->first;
             score = iter->second;
@@ -229,7 +223,6 @@ static void create_kmer(const Dataset &data,
             }
             try{
                 retHash.erase(iter++);
-                // to_erase.push_back(key);
             }
             catch(...){
                 cerr << "line 239 Enumerate_kmer.cpp" << endl;
@@ -240,25 +233,13 @@ static void create_kmer(const Dataset &data,
             }
             else{
                 for(size_t j = 0; j < nucleotideStack.size(); j++){
-                    // cout << "newkey: " << pair.first + nucleotideStack[j] << endl
-                         // << "pair.first: " << pair.first << endl
-                         // << "nucleotideStack[" << j << "]: " << nucleotideStack[j] << endl;
                     string newkey = key + nucleotideStack[j];
                     double newscore = score + pwmHash.at({i + 1, nucleotideStack[j]});
-                    // retHash[newkey] = newscore;
                     retHash[newkey] = newscore;
-                    // to_add.push_back({newkey, newscore});
                 }
             }
-        }
-  // debug above here
-    	// for(auto val : to_erase){
-     //    	retHash.erase(val);
-    	// }
-    	// for(auto pair : to_add){
-     //    	retHash[pair.first] = pair.second;
-    	// }
-    } // for loop
+        } // for retHash loop
+    } // for bestCase loop
 }
 
 static double get_cutoff(const Dataset &data){
@@ -297,15 +278,12 @@ static double get_cutoff(const Dataset &data){
 
 // EFFECTS: finds maximum mapped value
 static double findMax(const map<int, double> &v){
-    double max = -1000000000.0;
-    // cout << "here" << endl;
+    double max = v.begin()->second;
     for(auto i : v){
-        // cout << i.first << ' ' << i.second << endl;
         if(i.second > max){
             max = i.second;
         }
     }
-    // cout << "max: " << max << endl;
     return max;
 }
 
