@@ -178,10 +178,5 @@ int getLength(const Dataset &data){
         std::cerr << "data.kmerHash is empty!!!!\n\tEXITING" << std::endl;
         exit(1);
     }
-#ifdef DEBUG
-    auto it = data.kmerHash.begin();
-    cout << "kmer from length is taken: " << it->first.size() << ' '
-         << it->first << endl;
-#endif
     return static_cast<int>(data.kmerHash.begin()->first.size());
 }
