@@ -50,7 +50,6 @@ void Enumerate_kmer(Dataset &data){
 
     // clear data.kmerHash
     data.kmerHash.clear();
-    bestCase.clear();
 
     try{
         parse_pwm(data, pwmHash, nucleotideStack, bestCase);
@@ -65,6 +64,9 @@ void Enumerate_kmer(Dataset &data){
     }
     cutoff = get_cutoff(data);
 
+#ifdef DEBUG
+    cout << "\tcutoff: " << cutoff << endl;
+#endif
     if(cutoff == 0.0){
         cerr << "cutoff value unchanged within Enumerate_kmer.cpp\n\tEXITING" << endl;
         exit(1);
@@ -85,17 +87,25 @@ void Enumerate_kmer(Dataset &data){
     // OUT.close();
 #endif
     // print_kmer is replaced by a simple object assignment
-    std::vector<std::string> to_erase;
-    for(auto pair : data.kmerHash){
-        if(pair.second <= cutoff){
-            to_erase.push_back(pair.first);
+    // std::vector<std::string> to_erase;
+    // for(auto pair : data.kmerHash){
+    //     if(pair.second <= cutoff){
+    //         to_erase.push_back(pair.first);
+    //     }
+    //     else{
+
+    //     }
+    // }
+    // for(auto val : to_erase){
+    //     data.kmerHash.erase(val);
+    // }
+    for(auto iter = data.kmerHash.begin(); iter != data.kmerHash.end(); ){
+        if(iter->second <= cutoff){
+            data.kmerHash.erase(iter++);
         }
         else{
-
+            ++iter;
         }
-    }
-    for(auto val : to_erase){
-        data.kmerHash.erase(val);
     }
     // data.kmerHash is now ready for use
 
@@ -164,7 +174,6 @@ static void parse_pwm(const Dataset &data,
         }
 #endif
     }
-
 }
 
 static void create_kmer(const Dataset &data,
@@ -200,6 +209,7 @@ static void create_kmer(const Dataset &data,
         cerr << "line 207 or 205 out of range error" << endl;
         exit(1);
     }
+
     std::vector<std::string> to_erase;
     std::vector<std::pair<std::string, double> > to_add;
     
@@ -271,7 +281,7 @@ static double get_cutoff(const Dataset &data){
           return a;
         }
     }
-    cerr << "Unable to find pre-caluclated cutoff in file\n\tEXITING" << endl;
+    cerr << "Unable to find pre-calculated cutoff in file\n\tEXITING" << endl;
     exit(1);
     return 0.0;
 }
