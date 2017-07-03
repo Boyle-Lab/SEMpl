@@ -59,10 +59,22 @@ void Enumerate_kmer(Dataset &data){
         exit(1);
     }
   // pwmHash is now filled in, along with bestCase
-    if(data.settings.verbose){
-        cout << "\tNo cutoff defined, so searching for pre-calculated cutoff." << '\n';
+    if(data.settings.threshold < 0.0){
+        // indicated in iterativeSEM.hpp that if
+        // data.settings.threshold < 0.0, then the value
+        // should be treated as not defined, for purposes of
+        // replicating the perl version
+        if(data.settings.verbose){
+            cout << "\tNo cutoff defined, so searching for pre-calculated cutoff.\n";
+        }
+        cutoff = get_cutoff(data);
     }
-    cutoff = get_cutoff(data);
+    else{
+        if(data.settings.verbose){
+            cout << "\tUsing user defined cutoff.\n";
+        }
+        cutoff = data.settings.threshold;
+    }
 
 #ifdef DEBUG
     cout << "\tcutoff: " << cutoff << endl;
@@ -78,27 +90,7 @@ void Enumerate_kmer(Dataset &data){
         cerr << "Problem with create_kmer!\n\tEXITING" << endl;
         exit(1);
     }
-#ifdef DEBUG
-    // ofstream OUT("Enumerated_kmer1.txt");
-    // for(auto val : data.kmerHash){
-    //     OUT << val.first << ' ' << val.second << endl;
-    // }
-    // data.size_of_kmerHash = data.kmerHash.size();
-    // OUT.close();
-#endif
-    // print_kmer is replaced by a simple object assignment
-    // std::vector<std::string> to_erase;
-    // for(auto pair : data.kmerHash){
-    //     if(pair.second <= cutoff){
-    //         to_erase.push_back(pair.first);
-    //     }
-    //     else{
 
-    //     }
-    // }
-    // for(auto val : to_erase){
-    //     data.kmerHash.erase(val);
-    // }
     for(auto iter = data.kmerHash.begin(); iter != data.kmerHash.end(); ){
         if(iter->second <= cutoff){
             data.kmerHash.erase(iter++);

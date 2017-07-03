@@ -87,7 +87,8 @@ struct Dataset {
 		bool delSignalFile = false, writecache = false, fastrun = false,
              verbose = false;
         int iteration = -1;
-		double threshold = 0.0;
+		double threshold = -1.0;
+        // negative threshold value indicates not defined
 	};
 	// contains data from findMaximumAverageSignalWrapper
 	struct MaximumAverageSignalData{
