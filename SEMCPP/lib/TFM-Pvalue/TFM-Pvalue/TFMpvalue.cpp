@@ -7,18 +7,15 @@
  *
  */
 
-#define PROGRAM 0
-
 #include <iostream>
 #include <vector>
 #include <fstream>
 #include <cmath>
 #include <string>
 #include <map>
-#include <getopt.h>
+//#include <GetOpt.h>
 #include <cstdlib>
 #include <stdio.h>
-#include <unistd.h>
 
 #include "Matrix.h"
 #include "ArgumentException.h"
@@ -500,26 +497,15 @@ void arguments (int argc, char * const argv[]) {
    char option;
    map<char,bool> opt;
    char options[REQUIRED[PROGRAM].length()+OPTIONAL[PROGRAM].length()+1];
-
    for (int i = 0; i < REQUIRED[PROGRAM].length(); i++) { options[i] = REQUIRED[PROGRAM][i]; }
    for (int i = 0; i < OPTIONAL[PROGRAM].length(); i++) { options[i+REQUIRED[PROGRAM].length()] = OPTIONAL[PROGRAM][i]; }  
-
    options[REQUIRED[PROGRAM].length()+OPTIONAL[PROGRAM].length()+1] = '\0';
-
- while (((option = getopt(argc,argv,options)) != EOF)) {
-   if (option == '?') {
-     throw new ArgumentException("Bad argument");
-   } 
-	string s = "";
-	int pos = 0;
-	char* const *args = argv;
-	for(int i = 0; i < argc; i++){
-		args++;	
-	
-//	./TFMpvalue-pv2sc -a 0.25 -t 0.25 -c 0.25 -g 0.25 -m MA0045.pfm -p 1e-5
-    OPTIONS[option] = option-1;        
+  while (((option = getopt(argc,argv,options)) != EOF)) {
+    if (option == '?') {
+      throw new ArgumentException("Bad argument");
+    } 
+    OPTIONS[option] = optind-1;        
     opt[option] = true;
-	}
   }
   for (int i = 0; i < REQUIRED[PROGRAM].length(); i++) {
     if (REQUIRED[PROGRAM][i] != ':' && !opt[REQUIRED[PROGRAM][i]]) throw new ArgumentException("Bad number of args");    
@@ -537,6 +523,8 @@ int main (int argc, char * const argv[]) {
     usage(argv);
     exit(1);
   }
+  
+  
   
   Matrix m(atof(argv[OPTIONS['a']]),atof(argv[OPTIONS['c']]),atof(argv[OPTIONS['g']]),atof(argv[OPTIONS['t']])); 
   
@@ -600,11 +588,13 @@ int main (int argc, char * const argv[]) {
         map<double,int> t;
         //        long int sum = 0;      
         enumScoreFloat(&m,0,0,&t);
-//         map<double,int>::reverse_iterator riter = t.rbegin();
-//         while (riter->first >= atof(argv[3]) && riter != t.rend()) {
-//           sum += riter->second;
-//           riter++;
-//         }
+        /*
+         map<double,int>::reverse_iterator riter = t.rbegin();
+         while (riter->first >= atof(argv[3]) && riter != t.rend()) {
+           sum += riter->second;
+           riter++;
+         }
+         */
         nbsc = t.size();
       }
       if (OPTIONS['h']) {
@@ -630,4 +620,6 @@ int main (int argc, char * const argv[]) {
 
 return 0;
 }
+
+
 

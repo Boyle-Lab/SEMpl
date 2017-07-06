@@ -197,6 +197,6 @@ bool seq_col_to_fa(const std::vector<std::string> &column,
 void writeCache(Dataset &data, const std::string &cache,
                 Dataset::accumSummary_type::accumSummary_dest dest);
 
-std::string read_pwm(Dataset &data);
+std::string read_pwm(Dataset &data, std::string file);
 
 #endif /* iterativeSEM_hpp */

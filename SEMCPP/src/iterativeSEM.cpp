@@ -27,6 +27,7 @@ using namespace std;
  -TF_name HNF4A -output examples/HNF4A/"
 */
 
+
 int main(int argc, char **argv){
 
 	Dataset data;
@@ -124,16 +125,19 @@ int main(int argc, char **argv){
 // data.cachefile.empty() checks if the string is empty, not the actual file
 	if(data.cachefile.empty())  data.cachefile = data.output_dir + "/CACHE.db";
 
-    vector<double> pvals(total_iterations + 1);
+    vector<double> pvals;
+    pvals.reserve(total_iterations + 1);
     pvals.push_back(0.0009765625);
-    for(int iteration = pvals.size() ; iteration <= total_iterations; ++iteration){
+
+    for(int iteration =  1; iteration <= total_iterations; ++iteration){
         pvals.push_back(0.0004882812);
     }
 
-//    pvals.erase(pvals.begin());
     double pVal = pvals.front();
+    pvals.erase(pvals.begin());
 
-    data.settings.threshold = get_threshold(data, pvals.front());
+    read_pwm(data, data.PWM_file);
+    data.settings.threshold = get_threshold(data, pVal);
     if (data.settings.threshold < 0){
         data.settings.threshold = 0;
     }
@@ -141,7 +145,7 @@ int main(int argc, char **argv){
     cout << "threshold: " << data.settings.threshold << endl;
 #endif
 
-    cout << "--- Iteration 0 ---" << '\n';
+    cout << "--- Iteration 0 ---\n";
 
     data.settings.iteration = 0;
     try{
@@ -284,8 +288,8 @@ int main(int argc, char **argv){
 // Requires: .pwm file uses '\t' to separate fields
 // Effects: fills in PWM_data and returns the second field of the first line
 // in the .pwm file specified
-string read_pwm(Dataset &data){
-    ifstream fin(data.PWM_file);
+string read_pwm(Dataset &data, string file){
+    ifstream fin(file);
     // string s = "";
     // fin.ignore(10000, '\n');
     // int i = 0;
@@ -298,6 +302,8 @@ string read_pwm(Dataset &data){
 #ifdef DEBUG
     assert(fin);
 #endif
+
+
     // fin.ignore(10000, '\n');
     string s = "";
     fin >> s >> s >> s;

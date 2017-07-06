@@ -1,5 +1,5 @@
-#include "iterativeSEM.hpp"
-#include "../lib/TFM-Pvalue/Matrix.h"
+#include "src/iterativeSEM.hpp"
+#include "lib/TFM-Pvalue/Matrix.h"
 using namespace std;
 
 class Matrix;
@@ -13,7 +13,6 @@ const string TEMPFILE = "examples/temp.txt";
 
 double get_threshold(Dataset & data, double pval){
 
-	read_pwm(data);
 	pwm_to_tfm(data);
 	Matrix m(0.25, 0.25, 0.25, 0.25);
 
@@ -34,47 +33,80 @@ double get_threshold(Dataset & data, double pval){
 		temp_out << '\n';
 	}
 
-
-
 	temp_out.close();
 
-    try{
-    	m.readJasparMatrix(TEMPFILE);
-    }
-    catch(...){
-        cout << "failed to read JasparMatrix" << endl;
-    }
-	// implementation of TFMpvalue.cpp below
+//	./TFMpvalue-pv2sc -a 0.25 -t 0.25 -c 0.25 -g 0.25 -m MA0045.pfm -p 1e-5
 
-	double initial_gran = 0.1;
-	m.computesIntegerMatrix(initial_gran);
-	long long max = m.maxScore + ceil(m.errorMax + 0.5);
-	long long min = m.minScore;
-	double pv = 0, ppv = 0;
-	long long score = 0;
-	double final_score = 0.0;
-
-	for(double granularity = initial_gran; granularity >= 1e-10; granularity /= 10){
-        try{
-		    m.computesIntegerMatrix(granularity);
-		}
-        catch(...){
-            cout << "problem with computing integer matrix" << endl;
-        }
-
-
-        score = m.lookForScore(min, max, pval, &pv, &ppv);
-		min = (score - ceil(m.errorMax + 0.5)) * 10;
-		max = (score + ceil(m.errorMax + 0.5)) * 10;
+// my $resultCmd = "bin/TFMpvalue-pv2sc -a 0.25 -t 0.25 -c 0.25 -g 0.25 -m (input) -p $PVAL";
+	try{
+		m.readJasparMatrix(TEMPFILE);
 	}
-#ifdef DEBUG
-	assert(score != 0);
-	assert(m.granularity != 0.0);
-#endif
-	final_score = (score - m.offset) / m.granularity;
-#ifdef DEBUG
-	assert(final_score != 0.0);
-#endif
-	return final_score;
+	catch(...){
+		cerr << "problem with readJasparMatrix" << endl;
+		exit(1);
+	}
+
+
+	// testPvalueToScore(m, 0.1, { p-value } );
+
+	const double initialGranularity = 0.1;
+	const bool forcedGranularity = false;
+	const double maxGranularity = 1e-10;
+	// const bool sortColumns = false;
+	const long decrgr = 10;
+
+
+	m.computesIntegerMatrix(initialGranularity);
+	long long max = m.maxScore+ceil(m.errorMax+0.5);
+	long long min = m.minScore;
+	double pv = 0.0;
+	long long score = 0;
+
+	for (double granularity = initialGranularity; granularity >= maxGranularity; granularity /= decrgr) {
+
+
+		cerr << "Computing rounded matrix with granularity " << granularity << endl;
+
+		m.computesIntegerMatrix(granularity);
+
+    // cerr << "Score range : " << m.scoreRange << endl;
+    // cerr << "Min         : " << min << " " << m.minScore << endl;
+    // cerr << "Max         : " << max << endl;
+    // cerr << "Precision   : " << m.granularity << endl;
+    // cerr << "Error max   : " << m.errorMax << endl;
+    // cerr << "Computing score for requested pvalue " << pval << endl;
+
+
+		double ppv = 0.0;    
+// requestedPvalue = pval
+		score = m.lookForScore(min, max, pval, &pv, &ppv);
+
+
+    cerr << "P-Pvalue      : " << ppv << endl;
+    cerr << "Pvalue        : " << pv << endl;
+    cerr << "Rounded score : " << score << endl;
+    cerr << "m.offset      : " << m.offset << endl;
+    cerr << "m.granularity : " << m.granularity << endl;
+    cerr << "Real score (score - m.offset) / m.granularity    : " << ((score-m.offset)/m.granularity) << endl;
+
+
+		min = (score - ceil(m.errorMax+0.5)) * decrgr;
+		max = (score + ceil(m.errorMax+0.5)) * decrgr;
+
+		if (pv == ppv) {
+
+			// cerr << "#####  STOP Pvalue computed  #####" << endl;
+
+			if (!forcedGranularity) {        
+				break;
+			}
+		}
+
+	}
+	cout << "score : " << (score - m.offset) / m.granularity << endl
+		 << "pvalue : " << pv << endl
+		 << "granularity : " << m.granularity << endl;
+
+	return ((score - m.offset) / m.granularity);
 
 }
