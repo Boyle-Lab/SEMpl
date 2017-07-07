@@ -2,8 +2,8 @@ CXX=g++
 
 C++FLAGS=-Wall -Werror -pedantic --std=c++11 -I. -pthread
 
-DEBUG_OR_OPTIMIZE = -O3 -DDEBUG
-#DEBUG_OR_OPTIMIZE = -g3 -DDEBUG 
+#DEBUG_OR_OPTIMIZE = -O3 -DDEBUG
+DEBUG_OR_OPTIMIZE = -g3 -DDEBUG -DVERBOSE
 
 DISABLE_WARNINGS = -Wno-variadic-macros -Wno-unused-local-typedefs -Wno-enum-compare -Wno-unused-result
 
@@ -24,6 +24,8 @@ TFMLIB=-lTFMpvalue
 
 LIBLOC=-Llib
 
+STATICLIB=libTFMpvalue.a
+
 CSOURCES=bw{Read,Stats,Values,Write}.c
 
 
@@ -40,18 +42,27 @@ EXECUTABLE=iterativeSEM
 
 all: $(EXECUTABLE)
 
+
+
 $(EXECUTABLE): $(C++OBJ) $(SQLITEOBJ)
 		$(CXX) $(C++FLAGS) $(LIBLOC) -o $(EXECUTABLE) $(C++OBJ) $(SQLITEOBJ) $(TFMLIB) $(BIGWIGLIB) -ldl
 
 obj/%.o : lib/TFM-Pvalue/%.cpp
-		$(CXX) $(C++FLAGS) $(DEBUG_OR_OPTIMIZE) $(DISABLE_WARNINGS) -c $< -o $@
+		$(CXX) $(C++FLAGS) -DPROGRAM=0 $(DEBUG_OR_OPTIMIZE) $(DISABLE_WARNINGS) -c $< -o $@
 obj/%.o : src/%.cpp												#pre-requisite   #target
 		$(CXX) $(C++FLAGS) $(DEBUG_OR_OPTIMIZE) $(DISABLE_WARNINGS) -c $< -o $@
 obj/%.o : lib/sqlite3/%.c
 		gcc -Wall -Werror -pedantic $(DEBUG_OR_OPTIMIZE) $(DISABLE_WARNINGS) -c $< -o $@
 
+
+
+lib: $(STATICLIB)
+
+libTFMpvalue.a : $(TFMOBJ)
+	ar rcs libTFMpvalue.a $(TFMOBJ)
+
 clean:
 		rm -f obj/*.o
 		rm -f $(EXECUTABLE)
 
-.PHONY: all clean
+.PHONY: all clean lib

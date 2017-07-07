@@ -142,8 +142,8 @@ void GetFilesInDirectory(std::vector<string> &out, const string &directory)
     FindClose(dir);
 #else
     DIR *dir;
-    class dirent *ent;
-    class stat st;
+    struct dirent *ent;
+    struct stat st;
 
     dir = opendir(directory.c_str());
     while ((ent = readdir(dir)) != NULL) {

@@ -1,5 +1,6 @@
 #include "src/iterativeSEM.hpp"
 #include "lib/TFM-Pvalue/Matrix.h"
+// #include "lib/TFM-Pvalue/TFMpvalue.cpp"
 using namespace std;
 
 class Matrix;
@@ -9,7 +10,6 @@ const string TEMPFILE = "examples/temp.txt";
 //REQUIRES: data is a valid Dataset, in that data is not "missing," with PWM_data filled in
 //MODIFIES: data
 //EFFECTS: returns score threshold
-//NOTE: I believe pval == 0.0009765625, also the original version takes a file address I believe
 
 double get_threshold(Dataset & data, double pval){
 
@@ -35,6 +35,7 @@ double get_threshold(Dataset & data, double pval){
 
 	temp_out.close();
 
+
 //	./TFMpvalue-pv2sc -a 0.25 -t 0.25 -c 0.25 -g 0.25 -m MA0045.pfm -p 1e-5
 
 // my $resultCmd = "bin/TFMpvalue-pv2sc -a 0.25 -t 0.25 -c 0.25 -g 0.25 -m (input) -p $PVAL";
@@ -54,59 +55,105 @@ double get_threshold(Dataset & data, double pval){
 	const double maxGranularity = 1e-10;
 	// const bool sortColumns = false;
 	const long decrgr = 10;
+	const double requestedPvalue = pval;
 
 
-	m.computesIntegerMatrix(initialGranularity);
-	long long max = m.maxScore+ceil(m.errorMax+0.5);
-	long long min = m.minScore;
-	double pv = 0.0;
-	long long score = 0;
+#ifdef VERBOSE
+  cerr << "### PvalueToScore (pv  " << requestedPvalue << ") #########################################" << endl;
+#endif
+  
+#ifdef MEMORYCOUNT
+  long long totalSize;
+  long long totalOp;
+  totalSize = 0;
+  totalOp = 0;
+#endif
+  
+  m.computesIntegerMatrix(initialGranularity);
+  long long max = m.maxScore+ceil(m.errorMax+0.5);
+  long long min = m.minScore;
+  double pv;
+  long long score = 0;
+  
+  for (double granularity = initialGranularity; granularity >= maxGranularity; granularity /= decrgr) {
+    
+#ifdef VERBOSE    
+    cerr << "Computing rounded matrix with granularity " << granularity << endl;
+#endif
+    
+    m.computesIntegerMatrix(granularity);
 
-	for (double granularity = initialGranularity; granularity >= maxGranularity; granularity /= decrgr) {
+#ifdef VERBOSE
+    cerr << "Score range : " << m.scoreRange << endl;
+    cerr << "Min         : " << min << " " << m.minScore << endl;
+    cerr << "Max         : " << max << endl;
+    cerr << "Precision   : " << m.granularity << endl;
+    cerr << "Error max   : " << m.errorMax << endl;
+    cerr << "Computing score for requested pvalue " << requestedPvalue << endl;
+#endif
 
+    double ppv;    
+    
+#ifdef MEMORYCOUNT
+    m.totalMapSize = 0;
+    m.totalOp = 0;
+#endif
+    
+    score = m.lookForScore(min,max,requestedPvalue,&pv,&ppv);
 
-		cerr << "Computing rounded matrix with granularity " << granularity << endl;
-
-		m.computesIntegerMatrix(granularity);
-
-    // cerr << "Score range : " << m.scoreRange << endl;
-    // cerr << "Min         : " << min << " " << m.minScore << endl;
-    // cerr << "Max         : " << max << endl;
-    // cerr << "Precision   : " << m.granularity << endl;
-    // cerr << "Error max   : " << m.errorMax << endl;
-    // cerr << "Computing score for requested pvalue " << pval << endl;
-
-
-		double ppv = 0.0;    
-// requestedPvalue = pval
-		score = m.lookForScore(min, max, pval, &pv, &ppv);
-
-
+#ifdef VERBOSE
     cerr << "P-Pvalue      : " << ppv << endl;
     cerr << "Pvalue        : " << pv << endl;
     cerr << "Rounded score : " << score << endl;
-    cerr << "m.offset      : " << m.offset << endl;
-    cerr << "m.granularity : " << m.granularity << endl;
-    cerr << "Real score (score - m.offset) / m.granularity    : " << ((score-m.offset)/m.granularity) << endl;
+    cerr << "Real score    : " << ((score-m.offset)/m.granularity) << endl;
+#ifdef MEMORYCOUNT
+    cerr << "Memory        : " << m.totalMapSize << " " << totalSize << endl;    
+#endif
+#endif
 
+#ifdef MEMORYCOUNT
+    totalSize += m.totalMapSize;
+    totalOp += m.totalOp;
+#endif
+    
+    min = (score - ceil(m.errorMax+0.5)) * decrgr;
+    max = (score + ceil(m.errorMax+0.5)) * decrgr;
+    
+#ifdef VERBOSE
+    cerr << "***********************************************" << endl;
+#endif
+    if (pv == ppv) {
+#ifdef VERBOSE
+      cerr << "#####  STOP Pvalue computed  #####" << endl;
+#endif
+      if (!forcedGranularity) {        
+        break;
+      }
+    }
 
-		min = (score - ceil(m.errorMax+0.5)) * decrgr;
-		max = (score + ceil(m.errorMax+0.5)) * decrgr;
-
-		if (pv == ppv) {
-
-			// cerr << "#####  STOP Pvalue computed  #####" << endl;
-
-			if (!forcedGranularity) {        
-				break;
-			}
-		}
-
-	}
-	cout << "score : " << (score - m.offset) / m.granularity << endl
-		 << "pvalue : " << pv << endl
-		 << "granularity : " << m.granularity << endl;
-
-	return ((score - m.offset) / m.granularity);
+  }
+  
+  if (OPTIONS['h']) {
+    cout << "Score          : " << ((score-m.offset)/m.granularity) << endl;
+    cout << "Pvalue         : " << pv << endl;
+    cout << "Granularity    : " << m.granularity << endl;
+#ifdef MEMORYCOUNT
+    cout << "Total map size : " << totalSize << endl;
+    cout << "Total op       : " << totalOp << endl;
+#endif
+  } else {  
+    if (OPTIONS['i']) {
+      cout << score << " ";
+    }
+    cout << ((score-m.offset)/m.granularity) << " ";
+    cout << pv << " ";
+    cout << m.granularity << " ";
+#ifdef MEMORYCOUNT
+    cout << totalSize << " " << totalOp << " ";
+#endif
+    cout << endl;
+  }
+  
+	return ((score - m.offset ) / m.granularity );
 
 }
