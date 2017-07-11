@@ -2,8 +2,8 @@ CXX=g++
 
 C++FLAGS=-Wall -Werror -pedantic --std=c++11 -I. -pthread
 
-#DEBUG_OR_OPTIMIZE = -O3 -DDEBUG
-DEBUG_OR_OPTIMIZE = -g3 -DDEBUG -DVERBOSE
+DEBUG_OR_OPTIMIZE = -O3 -DDEBUG
+#DEBUG_OR_OPTIMIZE = -g3 -DDEBUG
 
 DISABLE_WARNINGS = -Wno-variadic-macros -Wno-unused-local-typedefs -Wno-enum-compare -Wno-unused-result
 
@@ -56,10 +56,10 @@ obj/%.o : lib/sqlite3/%.c
 
 
 
-lib: $(STATICLIB)
+#lib: $(STATICLIB)
 
-libTFMpvalue.a : $(TFMOBJ)
-	ar rcs libTFMpvalue.a $(TFMOBJ)
+#libTFMpvalue.a : $(TFMOBJ)
+#	ar rcs libTFMpvalue.a $(TFMOBJ)
 
 clean:
 		rm -f obj/*.o

@@ -1,4 +1,4 @@
-CFLAGS=-O3 -DJASPAR=1 -DVERBOSE
+CFLAGS=-O3 -DJASPAR=1
 CC=g++
 HEADERS=Matrix.h ArgumentException.h FileException.h ParseException.h
 SOURCES=TFMpvalue.cpp $(HEADERS:.h=.cpp) 
