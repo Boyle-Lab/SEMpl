@@ -3,6 +3,7 @@
 
 #include "iterativeSEM.hpp"
 #include <iostream>
+#include <sstream>
 #include <regex>
 #include <dirent.h>
 #include <sys/stat.h>
@@ -13,13 +14,20 @@ bool fileExists(const std::string &filename);
 
 void split_string(const std::string &str, const std::string &splitBy, 
 		   std::vector<std::string>& tokens);
+void split_string_white(const std::string &str, 
+		   std::vector<std::string>& tokens);
 
 std::string grab_string_at_index(const std::string &str, const size_t index, 
 								 const std::string &split);
+
+std::string grab_string_at_index_white(const std::string &str, const size_t index);
+
 
 void GetFilesInDirectory(std::vector<std::string> &out, 
 						 const std::string &directory);
 
 int getLength(const Dataset &data);
+
+void grab_string_3_index(std::string s, std::string &out);
 
 #endif /* COMMON_HPP */

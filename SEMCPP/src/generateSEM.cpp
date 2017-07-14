@@ -44,14 +44,10 @@ void generateSEM(const Dataset &data) {
 
 
 #ifdef DEBUG
-
-
-    // debug
         cout << "\tenum_: " << enum_ << endl
              << "\tenum_err: " << enum_err << endl;
 #endif
 
-    // end debug
 
     double score = 0.0, sterr = 0.0;
     int max = 0;

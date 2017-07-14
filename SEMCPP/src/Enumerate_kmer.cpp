@@ -104,7 +104,6 @@ void Enumerate_kmer(Dataset &data){
 
 #ifdef DEBUG
     ofstream OUT("Enumerate_kmer.txt");
-    // OUT.open("Enumerated_kmer2.txt");
     for(auto val : data.kmerHash){
         OUT << val.first << ' ' << val.second << endl;
     }

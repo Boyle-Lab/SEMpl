@@ -52,7 +52,7 @@ int main(int argc, char **argv){
     };
     char c = '\0';
     
-    while((c = static_cast<char>(getopt_long_only(argc, argv, "p:m:b:t:o:c:v", long_opts, &index))) != -1){
+    while( (c = static_cast<char>(getopt_long_only(argc, argv, "p:m:b:t:o:c:v", long_opts, &index)) ) != -1){
         switch (c) {
             case 'p':
                 data.PWM_file = optarg;
@@ -166,20 +166,11 @@ int main(int argc, char **argv){
         exit(1);
     }
 
-/*
-*	will change the Cmd's to functions, once the functions are implemented
-*/
-
     pvals.erase(pvals.begin());
-//    pVal = pvals.front();
-//    string newPwm = data.output_dir + "/" + tf + ".pwm";
-//    threshstream.str("");
-//    threshstream << "src/get_threshold.cpp " << newPwm << " " << pVal;
-//    threshCmd = threshstream.str();
-//    threshold = threshCmd.c_str();
-//    threshold = get_threshold( something here ) ;
 
-    data.settings.threshold = get_threshold(data, 0.0006765625);
+
+    data.settings.threshold = get_threshold(data, pvals.front());
+    pvals.erase(pvals.begin());
     if (data.settings.threshold < 0){
         data.settings.threshold = 0;
     }
@@ -195,45 +186,35 @@ int main(int argc, char **argv){
     string line = "";
 //    int iterID = 0;
 
-    map <string, int> kmers, kmers_2;
-
+    map <string, double> kmers;
+    // kmers_2 is new k-mers or data.kmerHash
+    // kmers is old k-mer or previous data.kmerHash
+    data.settings.fastrun = false;
     for (int iteration = 1; iteration < total_iterations; ++iteration){
-	    data.settings.fastrun = false;
-//      iterID = rand() % 16777216;
+	    
+        // iterID = rand() % 16777216;
         ofstream outFile(data.output_dir + "/kmer_similarity.out");
         if(iteration > 1 && converge < 10){
             int j = iteration - 1;
             total_1 = same = diff = total_diff = 0;
-            ostringstream Ekmerstream;
-            Ekmerstream << data.output_dir << "/it" << j
-                        << "/Enumerated_kmer.txt";
-            string EkmerFile = Ekmerstream.str();
-            ifstream Ekmer(EkmerFile);
-            if (!Ekmer){
-                cerr << "Problem opening " << EkmerFile << '\n';
-                exit(1);
-            }
-            while (Ekmer){
-                for (string temp; getline(Ekmer, temp, '\n'); line_2.push_back(temp));
-                kmers_2[line_2[1]] = 1;
-                ++total_1;
-                if (kmers_2.find(line_2[1]) != kmers_2.end()){
+            for(const auto &kmer_val_pair : kmers){
+                if(data.kmerHash.find(kmer_val_pair.first) != data.kmerHash.end()){
                     ++same;
                 }
                 else{
                     ++diff;
                 }
+                ++total_1;
             }
 
-            if (diff == 0){
+            if(diff == 0){
                 ++converge;
             }
             else{
                 converge = 0;
             }
-            kmers.clear();
-            kmers.insert(kmers_2.begin(), kmers_2.end());
-            kmers_2.clear();
+            kmers = data.kmerHash;
+
         }
 
         if(converge < 10){
@@ -251,7 +232,6 @@ int main(int argc, char **argv){
             generatePWMfromSEM(data);
 
             pVal = pvals.front();
-
             pvals.erase(pvals.begin());
             // newPwm = data.output_dir+ "/" + tf + ".pwm";
             data.settings.threshold = get_threshold(data, pVal);

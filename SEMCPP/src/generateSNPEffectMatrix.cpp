@@ -174,7 +174,9 @@ void find_signal(Dataset &data, int length){
     string cachefile = "";
 
     GetFilesInDirectory(files, data.output_dir + "/ALIGNMENT/");
-
+#ifdef DEBUG
+    sort(files.rbegin(), files.rend());
+#endif
     char bp = '\0';
     const char *pos = nullptr;
     const char *end = nullptr;
@@ -203,6 +205,7 @@ void find_signal(Dataset &data, int length){
         }
 
         try{
+            // grabbing bp and position from file name
             bp = file[val - 1];
             pos = file.c_str() + val - 1 + 5;
             end = pos;
@@ -239,15 +242,6 @@ void find_signal(Dataset &data, int length){
             exit(1);
         }
         // do not use N/A files
-#ifdef DEBUG
-        // cout << "\tDeleting " << file << '\n';
-        // int val = system(("rm -rf " + file).c_str());
-        // assert(val == 0);
-#else
-        // system(("rm -rf " + file).c_str());
-#endif
-        // write to cache
-        // -in_file and -cache are built into data
         try{
             if(data.settings.verbose){
                 cout << "\twriteCache(args) is running..." << flush;
@@ -529,30 +523,10 @@ void create_baselines(Dataset &data, int length){
                 data.signal_cache_enumerate.end(),
                 iter);
 
-
-
     findMaximumAverageSignalWrapper(data,
-                                    Dataset::accumSummary_type::accumSummary_dest::enumerated);
+                    Dataset::accumSummary_type::accumSummary_dest::enumerated);
     findMaximumAverageSignalWrapper(data,
-                                    Dataset::accumSummary_type::accumSummary_dest::scrambled);
-    // actual processing occurs in generateSEM(args)
-    
-    // data.sig_deets_maximum.insert( {-1, ENUM_BP}, 
-    //                                 data.Signal_data.enumerate_maximum );
-    // data.sig_deets_maximum.insert( {-1, SCRAM_BP}, 
-    //                                 data.Signal_data.scramble_maximum );
-    // data.sig_deets_counter.insert( {-1, ENUM_BP}, 
-    //                                 data.Signal_data.enumerate_counter );
-    // data.sig_deets_counter.insert( {-1, SCRAM_BP}, 
-    //                                 data.Signal_data.scramble_counter );
-    // data.sig_deets_stdev.insert( {-1, ENUM_BP},
-    //                                 data.Signal_data.enumerate_stdev );
-    // data.sig_deets_stdev.insert( {-1, SCRAM_BP},
-    //                                 data.Signal_data.scramble_stdev );
-    // data.sig_deets_sterr.insert( {-1, ENUM_BP},
-    //                                 data.Signal_data.enumerate_sterr );
-    // data.sig_deets_sterr.insert( {-1, SCRAM_BP},
-    //                                 data.Signal_data.scramble_sterr );
+                    Dataset::accumSummary_type::accumSummary_dest::scrambled);
 
 
 }

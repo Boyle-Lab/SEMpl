@@ -22,6 +22,9 @@ void filterDNaseWrapper(const Dataset &data){
     #endif
 
     GetFilesInDirectory(files, targetDir);
+#ifdef DEBUG
+    sort(files.begin(), files.end());
+#endif
     for(auto file : files){
         if(file.find("pos") != string::npos 
             && file.find("filtered") == string::npos
@@ -53,8 +56,11 @@ void filterDNaseWrapper(const Dataset &data){
                     + " -b " + data.DNase_file + " -wa -u | sort | uniq > "
                     + bedfile;
 #ifdef DEBUG
+                cout << "Command: " << bed_cmd 
+                     << "\n\tRunning..." << flush;
                 int val = system(bed_cmd.c_str());
                 assert(val == 0);
+                cout << "FINISH" << endl;
 #else
                 if(system(bed_cmd.c_str()) != 0){
                     cerr << "problem running " << bed_cmd << endl;
@@ -71,30 +77,7 @@ void filterDNaseWrapper(const Dataset &data){
                     exit(1);
                 }
             }
-#ifdef DEBUG
-            // cout << "\tdeleting readfile\n";
-#endif
-            // didn't mean to do rm while testing
-            // system(string("rm -f " + readfile).c_str());
-
-            // read_in_files(data, bedfile);
         }
 
     }
 }
-
-
-// static void read_in_files(Dataset &data, const string &file){
-//     ifstream fin(file);
-
-//     if(!fin){
-//         cerr << "unable to open " << file << " for read in\n";
-//         exit(1);
-//     }
-
-//     string line = "";
-
-//     while(getline(fin, line, '\n')){
-//         data.filterDNaseWrapper_output.push_back(line);
-//     }
-// }

@@ -5,6 +5,7 @@ using namespace std;
 // function taken from internet that splits  a string by a character
 void split_string(const string &str, const string &splitBy, vector<string>& tokens)
 {
+    tokens.clear();
     /* Store the original string in the array, so we can loop the rest
      * of the algorithm. */
     tokens.push_back(str);
@@ -38,6 +39,8 @@ void split_string(const string &str, const string &splitBy, vector<string>& toke
     }
 }
 
+
+
 // REQUIRES: index is within str
 string grab_string_at_index(const string &str, const size_t index, 
                             const string &split){
@@ -50,21 +53,29 @@ string grab_string_at_index(const string &str, const size_t index,
     split_string(str, split, tokens);
 
     return tokens[index];
-    // auto ptr = str.c_str();
-    // size_t val = 0;
-    // while(val < index){
-    //         while(*ptr != ' ' && *ptr){
-    //             ++ptr;
-    //         }
-    //         ++ptr;
-    //         ++val;
-    // }
+}
 
-    // auto index_ptr = ptr;
-    // while(*index_ptr != ' ' && *index_ptr){
-    //     ++index_ptr;
-    // }
-    // return string(ptr, static_cast<size_t>(index_ptr - ptr));
+void split_string_white(const string &str, vector<string>& tokens){
+    tokens.clear();
+    stringstream strm(str);
+    string s = "";
+    while(strm){
+        strm >> s;
+        tokens.push_back(s);
+    }
+}
+
+string grab_string_at_index_white(const string &str, const size_t index){
+    if(index >= str.size()){
+        cerr << "grab_string_at_index bad arguments!\n\tEXITING";
+        exit(1);
+    }
+
+    std::vector<std::string> tokens;
+
+    split_string_white(str, tokens);
+
+    return tokens[index];
 }
 
 
@@ -114,6 +125,9 @@ string revCompDNA(string dna){
     return ret;
 
 }
+
+
+
 
 // grabbed from internet
 void GetFilesInDirectory(std::vector<string> &out, const string &directory)
@@ -166,6 +180,22 @@ void GetFilesInDirectory(std::vector<string> &out, const string &directory)
     closedir(dir);
 #endif
 } // GetFilesInDirectory
+
+void grab_string_3_index(string s, string &out){
+    auto ptr = s.c_str();
+    for(size_t i = 0; i < 2; ++i){
+        while(!isspace(*ptr)){
+            ++ptr;
+        }
+        ++ptr;
+    }
+    auto ptr2 = ptr;
+    while(!isspace(*ptr2)){
+        ++ptr2;
+    }
+    ++ptr2;
+    out = string(ptr, ptr2 - ptr - 1);
+}
 
 bool fileExists(const string &filename){
   struct stat buffer;

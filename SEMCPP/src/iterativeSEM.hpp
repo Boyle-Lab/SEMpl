@@ -181,7 +181,7 @@ void Enumerate_kmer(Dataset &data);
 void filterDNaseWrapper(const Dataset &data);
 void findMaximumAverageSignalWrapper(Dataset &data,
                                      Dataset::accumSummary_type::accumSummary_dest dest);
-void generatePWMfromSEM(Dataset &data);
+void generatePWMfromSEM(const Dataset &data);
 void generateRmeplot(Dataset &data);
 void generateRplot(const Dataset &data);
 void generateSelfInfo(Dataset &data);

@@ -25,10 +25,6 @@ void accumSummary_scale(Dataset &data, const string &hfile,
 
 // clear accum data of corresponding type
     switch (dest) {
-            case Dataset::accumSummary_type::accumSummary_dest::none:
-                cerr << "dest shouldn't be none!!!!" << endl;;
-                exit(1);
-            break;
             case Dataset::accumSummary_type::accumSummary_dest::enumerated:
                 data.accumSummary_data.enum_accum_max.clear();
                 data.accumSummary_data.enum_accum_lines.clear();
@@ -40,6 +36,10 @@ void accumSummary_scale(Dataset &data, const string &hfile,
             case Dataset::accumSummary_type::accumSummary_dest::alignment: 
                 data.accumSummary_data.align_accum_max.clear();
                 data.accumSummary_data.align_accum_lines.clear();
+            break;
+            case Dataset::accumSummary_type::accumSummary_dest::none:
+                cerr << "dest shouldn't be none!!!!" << endl;;
+                exit(1);
             break;
             default:
                 cerr << "there is no default for dest's switch statement!!!" << endl;
@@ -59,14 +59,14 @@ void accumSummary_scale(Dataset &data, const string &hfile,
     	exit(1);
 	}
 
-	int dist = 500;
-	int total_size = dist * 2 + scale;
+	// int dist = 500;
+	// int total_size = dist * 2 + scale;
 	float max = 0.0;
 	// int hitcount = 0;
 
     // FOR FIXING OUT OF RANGE ERROR WHEN RUNNING ACCUMSUMMARY_SCALE(ARGS)
     // ON SCRAMBLED DATA
-    ++total_size;
+    // ++total_size;
     // FIX DONE
 
 
@@ -128,67 +128,11 @@ void accumSummary_scale(Dataset &data, const string &hfile,
 		chrom = new char[seqid.length() + 1];
 		strcpy(chrom, seqid.c_str());
 
-        // cout << "chrom: " << chrom << endl
-        // << "upstart: " << static_cast<uint32_t>(upstart) << endl
-        // << "upend: " << static_cast<uint32_t>(upend) << endl
-        // << "nBins: " << static_cast<uint32_t>(upend - upstart) << endl;
-
-  //       try{
-  //           #ifdef DEBUG
-  //           // cout << "chrom: " << chrom << endl
-  //           //      << "upstart: " << upstart << endl
-  //           //      << "upend: " << upend << endl
-  //           //      << "upend - upstart: " << upend - upstart << endl;
-
-  //           #endif
-
-  //           #ifdef DEBUG
-  //                // cout << "running bwStats(args)..." << flush;
-  //           #endif
-  //   		values = bwStats(bwFile, chrom, static_cast<uint32_t>(upstart),
-  //                            static_cast<uint32_t>(upend),
-  //                            static_cast<uint32_t>(upend - upstart), 
-  //                            bwStatsType::mean);
-  //           #ifdef DEBUG
-  //               // cout << "FINISH" << endl;
-  //           // cout << "upend: " << upend << endl << "upstart: " << upstart << endl;
-  //           #endif
-  //       }
-  //       catch(...){
-  //           cerr << "problem with bwStats\n\tEXITING" << endl;
-  //           exit(1);
-  //       }
-
-  //       if(values == NULL){
-  //           cerr << "Failure to use bwStats!\n\tEXITING" << endl;
-  //           exit(1);
-  //       }
-
-  //       // cout << "chrom: " << chrom << endl;
-		// try{
-  //   		for(counter = 0; counter < upend - upstart; ++counter){
-  //   			values[counter] = roundf(values[counter] * 1000) / 1000;
-  //               // cout << "value at values[" << counter << "]: " << values[counter] << endl;
-  //   			signal_array.at(counter) = values[counter];
-  //   		}
-  //       }
-  //       catch(...){
-  //           cerr << "problem with line about 5 lines above!!" << endl
-  //                << "parameters:\n\t counter: " << counter << endl
-  //                << "\tscale: " << scale << endl
-  //                << "\tupend - upstart: " << upend - upstart << endl
-  //                << "\ttotal_size: " << total_size << endl;
-
-  //           exit(1);
-  //       }
-
-  //       // cout << "\tfreed values" << endl;
-  //       free(values);
 
         bwOverlappingIntervals_t *ptr = bwGetValues(bwFile, chrom, 
-                                   static_cast<uint32_t>(upstart),
-                                   static_cast<uint32_t>(upend),
-                                   1);
+                               static_cast<uint32_t>(upstart),
+                               static_cast<uint32_t>(upend),
+                               1);
 
         // cout << "\t for chrom: " << seqid << endl;
         // cout << "\tdeleted chrom" << endl;
@@ -242,31 +186,12 @@ void accumSummary_scale(Dataset &data, const string &hfile,
         free(ptr->end);
         free(ptr->value);
         free(ptr);
-		// max = 0;
-		// hitcount = 0;
-  //       // cout << "\tline 213" << endl;
-		// for(int l = 0; l < static_cast<int>(signal_array.size()); ++l){
-		// 	if(!signal_array_is_nan.at(l)){ 
-  //               ++hitcount;
-  //           }
-  //           else{
-  //               if(signal_array.at(l) > max){ 
-  //                   max = signal_array.at(l);
-  //               }
-  //           }
-		// }
-        // cout << "\tupend: " << upend 
-        //      << "\n\tupstart: " << upstart << "\n\thitcount / upend - upstart: "
-        //      << 1.0 - ( static_cast<float>(nan_count) / static_cast<float>(ptr->l) ) 
-        //      << endl;
-        if(static_cast<float>(nan_count) / static_cast<float>(ptr->l) > 0.10){
+
+        if( (static_cast<float>(nan_count) / static_cast<float>(ptr->l) ) > 0.10){
             max = NAN_VALUE;
         }
         // if max is maximum possible double value, then it is not applicable
-		// if( ( hitcount / static_cast<double>( signal_array.size() ) ) < 0.9){
-		// 	max = NAN_VALUE;
-  //       }
-        // cout << "\tline 232" << endl;
+
         switch (dest) {
             case Dataset::accumSummary_type::accumSummary_dest::none:
                 cerr << "dest shouldn't be none!!!!" << endl;

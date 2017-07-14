@@ -40,7 +40,7 @@ void checkCache(Dataset &data, const vector<string> &in_file, vector<string> &ou
     out_cache.clear();
 
     if(data.settings.verbose){
-        cout << "Querying cache for processed kmers\n";
+        cout << "Querying cache for processed kmers..." << flush;
     }
     // should this be here?
     switch (dest) {
@@ -123,17 +123,10 @@ void checkCache(Dataset &data, const vector<string> &in_file, vector<string> &ou
             // CHECKING THE NUMBER OF COLS WORKS ONLY FOR THE PERL API
             // I BELIEVE THIS API RETURNS A NULL IF SOMETHING DOESN'T EXIST
 
+//          grabs the alignment of current kmers
             const char* text = (char*)sqlite3_column_text(data_query, 1);
             
-
             if(text){
-                // debug output
-                #ifdef DEBUG
-                    // cout << "text: " << text << endl;
-                #endif
-                // found (?)
-                // result is not NULL
-
                 switch (dest) {
                     case Dataset::accumSummary_type::accumSummary_dest::alignment:
                         data.signal_cache.emplace_back(text);
@@ -284,6 +277,10 @@ void checkCache(Dataset &data, const vector<string> &in_file, vector<string> &ou
 
     message = sqlite3_close_v2(cacheDB);
     problemEncountered(message, "closing the connection");
+
+    if(data.settings.verbose){
+        cout << "FINISH" << endl;
+    }
 }
 
 static void problemEncountered(const int message, const string &what){

@@ -5,6 +5,7 @@
 using namespace std;
 
 bool fileExists(const string &filename);
+static void grab_string_3_index(string s, string &out);
 static void problemEncountered(const int &message, const string &what);
 //static void isRowReady(const int &message);
 // static void prepareStmt(sqlite3 *db, string stmt, sqlite3_stmt *query);
@@ -44,13 +45,6 @@ void writeCache(Dataset &data, const string &cache,
     }
 
     // points to an output vector from running accumSummary_scale(args)
-    for(string line : *ptr){
-#ifdef DEBUG
-        // cout << "string at index 3 of string: " << line
-            // << "\nis: " << grab_string_at_index(line, 3, string("\t")) << endl;
-#endif
-        kmers[grab_string_at_index(line, 3, string("\t"))] = line;
-    }
 
     bool newcache = fileExists(cache);
 
@@ -77,62 +71,40 @@ void writeCache(Dataset &data, const string &cache,
         message = sqlite3_exec(cacheDB, msg.c_str(), NULL, NULL, &z_err_msg);
         problemEncountered(message, "create unique index on seen_cache");
         sqlite3_free(z_err_msg);
-        // message = sqlite3_exec(cacheDB, msg.c_str(), NULL, NULL, &z_err_msg);
-        // // prepareStmt(cacheDB, msg, build_statement);
-        // // message = sqlite3_step(build_statement);
-        // checkDone(message, "build statement create table kmer_cache");
-        // sqlite3_finalize(build_statement);
 
         msg = "CREATE UNIQUE INDEX kmerIDX ON kmer_cache(kmer)";
         message = sqlite3_exec(cacheDB, msg.c_str(), NULL, NULL, &z_err_msg);
         problemEncountered(message, "create unique index on seen_cache");
         sqlite3_free(z_err_msg);
-        // message = sqlite3_exec(cacheDB, msg.c_str(), NULL, NULL, &z_err_msg);
-        // // prepareStmt(cacheDB, msg, build_statement);
-        // // message = sqlite3_step(build_statement);
-        // checkDone(message, "build statement create unique index kmer_cache");
-        // sqlite3_finalize(build_statement);
 
         msg = "CREATE TABLE seen_cache (kmer TEXT PRIMARY KEY NOT NULL, iter INT NOT NULL)";
         message = sqlite3_exec(cacheDB, msg.c_str(), NULL, NULL, &z_err_msg);
         problemEncountered(message, "create unique index on seen_cache");
         sqlite3_free(z_err_msg);
-        // message = sqlite3_exec(cacheDB, msg.c_str(), NULL, NULL, &z_err_msg);
-        // // prepareStmt(cacheDB, msg, build_statement);
-        // // message = sqlite3_step(build_statement);
-        // checkDone(message, "build statement create table seen_cache");
-        // sqlite3_finalize(build_statement);
 
         msg = "CREATE UNIQUE INDEX seenIDX ON seen_cache(kmer)";
         message = sqlite3_exec(cacheDB, msg.c_str(), NULL, NULL, &z_err_msg);
         problemEncountered(message, "create unique index on seen_cache");
         sqlite3_free(z_err_msg);
-        // message = sqlite3_exec(cacheDB, msg.c_str(), NULL, NULL, &z_err_msg);
-        // // prepareStmt(cacheDB, msg, build_statement);
-        // // message = sqlite3_step(build_statement);
-        // checkDone(message, "build statement create unique index on seen_cache");
     }
     sqlite3_stmt *staged_query = nullptr;
     msg = "INSERT OR IGNORE INTO kmer_cache VALUES(?,?)";
     sqlite3_prepare_v2(cacheDB, msg.c_str(), static_cast<int>(msg.size()),
                        &staged_query, NULL);
     problemEncountered(message, msg);
-    // prepareStmt(cacheDB, msg, staged_query);
 
 
-    //stringstream ss;
-    #ifdef DEBUG
-    // cout << "\tkmers" << endl;
-    #endif
-
-    for(auto val1 : kmers){
+    string temp = "";
+    for(auto val : *ptr){
         #ifdef DEBUG
-        // cout << "\tkmer: " << val1.first << ' ' << val1.second << endl;
+        // cout << "\tkmer: " << "first: " << val1.first << "\tsecond:" << val1.second << endl;
         #endif
 
-        message = sqlite3_bind_text(staged_query, 1, val1.first.c_str(), -1, NULL);
+        grab_string_3_index(val, temp);
+        
+        message = sqlite3_bind_text(staged_query, 1, temp.c_str(), -1, NULL);
         problemEncountered(message, "bind text 1 for staged_query, writeCache");
-        message = sqlite3_bind_text(staged_query, 2, val1.second.c_str(), -1, NULL);
+        message = sqlite3_bind_text(staged_query, 2, val.c_str(), -1, NULL);
         problemEncountered(message, "bind text 2 for staged_query, writeCache");
         message = sqlite3_step(staged_query);
         if(message != SQLITE_DONE){
@@ -152,12 +124,6 @@ void writeCache(Dataset &data, const string &cache,
 
 
 
-// static void prepareStmt(sqlite3 *db, string stmt, sqlite3_stmt *query){
-//     //sqlite3_prepare(sqlite3 *db, const char *zSql, int nByte, sqlite3_stmt **ppStmt, const char **pzTail)
-//     int message = sqlite3_prepare_v2(db, stmt.c_str(), static_cast<int>(stmt.size()), &query, nullptr);
-//     problemEncountered(message, stmt);
-// }
-
 static void problemEncountered(const int &message, const string &what){
     if(message != SQLITE_OK){
         cerr << "Problem encountered with " << what << "!\n\tEXITING\n";
@@ -165,18 +131,4 @@ static void problemEncountered(const int &message, const string &what){
         exit(1);
     }
 }
-
-// static void checkDone(const int &message, const string &s){
-//     if(message != SQLITE_DONE){
-//         cerr << s << " is not done!\n\tEXITING" << endl;
-//         exit(1);
-//     }
-// }
-
-//  static void isRowReady(const int &message){
-//      if(message != SQLITE_ROW){
-//          cerr << "Row isn't ready!!\n\tEXITING\n";
-//          exit(1);
-//      }
-//  }
 

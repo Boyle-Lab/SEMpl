@@ -19,8 +19,9 @@ void static parse_pwm(const string &pwm, map<char, vector<double> > &map);
 
 //REQUIRES: requires data is a valid Dataset with pwm filled in
 //MODIFIES: modifies data, specifically pwm
-//EFFECTS: Creates a pwm matrix from the previous sem matrix
-void generatePWMfromSEM(Dataset & data){
+//EFFECTS: Creates a pwm matrix from the previous sem matrix in same
+//         directory
+void generatePWMfromSEM(const Dataset & data){
 
     // raw baseline is the output from running findMaximumAverageSignal... on
     // "enumerate" data
@@ -67,7 +68,7 @@ void generatePWMfromSEM(Dataset & data){
 
         for(size_t i = 1; i < 5; ++i){
             try{
-                fields_dbl[i] = avgScore * pow(2, stod(fields_str[i]));
+                fields_dbl.at(i) = avgScore * pow(2, stod(fields_str.at(i) ) );
             }
             catch(...){
                 cerr << "Something has been caught!!\n\tEXITING\n";
@@ -126,19 +127,19 @@ void generatePWMfromSEM(Dataset & data){
 
         OUTF << i + '\t';
         OUTF << static_cast<int>( (static_cast<double>(A[i]) * alpha)
-                                    + (static_cast<double>(pwm['A'][i] * rowsum * (1- alpha) ))
+                                    + (static_cast<double>(pwm['A'][i] * rowsum * (1 - alpha) ))
                                     + .5 );
-        OUTF << i + '\t';
+        OUTF << '\t';
         OUTF << static_cast<int>( (static_cast<double>(C[i]) * alpha)
-                                    + (static_cast<double>(pwm['C'][i] * rowsum * (1- alpha) ))
+                                    + (static_cast<double>(pwm['C'][i] * rowsum * (1 - alpha) ))
                                     + .5 );
-        OUTF << i + '\t';
+        OUTF << '\t';
         OUTF << static_cast<int>( (static_cast<double>(G[i]) * alpha)
-                                    + (static_cast<double>(pwm['G'][i] * rowsum * (1- alpha) ))
+                                    + (static_cast<double>(pwm['G'][i] * rowsum * (1 - alpha) ))
                                     + .5 );
-        OUTF << i + '\t';
+        OUTF << '\t';
         OUTF << static_cast<int>( (static_cast<double>(T[i]) * alpha)
-                                    + (static_cast<double>(pwm['T'][i] * rowsum * (1- alpha) ))
+                                    + (static_cast<double>(pwm['T'][i] * rowsum * (1 - alpha) ))
                                     + .5 );
         OUTF << "\tX\n";
     }
@@ -149,7 +150,7 @@ void generatePWMfromSEM(Dataset & data){
 
 }
 
-static void parse_pwm(const string &pwm, map<char, vector<double> > &map){
+static void parse_pwm(const string &pwm, map<char, vector<double> > &motif){
     ifstream IN_HANDLE(pwm);
 
     if(!IN_HANDLE){
@@ -177,13 +178,13 @@ static void parse_pwm(const string &pwm, map<char, vector<double> > &map){
             int rowsum = fields_int[1] + fields_int[2]
                        + fields_int[3] + fields_int[4];
 
-            map['A'].push_back(static_cast<double>(fields_int[1]) /
+            motif['A'].push_back(static_cast<double>(fields_int[1]) /
                                static_cast<double>(rowsum) );
-            map['C'].push_back(static_cast<double>(fields_int[2]) /
+            motif['C'].push_back(static_cast<double>(fields_int[2]) /
                                static_cast<double>(rowsum) );
-            map['G'].push_back(static_cast<double>(fields_int[3]) /
+            motif['G'].push_back(static_cast<double>(fields_int[3]) /
                                static_cast<double>(rowsum) );
-            map['T'].push_back(static_cast<double>(fields_int[4]) /
+            motif['T'].push_back(static_cast<double>(fields_int[4]) /
                                static_cast<double>(rowsum) );
 
             fields.clear();

@@ -20,10 +20,10 @@ double get_threshold(Dataset & data, double pval){
 	ofstream temp_out(TEMPFILE);
 
 #ifdef DEBUG
-	assert(data.TFM_data.letter_array[0].size() == data.TFM_data.letter_array[1].size());
-	assert(data.TFM_data.letter_array[0].size() == data.TFM_data.letter_array[2].size());
-	assert(data.TFM_data.letter_array[0].size() == data.TFM_data.letter_array[3].size());
-	assert(data.TFM_data.letter_array[0].size() > 0);
+    assert(data.TFM_data.letter_array[0].size() == data.TFM_data.letter_array[1].size());
+    assert(data.TFM_data.letter_array[0].size() == data.TFM_data.letter_array[2].size());
+    assert(data.TFM_data.letter_array[0].size() == data.TFM_data.letter_array[3].size());
+    assert(data.TFM_data.letter_array[0].size() > 0);
 #endif
 
 #ifdef VERBOSE
