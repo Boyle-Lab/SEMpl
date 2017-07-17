@@ -44,11 +44,10 @@ static void generate_input(const Dataset &data){
 
 static void run_R(const Dataset &data){
 
-    stringstream Rout;
-    Rout << "R --vanilla < " << data.output_dir << "/generateRinput.input";
-    system(Rout.str().c_str());
-    Rout.clear();
-    Rout << "rm " << data.output_dir << "/generateRinput.input";
-    system(Rout.str().c_str());
+    
+    string s = "R --vanilla < " + data.output_dir + "/generateRinput.input";
+    system(s.c_str());
+    s = "rm " + data.output_dir + "/generateRinput.input";
+    system(s.c_str());
 
 }

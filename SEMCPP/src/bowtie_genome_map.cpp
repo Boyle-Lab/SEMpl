@@ -39,7 +39,7 @@ void bowtie_genome_map(int length, const string& genome, const string& file,
 *    argvs[7] = "../data/hg19\0";
 *    argvs[8] = "temp.dat\0";
 */
-    string temp_file = "temp.dat";
+    const string temp_file = "./results/temp.dat";
 
     string cmd = "./bin/bowtie --quiet -a -v 0 ./data/hg19 -f " 
                  + file + ' ' + temp_file;

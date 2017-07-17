@@ -13,9 +13,6 @@ void alignToGenomeWrapper(Dataset &data, int iteration, const string genome) {
 
     // step 1: get the length of kmer
     int length = getLength(data);
-    #ifdef DEBUG
-    // cout << "length: " << length << endl;
-    #endif
     if(data.settings.verbose){
         cout << "\tAligning\n";
     }
@@ -48,17 +45,21 @@ static void align_SNPs(Dataset &data, int length,
 
     bool non_zero_file_size = false;
 
-    vector<string> cache_output;
+    vector<string> cache_to_align;
 
     for(int position  = 0; position < length; ++position){
         for(int j = 0; j < static_cast<int>(nucleotideStack.size()); ++j){
 
-            name = nucleotideStack[j] +  "_pos" + to_string(position);
-
+            cache_to_align.clear();
             new_kmer.clear();
+
+            name = nucleotideStack[j] +  "_pos" + to_string(position);
+            
                                       // nucleotide
 	        string genome = "./data/hg19";
             try{
+                // creates new_kmer vector from copying over data.kmerHash
+                // and changing a single nucleotide
                 changeBase(data, position, nucleotideStack[j], new_kmer,
                            genome);
             }
@@ -68,12 +69,10 @@ static void align_SNPs(Dataset &data, int length,
             }
                         // CHECK THAT THIS IS CORRECT RELATIVE LOCATION
 
-// void checkCache(Dataset &data, vector<string> &in_file, vector<string> &out_cache,
-//                 const string &cachefile);
-
             try{
-                checkCache(data, new_kmer, cache_output, data.cachefile,
+                checkCache(data, new_kmer, cache_to_align, data.cachefile,
                         Dataset::accumSummary_type::accumSummary_dest::alignment);
+                
             }
             catch(...){
                 cerr << "exception thrown from checkCache" << endl;
@@ -85,12 +84,14 @@ static void align_SNPs(Dataset &data, int length,
             fa_file = CWD + name + ".fa";
             bowtie_output = CWD + name + ".bed";
 
-            non_zero_file_size = seq_col_to_fa(cache_output, fa_file);
+            non_zero_file_size = seq_col_to_fa(cache_to_align, fa_file);
             if(non_zero_file_size){
                 bowtie_genome_map(length, "./data/hg19", fa_file, bowtie_output,
                                   data.settings.verbose);
             }
-            cache_output.clear();
+            #ifdef DEBUG
+                
+            #endif
         }
     }
 }

@@ -32,10 +32,13 @@ void generateSEM(const Dataset &data) {
 
 
 
-#ifdef DEBUG
-    ofstream debug_out("signal.maximums");
+// #ifdef DEBUG
+    system( ("mkdir -p " + data.output_dir + "/SIGNAL/").c_str() );
+    ofstream debug_out(data.output_dir + "/SIGNAL/signal.maximums");
+    system( ("mkdir -p " + data.output_dir + "/BASELINE/").c_str() );
+    ofstream debug_out2(data.output_dir + "/BASELINE/baseline.maximums");
 
-#endif
+// #endif
 
 
 
@@ -43,10 +46,18 @@ void generateSEM(const Dataset &data) {
     double enum_err = data.Signal_data.enumerate_sterr;
 
 
-#ifdef DEBUG
-        cout << "\tenum_: " << enum_ << endl
-             << "\tenum_err: " << enum_err << endl;
-#endif
+    debug_out2 << "Enumerated_kmer_filtered.signal\t" << data.Signal_data.enumerate_maximum
+              << '\t' << data.Signal_data.enumerate_counter
+              << '\t' << data.Signal_data.enumerate_stdev
+              << '\t' << data.Signal_data.enumerate_sterr << endl;
+
+    debug_out2 << "Scrambled_kmer_filtered.signal\t" << data.Signal_data.scramble_maximum
+              << '\t' << data.Signal_data.scramble_counter
+              << '\t' << data.Signal_data.scramble_stdev
+              << '\t' << data.Signal_data.scramble_sterr << endl;
+         
+    // cout << "\tenum_: " << enum_ << endl
+    //      << "\tenum_err: " << enum_err << endl;
 
 
     double score = 0.0, sterr = 0.0;
@@ -72,13 +83,14 @@ void generateSEM(const Dataset &data) {
                 score = data.sig_deets_maximum.at( {loc, bp} );
                 sterr = data.sig_deets_sterr.at( {loc, bp} );
 
-#ifdef DEBUG
-                debug_out << loc << bp << ' ' << data.sig_deets_maximum.at({loc, bp})
-                          << ' ' << data.sig_deets_counter.at({loc, bp})
-                          << ' ' << data.sig_deets_stdev.at({loc, bp}) 
-                          << ' ' << data.sig_deets_sterr.at({loc, bp})
+
+                debug_out << bp << "_pos" << loc << "_filtered.signal"
+                          << '\t' << data.sig_deets_maximum.at({loc, bp})
+                          << '\t' << data.sig_deets_counter.at({loc, bp})
+                          << '\t' << data.sig_deets_stdev.at({loc, bp}) 
+                          << '\t' << data.sig_deets_sterr.at({loc, bp})
                           << endl;        
-#endif
+
 
                 // debug
                 cout << "score (maximum) for " << loc << ' ' << bp << ": " 

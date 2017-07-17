@@ -190,7 +190,7 @@ void generateSignalMethylTable(Dataset &data);
 //                                      as noted in original implementation
 double get_threshold(Dataset &data, double pval);
 void pwm_to_tfm(Dataset &data);
-void quality_control(Dataset &data);
+void quality_control(const Dataset &data);
 void scramble_kmer(Dataset &data);
 bool seq_col_to_fa(const std::vector<std::string> &column,
                     const std::string &file);

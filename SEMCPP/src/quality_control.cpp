@@ -19,7 +19,7 @@ double ttest(const Dataset &data);
 
 // REQUIRES: data.signal_scramble_output is filled
 //           along with data.signal_enumerate_output
-void quality_control(Dataset &data){
+void quality_control(const Dataset &data){
 
     ofstream quality_output;
     stringstream output_stream;
@@ -75,14 +75,14 @@ double ttest(const Dataset &data){
     // writes the three files necessary to do the t-test
     ofstream OUT(data.output_dir + "/runTtest.R");
     ofstream OUT1(data.output_dir + "Enumerated_kmer_filtered.signal");
-    ofstream OUT2(data.output_dir + "Scrambled_kmer.filtered.signal");
+    ofstream OUT2(data.output_dir + "Scrambled_kmer_filtered.signal");
     for(auto val : data.signal_scramble_output){
         OUT2 << val << '\n';
     }
     for(auto val : data.signal_enumerate_output){
         OUT1 << val << '\n';
     }
-    OUT << "signal <- read.table(\"" <<  data.output_dir 
+    OUT << "signal <- read.table(\"" << data.output_dir 
         << "Enumerated_kmer_filtered.signal\")" << '\n'
         << "baseline <- read.table(\"" <<  data.output_dir 
         << "Scrambled_kmer_filtered.signal\")" << "\n\n"
@@ -92,18 +92,23 @@ double ttest(const Dataset &data){
 
     string cmd = "R --vanilla --no-save --slave < " 
                  + data.output_dir 
-                 + "/runTtest.R";
+                 + "/runTtest.R > " + data.output_dir + "/ttest.txt";
 
-    FILE * strm = popen(cmd.c_str(), "r");
+    // FILE * strm = popen(cmd.c_str(), "r");
+    if(system(cmd.c_str() ) ){
+        cerr << "problem running " << cmd << endl;
+        exit(1);
+    }
     double p_val = -1.0;
-    int message = fscanf(strm, " %lf", &p_val);
+
+    // int message = fscanf(strm, " %lf", &p_val);
     if(p_val == -1.0){
         cerr << "Failure to read p_val!!!!!!\n\tEXITING";
         exit(1);
     }
-    if(message != 1){
-        cerr << "incorrect message from fscanf(args)!!!!!\n\tEXITING";
-        exit(1);
-    }
+    // if(message != 1){
+    //     cerr << "incorrect message from fscanf(args)!!!!!\n\tEXITING";
+    //     exit(1);
+    // }
     return p_val;
 }

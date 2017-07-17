@@ -5,7 +5,6 @@
 using namespace std;
 
 bool fileExists(const string &filename);
-static void grab_string_3_index(string s, string &out);
 static void problemEncountered(const int &message, const string &what);
 //static void isRowReady(const int &message);
 // static void prepareStmt(sqlite3 *db, string stmt, sqlite3_stmt *query);
@@ -96,11 +95,13 @@ void writeCache(Dataset &data, const string &cache,
 
     string temp = "";
     for(auto val : *ptr){
-        #ifdef DEBUG
-        // cout << "\tkmer: " << "first: " << val1.first << "\tsecond:" << val1.second << endl;
-        #endif
+        
 
         grab_string_3_index(val, temp);
+
+        #ifdef DEBUG
+        cout << "\tkmer: " << "first: #" << temp << "#\tsecond:#" << val << '#' << endl;
+        #endif
         
         message = sqlite3_bind_text(staged_query, 1, temp.c_str(), -1, NULL);
         problemEncountered(message, "bind text 1 for staged_query, writeCache");

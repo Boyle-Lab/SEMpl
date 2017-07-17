@@ -195,7 +195,7 @@ int main(int argc, char **argv){
         // iterID = rand() % 16777216;
         ofstream outFile(data.output_dir + "/kmer_similarity.out");
         if(iteration > 1 && converge < 10){
-            int j = iteration - 1;
+            // int j = iteration - 1;
             total_1 = same = diff = total_diff = 0;
             for(const auto &kmer_val_pair : kmers){
                 if(data.kmerHash.find(kmer_val_pair.first) != data.kmerHash.end()){

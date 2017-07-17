@@ -32,6 +32,8 @@ static void checkDone(const int message, const string &s);
 //       out_cache is the argument given to -out_cache in the original algorithm
 //       cachefile is the argument given to -cache in the original algorithm
 //       -out_file is built into the function within the switch statements
+// IMPORTANT: out_cache is the kmers that need to be aligned to genome
+//            signal_cache_whatever are the alignments!!!
 void checkCache(Dataset &data, const vector<string> &in_file, vector<string> &out_cache,
                 const string &cachefile, Dataset::accumSummary_type::accumSummary_dest dest){
 
@@ -127,6 +129,9 @@ void checkCache(Dataset &data, const vector<string> &in_file, vector<string> &ou
             const char* text = (char*)sqlite3_column_text(data_query, 1);
             
             if(text){
+                #ifdef DEBUG
+                cerr << "found: " << kmer << endl;
+                #endif
                 switch (dest) {
                     case Dataset::accumSummary_type::accumSummary_dest::alignment:
                         data.signal_cache.emplace_back(text);
@@ -152,7 +157,10 @@ void checkCache(Dataset &data, const vector<string> &in_file, vector<string> &ou
                 
             }
             else{
-                // not found (?)
+                // not found
+                #ifdef DEBUG
+                cerr << "not found: " << kmer << endl;
+                #endif
                 message = sqlite3_bind_text(seen_query, 1, kmer.c_str(),
                           -1, NULL);
                 problemEncountered(message, "bind_text for seen_query");
@@ -174,10 +182,14 @@ void checkCache(Dataset &data, const vector<string> &in_file, vector<string> &ou
                 // cout << message << endl;
                 if(message > 0){
                     // don't print for processing
-                    // cout << "no print" << endl;
+                    #ifdef DEBUG
+                    cerr << "no print" << endl;
+                    #endif
                 }
                 else{
-                    // cout << "print" << endl;
+                    #ifdef DEBUG
+                    cerr << "print" << endl;
+                    #endif
                     message = sqlite3_bind_text(staged_query, 1, kmer.c_str(),
                                 static_cast<int>(kmer.size()), NULL);
                     problemEncountered(message, "bind_text for staged_query");
@@ -200,8 +212,6 @@ void checkCache(Dataset &data, const vector<string> &in_file, vector<string> &ou
 
             sqlite3_reset(seen_query);
             sqlite3_clear_bindings(seen_query);
-            // sqlite3_finalize(seen_query);
-            // sqlite3_finalize(data_query);
             sqlite3_reset(data_query);
             sqlite3_clear_bindings(data_query);
         }
@@ -253,7 +263,7 @@ void checkCache(Dataset &data, const vector<string> &in_file, vector<string> &ou
             exit(1);
         }
 	//cout << "Binding to cache" << endl;
-        for(auto kmer : in_file){
+        for(const auto &kmer : in_file){
             message = sqlite3_bind_text(staged_query, 1, kmer.c_str(),
                       static_cast<int>(kmer.size()), NULL);
             problemEncountered(message, "bind text for inserting into seen_cache");

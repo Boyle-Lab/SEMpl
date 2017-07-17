@@ -9,6 +9,7 @@ void changeBase(const Dataset &data, int position, const string &nucleotide, vec
   // find new_kmer
   // performs operations on Enumerated_kmer, or kmerHash
   // remove \r from line, not needed here, as stored in memory
+    new_kmer_vec.clear();
     for(auto pair : data.kmerHash){
         if(position > static_cast<int>(pair.first.size()) - 1){
             cout << "Position is greater than size!!\n\tEXITING";

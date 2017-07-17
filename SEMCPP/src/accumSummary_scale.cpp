@@ -59,7 +59,7 @@ void accumSummary_scale(Dataset &data, const string &hfile,
     	exit(1);
 	}
 
-	// int dist = 500;
+	int dist = 500;
 	// int total_size = dist * 2 + scale;
 	float max = 0.0;
 	// int hitcount = 0;

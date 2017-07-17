@@ -81,6 +81,7 @@ void generateSNPEffectMatrix(Dataset &data) {
 	cout << "Creating enumerated kmers from PWM file" << endl;
     cout << "\tstep one" << endl;
     int length = generate_kmers(data);
+    // generate_kmers(data);
     // data.kmerHash is now filled in!!!!
 
 	//Step 2: Change one base at each location in k-mers and align to genome
@@ -175,7 +176,7 @@ void find_signal(Dataset &data, int length){
 
     GetFilesInDirectory(files, data.output_dir + "/ALIGNMENT/");
 #ifdef DEBUG
-    sort(files.rbegin(), files.rend());
+    sort(files.begin(), files.end());
 #endif
     char bp = '\0';
     const char *pos = nullptr;
@@ -278,11 +279,6 @@ void find_signal(Dataset &data, int length){
             if(data.settings.verbose){
                 cout << "FINISH" << endl;
             }
-
-            // CHANGE REQUIRED REGARDING WHAT IS IN DATA.SIGNAL_ENUMERATE..._OUTPUT
-            // CHANGE REQUIRED REGARDING WHAT IS IN DATA.SIGNAL_ENUMERATE..._OUTPUT
-            // CHANGE REQUIRED REGARDING WHAT IS IN DATA.SIGNAL_ENUMERATE..._OUTPUT
-            // and corresponding other data
 
             //  FILLS data.signal_enumerate_output !!!!!!!!!!!!
             if(data.settings.verbose){
@@ -390,9 +386,9 @@ void create_baselines(Dataset &data, int length){
     vector<string> enumerate_kmers;
 
     // final output from processing scrambled kmer data
-    vector<string> scramble_cache_output;
+    vector<string> scramble_cache_to_align;
     // final output from processing enumerated kmer data
-    vector<string> enumerate_cache_output;
+    vector<string> enumerate_cache_to_align;
 
     
     for(const auto &pair : data.kmerHash){
@@ -410,9 +406,9 @@ void create_baselines(Dataset &data, int length){
         }
         // scramble_kmers IS NOW SCRAMBLED!!!!
 
-        checkCache(data, scramble_kmers, scramble_cache_output, data.cachefile,
+        checkCache(data, scramble_kmers, scramble_cache_to_align, data.cachefile,
                     Dataset::accumSummary_type::accumSummary_dest::scrambled);
-        seq_col_to_fa(scramble_cache_output,
+        seq_col_to_fa(scramble_cache_to_align,
                       data.output_dir + "/BASELINE/Scrambled_kmer.fa");
         bowtie_genome_map(length, "../data/hg19",
                           data.output_dir + "/BASELINE/Scrambled_kmer.fa",
@@ -422,7 +418,7 @@ void create_baselines(Dataset &data, int length){
         // NEED TO CHECK THAT THIS IS THE RIGHT RELATIVE DIRECTORY
         cmd = "./bin/bedtools intersect -a " + data.output_dir
                 + "/BASELINE/Scrambled_kmer.bed -b "
-                + data.DNase_file + " -wa -u > "+ data.output_dir
+                + data.DNase_file + " -wa -u > " + data.output_dir
                 + "/BASELINE/Scrambled_kmer_filtered.bed";
         system(cmd.c_str());
 
@@ -486,11 +482,11 @@ void create_baselines(Dataset &data, int length){
     //            std::vector<std::string> &out_cache, const std::string &cachefile,
     //            Dataset::accumSummary_type::accumSummary_dest dest)
 
-    checkCache(data, enumerate_kmers, enumerate_cache_output, data.cachefile,
+    checkCache(data, enumerate_kmers, enumerate_cache_to_align, data.cachefile,
                Dataset::accumSummary_type::accumSummary_dest::enumerated);
 
-    if(!enumerate_cache_output.empty()){
-        seq_col_to_fa(enumerate_cache_output,
+    if(!enumerate_cache_to_align.empty()){
+        seq_col_to_fa(enumerate_cache_to_align,
                       data.output_dir + "/BASELINE/Enumerated_kmer.fa");
         bowtie_genome_map(length, "../data/hg19", 
                           data.output_dir + "/BASELINE/Enumerated_kmer.fa",
@@ -536,7 +532,7 @@ void generate_output(Dataset &data){
         cout << "Generating Output" << endl;
     }
 
-    generateSEM(data);
+    // generateSEM(data);
 
     if(!data.settings.fastrun){
         generateRplot(data);
