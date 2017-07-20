@@ -188,7 +188,7 @@ void find_signal(Dataset &data, int length){
     data.sig_deets_sterr.clear();
 
     char* arr = nullptr;
-    int value = 0;
+    int position = 0;
 
     for(const string &file : files){
         if(file.find("filtered") == string::npos){
@@ -216,7 +216,7 @@ void find_signal(Dataset &data, int length){
             arr = new char[end - pos + 1];
             arr[end - pos] = '\0';
             strncpy(arr, file.c_str() + val - 1 + 5, end - pos);
-            value = atoi(arr);
+            position = atoi(arr);
 
         }
         catch(...){
@@ -263,11 +263,12 @@ void find_signal(Dataset &data, int length){
             if(data.settings.verbose){
                 cout << "\tsorting..." << flush;
             }
-            // sort(data.signal_cache.begin(), data.signal_cache.end());
+            sort(data.signal_cache[ {position, bp} ].begin(), 
+                 data.signal_cache[ {position, bp} ].end() );
             if(data.settings.verbose){
                 cout << "FINISH" << endl;
             }
-            data.signal_output.resize(data.signal_cache.size()
+            data.signal_output.resize(data.signal_cache[{position, bp}].size()
                                     + data.accumSummary_data.align_accum_lines.size());
             // returns iterator to one past the location of the last copy
             if(data.settings.verbose){
@@ -284,8 +285,8 @@ void find_signal(Dataset &data, int length){
             if(data.settings.verbose){
                 cout << "\tunique copying..." << flush;
             }
-            unique_copy(data.signal_cache_enumerate.begin(),
-                        data.signal_cache_enumerate.end(),
+            unique_copy(data.signal_cache[ {position, bp} ].begin(),
+                        data.signal_cache[ {position, bp} ].end(),
                         iter);
             if(data.settings.verbose){
                 cout << "FINISH" << endl;
@@ -316,11 +317,11 @@ void find_signal(Dataset &data, int length){
 
 #ifdef DEBUG
             if(data.settings.verbose){
-                cout << "\tpos: " << value << "  bp: " << bp << endl;
+                cout << "\tpos: " << position << "  bp: " << bp << endl;
             }
 #endif
 
-            auto iter = data.sig_deets_maximum.insert( { {value, bp}, 
+            auto iter = data.sig_deets_maximum.insert( { {position, bp}, 
                                                 data.Signal_data.alignment_maximum} );
             
                 // cout << '\t' << data.Signal_data.alignment_maximum << "  max inserted" << endl;
@@ -330,21 +331,21 @@ void find_signal(Dataset &data, int length){
                 exit(1);
             }
             // second pair type
-            auto iter1 = data.sig_deets_counter.insert( { {value, bp}, 
+            auto iter1 = data.sig_deets_counter.insert( { {position, bp}, 
                                                 data.Signal_data.alignment_counter} );
                 // cout << '\t' << data.Signal_data.alignment_counter << "  counter inserted" << endl;
             if(!iter1.second){
                 cerr << "duplicate key inserted into sig_deets_counter" << endl;
                 exit(1);
             }
-            iter = data.sig_deets_stdev.insert( { {value, bp}, 
+            iter = data.sig_deets_stdev.insert( { {position, bp}, 
                                                 data.Signal_data.alignment_stdev} );
                 // cout << '\t' << data.Signal_data.alignment_stdev << "  stdev inserted" << endl;
             if(!iter.second){
                 cerr << "duplicate key inserted into sig_deets_stdev" << endl;
                 exit(1);
             }
-            iter = data.sig_deets_sterr.insert( { {value, bp}, 
+            iter = data.sig_deets_sterr.insert( { {position, bp}, 
                                                 data.Signal_data.alignment_sterr} );
             if(!iter.second){
                 cerr << "duplicate key inserted into sig_deets_sterr" << endl;
