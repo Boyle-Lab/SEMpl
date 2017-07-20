@@ -28,7 +28,6 @@ static void checkDone(const int message, const string &s);
 // MODIFIES: adds appropriate kmers to the specific output_cache
 //           see line 121, switch statement
 // EFFECTS: checks cache located at cachefile
-// NOTE: THE NAMING SCHEME IS CONFUSING
 //       to_align is the argument given to -out_cache in the original algorithm
 //       cachefile is the argument given to -cache in the original algorithm
 //       -out_file is built into the function within the switch statements

@@ -53,7 +53,7 @@ static void align_SNPs(Dataset &data, int length,
             cache_to_align.clear();
             new_kmer.clear();
 
-            name = nucleotideStack[j] +  "_pos" + to_string(position);
+            name = nucleotideStack[j] + string("_pos") + to_string(position);
             
                                       // nucleotide
 	        string genome = "./data/hg19";

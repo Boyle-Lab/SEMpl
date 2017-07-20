@@ -13,7 +13,7 @@ void filterDNaseWrapper(const Dataset &data){
     }
 
     vector<string> files;
-    string targetDir = "./" + data.output_dir + "/ALIGNMENT/";
+    string targetDir = "./" + data.output_dir + "ALIGNMENT/";
 
     #ifdef DEBUG
         // cout << "targetDir: " << targetDir << endl;
