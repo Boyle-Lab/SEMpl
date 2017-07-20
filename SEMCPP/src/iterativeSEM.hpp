@@ -140,9 +140,10 @@ struct Dataset {
 
     std::map<std::string, double> kmerHash;
 
-    std::vector<std::pair<std::pair<int, char>, 
-                std::vector<std::string> > signal_cache;
-                
+    // std::vector<std::pair<std::pair<int, char>, 
+    //             std::vector<std::string> > > signal_cache;
+    std::map< std::pair<int, char>, std::vector<std::string> > signal_cache;
+
     std::vector<std::string> signal_cache_scramble;
     std::vector<std::string> signal_cache_enumerate;
 
@@ -171,13 +172,13 @@ void alignToGenomeWrapper(Dataset &data, int iteration,
 void bowtie_genome_map(int length, const std::string& genome,
                         const std::string& file, const std::string& final_output,
                         bool verbose);
-void changeBase(const Dataset &data, 
-                int position, const std::string &nucleotide, 
+void changeBase(const Dataset &data, int position, const char nucleotide, 
                 std::vector<std::string> &new_kmer_vec, 
                 const std::string &genome);
 void checkCache(Dataset &data, const std::vector<std::string> &in_file,
                 std::vector<std::string> &out_cache, const std::string &cachefile,
-                Dataset::accumSummary_type::accumSummary_dest dest);
+                Dataset::accumSummary_type::accumSummary_dest dest,
+                int position = -1, char bp = 'Q');
 void combineBedFiles(Dataset &data);
 void Enumerate_kmer(Dataset &data);
 void filterDNaseWrapper(const Dataset &data);

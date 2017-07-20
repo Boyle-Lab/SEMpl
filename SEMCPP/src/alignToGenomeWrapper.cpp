@@ -3,13 +3,13 @@
 #include <iostream>
 using namespace std;
 
-static void align_SNPs(Dataset &data, int length, const vector<string> &nucleotideStack);
+static void align_SNPs(Dataset &data, int length, const vector<char> &nucleotideStack);
 
 // default genome is "hg19"
 // INFILE FROM ORIGINAL ALGORITHM IS ENUMERATED_KMER
 void alignToGenomeWrapper(Dataset &data, int iteration, const string genome) {
 
-    const vector<string> nucleotideStack{"A", "C", "G", "T"};
+    const vector<char> nucleotideStack{'A', 'C', 'G', 'T'};
 
     // step 1: get the length of kmer
     int length = getLength(data);
@@ -24,7 +24,7 @@ void alignToGenomeWrapper(Dataset &data, int iteration, const string genome) {
 
 // INFILE FROM ORIGINAL ALGORITHM IS ENUMERATED_KMER
 static void align_SNPs(Dataset &data, int length,
-                       const vector<string> &nucleotideStack){
+                       const vector<char> &nucleotideStack){
     string name = "";
 
     string CWD =  "./" + data.output_dir + "ALIGNMENT/";
@@ -71,7 +71,8 @@ static void align_SNPs(Dataset &data, int length,
 
             try{
                 checkCache(data, new_kmer, cache_to_align, data.cachefile,
-                        Dataset::accumSummary_type::accumSummary_dest::alignment);
+                        Dataset::accumSummary_type::accumSummary_dest::alignment,
+                        position, nucleotideStack[j]);
             }
             catch(...){
                 cerr << "exception thrown from checkCache" << endl;

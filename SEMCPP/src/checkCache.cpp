@@ -35,7 +35,11 @@ static void checkDone(const int message, const string &s);
 // IMPORTANT: to_align is the kmers that need to be aligned to genome
 //            signal_cache_whatever are the alignments!!!
 void checkCache(Dataset &data, const vector<string> &in_file, vector<string> &to_align,
-                const string &cachefile, Dataset::accumSummary_type::accumSummary_dest dest){
+                const string &cachefile, Dataset::accumSummary_type::accumSummary_dest dest,
+                int position, char bp){
+
+    vector<string> signal_data;
+
 
     bool newcache = fileExists(cachefile);
 
@@ -46,25 +50,24 @@ void checkCache(Dataset &data, const vector<string> &in_file, vector<string> &to
     }
     // should this be here?
     // ANS: I don't think so, this is already processed data
-    // switch (dest) {
-    //     case Dataset::accumSummary_type::accumSummary_dest::alignment:
-    //         data.signal_cache.clear();
-    //     break;
-    //     case Dataset::accumSummary_type::accumSummary_dest::scrambled:
-    //         data.signal_cache_scramble.clear();
-    //     break;
-    //     case Dataset::accumSummary_type::accumSummary_dest::enumerated:
-    //         data.signal_cache_enumerate.clear();
-    //     break;
-    //     case Dataset::accumSummary_type::accumSummary_dest::none:
-    //         cerr << "none shouldn't happen!!" << endl;
-    //         exit(1);
-    //     break;
-    //     default:
-    //         cerr << "default shouldn't happen!!" << endl;
-    //         exit(1);
-    //     break;
-    // }
+    switch (dest) {
+        case Dataset::accumSummary_type::accumSummary_dest::alignment:
+        break;
+        case Dataset::accumSummary_type::accumSummary_dest::scrambled:
+            data.signal_cache_scramble.clear();
+        break;
+        case Dataset::accumSummary_type::accumSummary_dest::enumerated:
+            data.signal_cache_enumerate.clear();
+        break;
+        case Dataset::accumSummary_type::accumSummary_dest::none:
+            cerr << "none shouldn't happen!!" << endl;
+            exit(1);
+        break;
+        default:
+            cerr << "default shouldn't happen!!" << endl;
+            exit(1);
+        break;
+    }
 
     sqlite3 *cacheDB = NULL;
     int message = 0;
@@ -135,25 +138,26 @@ void checkCache(Dataset &data, const vector<string> &in_file, vector<string> &to
                 // cerr << "\tfound: #" << kmer << '#' << endl
                      // << "\tcorresponding align: #" << text << '#' << endl;
                 #endif
-                switch (dest) {
-                    case Dataset::accumSummary_type::accumSummary_dest::alignment:
-                        data.signal_cache.emplace_back(text);
-                    break;
-                    case Dataset::accumSummary_type::accumSummary_dest::scrambled:
-                        data.signal_cache_scramble.emplace_back(text);
-                    break;
-                    case Dataset::accumSummary_type::accumSummary_dest::enumerated:
-                        data.signal_cache_enumerate.emplace_back(text);
-                    break;
-                    case Dataset::accumSummary_type::accumSummary_dest::none:
-                        cerr << "none shouldn't happen!!" << endl;
-                        exit(1);
-                    break;
-                    default:
-                        cerr << "default shouldn't happen!!" << endl;
-                        exit(1);
-                    break;
-                }
+                signal_data.emplace_back(text);
+                // switch (dest) {
+                //     case Dataset::accumSummary_type::accumSummary_dest::alignment:
+                        
+                //     break;
+                //     case Dataset::accumSummary_type::accumSummary_dest::scrambled:
+                //         data.signal_cache_scramble.emplace_back(text);
+                //     break;
+                //     case Dataset::accumSummary_type::accumSummary_dest::enumerated:
+                //         data.signal_cache_enumerate.emplace_back(text);
+                //     break;
+                //     case Dataset::accumSummary_type::accumSummary_dest::none:
+                //         cerr << "none shouldn't happen!!" << endl;
+                //         exit(1);
+                //     break;
+                //     default:
+                //         cerr << "default shouldn't happen!!" << endl;
+                //         exit(1);
+                //     break;
+                // }
 
                 // sqlite3_free((char*)text);
                 text = NULL;
@@ -219,7 +223,27 @@ void checkCache(Dataset &data, const vector<string> &in_file, vector<string> &to
             sqlite3_clear_bindings(data_query);
         }
 
-        // signal_cache is filled above on line 117
+        switch (dest) {
+                    case Dataset::accumSummary_type::accumSummary_dest::alignment:
+                        data.signal_cache[ {position, bp} ] = signal_data;
+                    break;
+                    case Dataset::accumSummary_type::accumSummary_dest::scrambled:
+                        data.signal_cache_scramble = signal_data;
+                    break;
+                    case Dataset::accumSummary_type::accumSummary_dest::enumerated:
+                        data.signal_cache_enumerate = signal_data;
+                    break;
+                    case Dataset::accumSummary_type::accumSummary_dest::none:
+                        cerr << "none shouldn't happen!!" << endl;
+                        exit(1);
+                    break;
+                    default:
+                        cerr << "default shouldn't happen!!" << endl;
+                        exit(1);
+                    break;
+        }
+
+
     }
     else{
         if(data.settings.verbose){

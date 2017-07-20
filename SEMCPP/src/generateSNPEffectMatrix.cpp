@@ -263,7 +263,7 @@ void find_signal(Dataset &data, int length){
             if(data.settings.verbose){
                 cout << "\tsorting..." << flush;
             }
-            sort(data.signal_cache.begin(), data.signal_cache.end());
+            // sort(data.signal_cache.begin(), data.signal_cache.end());
             if(data.settings.verbose){
                 cout << "FINISH" << endl;
             }
