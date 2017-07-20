@@ -418,9 +418,9 @@ void create_baselines(Dataset &data, int length){
 
         // NEED TO CHECK THAT THIS IS THE RIGHT RELATIVE DIRECTORY
         cmd = "./bin/bedtools intersect -a " + data.output_dir
-                + "/BASELINE/Scrambled_kmer.bed -b "
+                + "BASELINE/Scrambled_kmer.bed -b "
                 + data.DNase_file + " -wa -u > " + data.output_dir
-                + "/BASELINE/Scrambled_kmer_filtered.bed";
+                + "BASELINE/Scrambled_kmer_filtered.bed";
         system(cmd.c_str());
 
         if(data.settings.verbose){
@@ -428,7 +428,7 @@ void create_baselines(Dataset &data, int length){
         }
         try{
             accumSummary_scale(data, data.bigwig_file,
-                               data.output_dir + "/BASELINE/Scrambled_kmer_filtered.bed",
+                               data.output_dir + "BASELINE/Scrambled_kmer_filtered.bed",
                                length,
                                Dataset::accumSummary_type::accumSummary_dest::scrambled);
         }
@@ -437,7 +437,7 @@ void create_baselines(Dataset &data, int length){
             exit(1);
         }
         if(data.settings.verbose){
-            cout << "FINISHed running accumSummary_scale(args) on scrambled" << endl;
+            cout << "FINISH" << endl;
         }
 
         if(data.settings.writecache){
@@ -533,7 +533,7 @@ void generate_output(Dataset &data){
         cout << "Generating Output" << endl;
     }
 
-    // generateSEM(data);
+    generateSEM(data);
 
     if(!data.settings.fastrun){
         generateRplot(data);

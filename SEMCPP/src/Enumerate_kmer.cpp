@@ -8,11 +8,6 @@
 #include <stdlib.h>
 using namespace std;
 
-/*
-* Does this file use the original PWM? Is new_PWM something else????
-*   By Cody
-*/
-
 // custom comparator necessary for map
 // is a function object
 // class hash_comp{
@@ -103,9 +98,9 @@ void Enumerate_kmer(Dataset &data){
 
 
 #ifdef DEBUG
-    ofstream OUT("Enumerate_kmer.txt");
+    ofstream OUT("Enumerated_kmers.txt");
     for(auto val : data.kmerHash){
-        OUT << val.first << ' ' << val.second << endl;
+        OUT << val.first << '\t' << val.second << endl;
     }
     data.size_of_kmerHash = data.kmerHash.size();
 #endif

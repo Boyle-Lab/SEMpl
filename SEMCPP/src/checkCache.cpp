@@ -223,23 +223,23 @@ void checkCache(Dataset &data, const vector<string> &in_file, vector<string> &to
         }
 
         switch (dest) {
-                    case Dataset::accumSummary_type::accumSummary_dest::alignment:
-                        data.signal_cache[ {position, bp} ] = signal_data;
-                    break;
-                    case Dataset::accumSummary_type::accumSummary_dest::scrambled:
-                        data.signal_cache_scramble = signal_data;
-                    break;
-                    case Dataset::accumSummary_type::accumSummary_dest::enumerated:
-                        data.signal_cache_enumerate = signal_data;
-                    break;
-                    case Dataset::accumSummary_type::accumSummary_dest::none:
-                        cerr << "none shouldn't happen!!" << endl;
-                        exit(1);
-                    break;
-                    default:
-                        cerr << "default shouldn't happen!!" << endl;
-                        exit(1);
-                    break;
+            case Dataset::accumSummary_type::accumSummary_dest::alignment:
+                data.signal_cache[ {position, bp} ] = signal_data;
+            break;
+            case Dataset::accumSummary_type::accumSummary_dest::scrambled:
+                data.signal_cache_scramble = signal_data;
+            break;
+            case Dataset::accumSummary_type::accumSummary_dest::enumerated:
+                data.signal_cache_enumerate = signal_data;
+            break;
+            case Dataset::accumSummary_type::accumSummary_dest::none:
+                cerr << "none shouldn't happen!!" << endl;
+                exit(1);
+            break;
+            default:
+                cerr << "default shouldn't happen!!" << endl;
+                exit(1);
+            break;
         }
 
 
