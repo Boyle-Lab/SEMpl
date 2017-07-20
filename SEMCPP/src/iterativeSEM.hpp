@@ -140,9 +140,12 @@ struct Dataset {
 
     std::map<std::string, double> kmerHash;
 
-    std::vector<std::string> signal_cache;
+    std::vector<std::pair<std::pair<int, char>, 
+                std::vector<std::string> > signal_cache;
+                
     std::vector<std::string> signal_cache_scramble;
     std::vector<std::string> signal_cache_enumerate;
+
 
     std::vector<std::string> signal_output;
     std::vector<std::string> signal_scramble_output;
