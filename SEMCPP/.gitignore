@@ -12,3 +12,5 @@ bin/
 iterativeSEM
 results
 perf.data*
+*test*
+*err*
