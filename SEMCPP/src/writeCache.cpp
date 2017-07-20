@@ -19,7 +19,6 @@ void writeCache(Dataset &data, const string &cache,
     //     cout << "Building cache for processed kmers.\n";
     // }
     // wants the third space, indexed from 0
-    map<string, string> kmers;
 
     // points to an output vector from running accumSummary_scale(args)
     const vector<string> *ptr = nullptr;
@@ -97,15 +96,15 @@ void writeCache(Dataset &data, const string &cache,
     for(auto val : *ptr){
         
 
-        grab_string_3_index(val, temp);
+        grab_string_4_index(val, temp);
 
         #ifdef DEBUG
-        cout << "\tkmer: " << "first: #" << temp << "#\tsecond:#" << val << '#' << endl;
+        // cout << "\tkmer: " << "first: #" << temp << "#\tsecond:#" << val << '#' << endl;
         #endif
         
-        message = sqlite3_bind_text(staged_query, 1, temp.c_str(), -1, NULL);
+        message = sqlite3_bind_text(staged_query, 1, temp.c_str(), -1, SQLITE_TRANSIENT);
         problemEncountered(message, "bind text 1 for staged_query, writeCache");
-        message = sqlite3_bind_text(staged_query, 2, val.c_str(), -1, NULL);
+        message = sqlite3_bind_text(staged_query, 2, val.c_str(), -1, SQLITE_TRANSIENT);
         problemEncountered(message, "bind text 2 for staged_query, writeCache");
         message = sqlite3_step(staged_query);
         if(message != SQLITE_DONE){

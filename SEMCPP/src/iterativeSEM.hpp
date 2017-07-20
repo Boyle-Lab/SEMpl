@@ -92,19 +92,21 @@ struct Dataset {
 	};
 	// contains data from findMaximumAverageSignalWrapper
 	struct MaximumAverageSignalData{
-        //baseline signal data
+        
         double scramble_maximum = 0.0;
         int scramble_counter = 0;
         double scramble_stdev = 0.0;
         double scramble_sterr = 0.0;
 
-        //alignment signal data, name may need to be changed
+        // Maxiumum average signal data will be built iteratively
+        // as in all the calculations of average... will not occur
+        // at once, but once the data is available to be calculated
         double alignment_maximum = 0.0;
         int alignment_counter = 0;
         double alignment_stdev = 0.0;
         double alignment_sterr = 0.0;
 
-        //enumerate signal data, name may need to be changed
+        
         double enumerate_maximum = 0.0;
         int enumerate_counter = 0;
         double enumerate_stdev = 0.0;
@@ -137,9 +139,6 @@ struct Dataset {
 	std::string cachefile = "";
 
     std::map<std::string, double> kmerHash;
-    // std::vector<std::string> scramble_kmers;
-
-    // std::vector<std::string> filterDNaseWrapper_output;
 
     std::vector<std::string> signal_cache;
     std::vector<std::string> signal_cache_scramble;

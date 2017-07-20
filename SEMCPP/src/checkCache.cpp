@@ -12,7 +12,7 @@ extern "C"{
 #include <iostream>
 using namespace std;
 
-  // takes in_file, out_file, out_cache, cache(location of cache), current iteration,
+  // takes in_file, out_file, to_align, cache(location of cache), current iteration,
   // all of them are file names, and are specific to nucleotide and position
 
   // signal_cache in Dataset is the output cache
@@ -29,41 +29,42 @@ static void checkDone(const int message, const string &s);
 //           see line 121, switch statement
 // EFFECTS: checks cache located at cachefile
 // NOTE: THE NAMING SCHEME IS CONFUSING
-//       out_cache is the argument given to -out_cache in the original algorithm
+//       to_align is the argument given to -out_cache in the original algorithm
 //       cachefile is the argument given to -cache in the original algorithm
 //       -out_file is built into the function within the switch statements
-// IMPORTANT: out_cache is the kmers that need to be aligned to genome
+// IMPORTANT: to_align is the kmers that need to be aligned to genome
 //            signal_cache_whatever are the alignments!!!
-void checkCache(Dataset &data, const vector<string> &in_file, vector<string> &out_cache,
+void checkCache(Dataset &data, const vector<string> &in_file, vector<string> &to_align,
                 const string &cachefile, Dataset::accumSummary_type::accumSummary_dest dest){
 
     bool newcache = fileExists(cachefile);
 
-    out_cache.clear();
+    to_align.clear();
 
     if(data.settings.verbose){
         cout << "Querying cache for processed kmers..." << flush;
     }
     // should this be here?
-    switch (dest) {
-        case Dataset::accumSummary_type::accumSummary_dest::alignment:
-            data.signal_cache.clear();
-        break;
-        case Dataset::accumSummary_type::accumSummary_dest::scrambled:
-            data.signal_cache_scramble.clear();
-        break;
-        case Dataset::accumSummary_type::accumSummary_dest::enumerated:
-            data.signal_cache_enumerate.clear();
-        break;
-        case Dataset::accumSummary_type::accumSummary_dest::none:
-            cerr << "none shouldn't happen!!" << endl;
-            exit(1);
-        break;
-        default:
-            cerr << "default shouldn't happen!!" << endl;
-            exit(1);
-        break;
-    }
+    // ANS: I don't think so, this is already processed data
+    // switch (dest) {
+    //     case Dataset::accumSummary_type::accumSummary_dest::alignment:
+    //         data.signal_cache.clear();
+    //     break;
+    //     case Dataset::accumSummary_type::accumSummary_dest::scrambled:
+    //         data.signal_cache_scramble.clear();
+    //     break;
+    //     case Dataset::accumSummary_type::accumSummary_dest::enumerated:
+    //         data.signal_cache_enumerate.clear();
+    //     break;
+    //     case Dataset::accumSummary_type::accumSummary_dest::none:
+    //         cerr << "none shouldn't happen!!" << endl;
+    //         exit(1);
+    //     break;
+    //     default:
+    //         cerr << "default shouldn't happen!!" << endl;
+    //         exit(1);
+    //     break;
+    // }
 
     sqlite3 *cacheDB = NULL;
     int message = 0;
@@ -105,7 +106,7 @@ void checkCache(Dataset &data, const vector<string> &in_file, vector<string> &ou
         for(const string &kmer : in_file){
             // cout << kmer.c_str() << endl;
             message = sqlite3_bind_text(data_query, 1, kmer.c_str(),
-                      -1, NULL);
+                      -1, SQLITE_TRANSIENT);
             problemEncountered(message, "bind_text for data_query");
 
             message = sqlite3_step(data_query);
@@ -124,13 +125,15 @@ void checkCache(Dataset &data, const vector<string> &in_file, vector<string> &ou
 #endif
             // CHECKING THE NUMBER OF COLS WORKS ONLY FOR THE PERL API
             // I BELIEVE THIS API RETURNS A NULL IF SOMETHING DOESN'T EXIST
+            // UPDATE: GOOGLE 
 
 //          grabs the alignment of current kmers
             const char* text = (char*)sqlite3_column_text(data_query, 1);
             
             if(text){
                 #ifdef DEBUG
-                cerr << "found: " << kmer << endl;
+                // cerr << "\tfound: #" << kmer << '#' << endl
+                     // << "\tcorresponding align: #" << text << '#' << endl;
                 #endif
                 switch (dest) {
                     case Dataset::accumSummary_type::accumSummary_dest::alignment:
@@ -159,10 +162,10 @@ void checkCache(Dataset &data, const vector<string> &in_file, vector<string> &ou
             else{
                 // not found
                 #ifdef DEBUG
-                cerr << "not found: " << kmer << endl;
+                // cerr << "not found: " << kmer << endl;
                 #endif
                 message = sqlite3_bind_text(seen_query, 1, kmer.c_str(),
-                          -1, NULL);
+                          -1, SQLITE_TRANSIENT);
                 problemEncountered(message, "bind_text for seen_query");
                 // int sqlite3_bind_int(sqlite3_stmt*, int, int);
                 message = sqlite3_bind_int(seen_query, 2, data.settings.iteration);
@@ -183,25 +186,25 @@ void checkCache(Dataset &data, const vector<string> &in_file, vector<string> &ou
                 if(message > 0){
                     // don't print for processing
                     #ifdef DEBUG
-                    cerr << "no print" << endl;
+                    // cerr << "no print" << endl;
                     #endif
                 }
                 else{
                     #ifdef DEBUG
-                    cerr << "print" << endl;
+                    // cerr << "print" << endl;
                     #endif
                     message = sqlite3_bind_text(staged_query, 1, kmer.c_str(),
-                                static_cast<int>(kmer.size()), NULL);
+                                static_cast<int>(kmer.size()), SQLITE_TRANSIENT);
                     problemEncountered(message, "bind_text for staged_query");
                     // int sqlite3_bind_int(sqlite3_stmt*, int, int);
                     message = sqlite3_bind_int(staged_query, 2, data.settings.iteration);
                     problemEncountered(message, "bind_int for staged_query");
 
                     // return by reference
-                    out_cache.push_back(kmer);
+                    to_align.push_back(kmer);
 
                     message = sqlite3_step(staged_query);
-                    checkDone(message, "staged query execution line 171");
+                    checkDone(message, "staged query execution line 204");
                     sqlite3_reset(staged_query);
                     sqlite3_clear_bindings(staged_query);
                 }
@@ -263,14 +266,17 @@ void checkCache(Dataset &data, const vector<string> &in_file, vector<string> &ou
             exit(1);
         }
 	//cout << "Binding to cache" << endl;
+
+        to_align = in_file;
         for(const auto &kmer : in_file){
             message = sqlite3_bind_text(staged_query, 1, kmer.c_str(),
-                      static_cast<int>(kmer.size()), NULL);
+                      static_cast<int>(kmer.size()), SQLITE_TRANSIENT);
             problemEncountered(message, "bind text for inserting into seen_cache");
             message = sqlite3_bind_int(staged_query, 2, data.settings.iteration);
             problemEncountered(message, "bind int for inserting into seen_cache");
 
-	        out_cache.push_back(kmer);
+	        // to_align.push_back(kmer);
+            // line 268
 
             message = sqlite3_step(staged_query);
 

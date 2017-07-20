@@ -30,4 +30,6 @@ int getLength(const Dataset &data);
 
 void grab_string_3_index(std::string s, std::string &out);
 
+void grab_string_4_index(std::string s, std::string &out);
+
 #endif /* COMMON_HPP */

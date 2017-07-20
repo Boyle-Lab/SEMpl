@@ -7,12 +7,10 @@
 
 using namespace std;
 
-// static void read_in_files(Dataset &data, const string &file);
-
-// REQUIRES: Boost library installed
-// MEMORY: incrementally reads in output
-// UNSURE OF ABOVE LINE UPDATE
 void filterDNaseWrapper(const Dataset &data){
+    if(data.settings.verbose){
+        cout << "Filtering using DNase data and finding the signal" << endl;
+    }
 
     vector<string> files;
     string targetDir = "./" + data.output_dir + "/ALIGNMENT/";

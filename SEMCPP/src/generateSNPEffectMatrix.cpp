@@ -77,6 +77,13 @@ void generateSNPEffectMatrix(Dataset &data) {
 		cout << "\nGenerating SEM for " << data.TF_name << endl;
 	}
 
+
+    data.signal_cache.clear();
+    data.signal_cache_scramble.clear();
+    data.signal_cache_enumerate.clear();
+
+
+
 	//Step 1: Generate Enumerated k-mers
 	cout << "Creating enumerated kmers from PWM file" << endl;
     cout << "\tstep one" << endl;
@@ -88,21 +95,13 @@ void generateSNPEffectMatrix(Dataset &data) {
     // ALSO: print output to file
 
 
-    // temporarily commented for testing
-    // temporarily commented for testing
-    // temporarily commented for testing
+
     cout << "\tstep two" << endl;
     align_to_genome(data);
 
     //Step 3: Filter using DNase data and finding the signal at each location
     // ALSO: read in output of filterDNaseWrapper back to memory
     // writes the *_filtered files
-    if(data.settings.verbose){
-        cout << "Filtering using DNase data and finding the signal" << endl;
-    }
-    // temporarily commented for testing
-    // temporarily commented for testing
-    // temporarily commented for testing
     cout << "\tstep three" << endl;
     filterDNaseWrapper(data);
 
@@ -218,6 +217,7 @@ void find_signal(Dataset &data, int length){
             arr[end - pos] = '\0';
             strncpy(arr, file.c_str() + val - 1 + 5, end - pos);
             value = atoi(arr);
+
         }
         catch(...){
             cerr << "pointer errors likely\n\tEXITING" << endl;

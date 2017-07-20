@@ -2,17 +2,9 @@
 #include "common.hpp"
 #include <iostream>
 #include <cstdlib>
-//#include "../lib/bowtie-1.0.0/ebwt.h"
 using namespace std;
 
 
-// from bowtie
-/*static void driver(const char * type, // "DNA", by Cody
-                   const string& ebwtFileBase,
-                   const string& query,
-                   const vector<string>& queries,
-                   const vector<string>& qualities,
-                   const string& outfile);*/
 
 
 // if I understand correctly, bowtie places output in the filename specified
@@ -28,18 +20,8 @@ void bowtie_genome_map(int length, const string& genome, const string& file,
                        const string& final_output, bool verbose){
     //const char *argvs[9] = {"./bin/bowtie", "--quiet", "-a", "-v 0", 
     //                        genome.c_str(), "-f", file.c_str(), "temp.dat" };
-/*
-*    argvs[0] = "./bin/bowtie\0";
-*    argvs[1] = "--quiet\0";
-*    argvs[2] = "-a\0";
-*    argvs[3] = "-v\0";
-*    argvs[4] = "0\0";
-*    argvs[5]  = genome;
-*    argvs[6] = "-f\0";
-*    argvs[7] = "../data/hg19\0";
-*    argvs[8] = "temp.dat\0";
-*/
-    const string temp_file = "./results/temp.dat";
+
+    const string temp_file = "temp_bowtie.dat";
 
     string cmd = "./bin/bowtie --quiet -a -v 0 ./data/hg19 -f " 
                  + file + ' ' + temp_file;

@@ -78,6 +78,22 @@ string grab_string_at_index_white(const string &str, const size_t index){
     return tokens[index];
 }
 
+void grab_string_4_index(const string s, string &out){
+    auto ptr = s.c_str();
+    for(size_t i = 0; i < 3; ++i){
+        while(!isspace(*ptr)){
+            ++ptr;
+        }
+        ++ptr;
+    }
+    auto ptr2 = ptr;
+    while(!isspace(*ptr2)){
+        ++ptr2;
+    }
+    ++ptr2;
+    out = string(ptr, ptr2 - ptr - 1);
+}
+
 
 string revCompDNA(string dna){
     string ret = "";
