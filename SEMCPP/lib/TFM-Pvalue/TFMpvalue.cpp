@@ -254,7 +254,7 @@ void testScoreToPvalue (Matrix m, double initialGranularity, double requestedSco
   long long min;
   double ppv;
   double pv;
-  long long score = 0;
+  long long score;
   
   for (double granularity = initialGranularity; granularity >= maxGranularity; granularity /= 10) {
 #ifdef VERBOSE
@@ -309,7 +309,6 @@ void testScoreToPvalue (Matrix m, double initialGranularity, double requestedSco
     
   }
   
-  
   if (OPTIONS['h']) {
     cout << "Score          : " << ((score-m.offset)/m.granularity) << endl;
     cout << "Pvalue         : " << pv << endl;
@@ -350,7 +349,7 @@ void testPvalueToScore (Matrix m, double initialGranularity, double requestedPva
   long long max = m.maxScore+ceil(m.errorMax+0.5);
   long long min = m.minScore;
   double pv;
-  long long score = 0;
+  long long score;
   
   for (double granularity = initialGranularity; granularity >= maxGranularity; granularity /= decrgr) {
     
@@ -439,7 +438,6 @@ void testDistrib(Matrix m, double granularity, double min, double max) {
   m.showDistrib(min*m.granularity+m.offset,max*m.granularity+m.offset);  
 }
 
-
 void usage (char * const argv[]) {
   cout << "Usage : " << argv[0] << " -a X -t X -g X -c X -m matrix_filename ";
   switch(PROGRAM) {
@@ -493,15 +491,14 @@ void usage (char * const argv[]) {
 //  cout << "  -G : granularity for integer matrix (a floating number)" << endl;
 //  cout << endl;
 }
-/*
+
 void arguments (int argc, char * const argv[]) {
    // parse options
    char option;
    map<char,bool> opt;
    char options[REQUIRED[PROGRAM].length()+OPTIONAL[PROGRAM].length()+1];
-   vector<char> options(REQUIRED[PROGRAM].length()+OPTIONAL[PROGRAM].length()+1);
-   for (size_t i = 0; i < REQUIRED[PROGRAM].length(); i++) { options[i] = REQUIRED[PROGRAM][i]; }
-   for (size_t i = 0; i < OPTIONAL[PROGRAM].length(); i++) { options[i+REQUIRED[PROGRAM].length()] = OPTIONAL[PROGRAM][i]; }  
+   for (int i = 0; i < REQUIRED[PROGRAM].length(); i++) { options[i] = REQUIRED[PROGRAM][i]; }
+   for (int i = 0; i < OPTIONAL[PROGRAM].length(); i++) { options[i+REQUIRED[PROGRAM].length()] = OPTIONAL[PROGRAM][i]; }  
    options[REQUIRED[PROGRAM].length()+OPTIONAL[PROGRAM].length()+1] = '\0';
   while (((option = getopt(argc,argv,options)) != EOF)) {
     if (option == '?') {
@@ -510,7 +507,7 @@ void arguments (int argc, char * const argv[]) {
     OPTIONS[option] = optind-1;        
     opt[option] = true;
   }
-  for (size_t i = 0; i < REQUIRED[PROGRAM].length(); i++) {
+  for (int i = 0; i < REQUIRED[PROGRAM].length(); i++) {
     if (REQUIRED[PROGRAM][i] != ':' && !opt[REQUIRED[PROGRAM][i]]) throw new ArgumentException("Bad number of args");    
   }
   
@@ -526,6 +523,8 @@ int main (int argc, char * const argv[]) {
     usage(argv);
     exit(1);
   }
+  
+  
   
   Matrix m(atof(argv[OPTIONS['a']]),atof(argv[OPTIONS['c']]),atof(argv[OPTIONS['g']]),atof(argv[OPTIONS['t']])); 
   
@@ -589,12 +588,13 @@ int main (int argc, char * const argv[]) {
         map<double,int> t;
         //        long int sum = 0;      
         enumScoreFloat(&m,0,0,&t);
-         // map<double,int>::reverse_iterator riter = t.rbegin();
-         // while (riter->first >= atof(argv[3]) && riter != t.rend()) {
-         //   sum += riter->second;
-         //   riter++;
-         // }
-         
+        /*
+         map<double,int>::reverse_iterator riter = t.rbegin();
+         while (riter->first >= atof(argv[3]) && riter != t.rend()) {
+           sum += riter->second;
+           riter++;
+         }
+         */
         nbsc = t.size();
       }
       if (OPTIONS['h']) {
@@ -620,4 +620,6 @@ int main (int argc, char * const argv[]) {
 
 return 0;
 }
-*/
+
+
+

@@ -14,7 +14,7 @@ const string TEMPFILE = "examples/temp.txt";
 double get_threshold(Dataset & data, double pval){
 
 	pwm_to_tfm(data);
-	Matrix m(0.25, 0.25, 0.25, 0.25);
+	Matrix m;
 
 
 	ofstream temp_out(TEMPFILE);
@@ -63,7 +63,7 @@ double get_threshold(Dataset & data, double pval){
 	const bool forcedGranularity = false;
 	const double maxGranularity = 1e-10;
 	// const bool sortColumns = false;
-	const long decrgr = 10;
+	const long long decrgr = 10;
 	const double & requestedPvalue = pval;
 
 
@@ -95,10 +95,6 @@ double get_threshold(Dataset & data, double pval){
     double ppv = 0.0;    
     
 
-    m.totalMapSize = 0;
-    m.totalOp = 0;
-
-    
     score = m.lookForScore(min, max, requestedPvalue, &pv, &ppv);
 
 
@@ -108,11 +104,6 @@ double get_threshold(Dataset & data, double pval){
     // cerr << "Real score    : " << ((score-m.offset)/m.granularity) << endl;
 
     // cerr << "Memory        : " << m.totalMapSize << " " << totalSize << endl;    
-
-
-
-
-
     
     min = (score - ceil(m.errorMax+0.5)) * decrgr;
     max = (score + ceil(m.errorMax+0.5)) * decrgr;

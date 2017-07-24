@@ -16,7 +16,7 @@
 void Matrix::computesIntegerMatrix (double granularity, bool sortColumns) {
   double minS = 0, maxS = 0;
   double scoreRange;
-
+  
   // computes precision
   for (int i = 0; i < length; i++) {
     double min = mat[0][i];
@@ -28,8 +28,7 @@ void Matrix::computesIntegerMatrix (double granularity, bool sortColumns) {
     minS += min;
     maxS += max;
   } 
-       
-              
+  
   // score range
   scoreRange = maxS - minS + 1;
   
@@ -39,8 +38,8 @@ void Matrix::computesIntegerMatrix (double granularity, bool sortColumns) {
     this->granularity = 1.0 / granularity;
   } else {
     this->granularity = 1.0;
-  }   
-
+  }
+  
   matInt = new long long *[length];
   for (int k = 0; k < 4; k++ ) {
     matInt[k] = new long long[length];
@@ -208,7 +207,7 @@ void Matrix::computesIntegerMatrix (double granularity, bool sortColumns) {
 * Computes the pvalue associated with the threshold score requestedScore.
  */
 void Matrix::lookForPvalue (long long requestedScore, long long min, long long max, double *pmin, double *pmax) {
-
+  
   map<long long, double> *nbocc = calcDistribWithMapMinMax(min,max); 
   map<long long, double>::iterator iter;
   
@@ -253,7 +252,7 @@ void Matrix::lookForPvalue (long long requestedScore, long long min, long long m
 * Computes the score associated with the pvalue requestedPvalue.
  */
 long long Matrix::lookForScore (long long min, long long max, double requestedPvalue, double *rpv, double *rppv) {
-
+  
   map<long long, double> *nbocc = calcDistribWithMapMinMax(min,max); 
   map<long long, double>::iterator iter;
 #ifdef SHOWCERR
@@ -325,7 +324,7 @@ long long Matrix::lookForScore (long long min, long long max, double requestedPv
 // computes the distribution of scores between score min and max as the DP algrithm proceeds 
 // but instead of using a table we use a map to avoid computations for scores that cannot be reached
 map<long long, double> *Matrix::calcDistribWithMapMinMax (long long min, long long max) { 
-
+  
   // maps for each step of the computation
   // nbocc[length] stores the pvalue
   // nbocc[pos] for pos < length stores the qvalue
@@ -386,8 +385,8 @@ map<long long, double> *Matrix::calcDistribWithMapMinMax (long long min, long lo
 
 
 long long Matrix::fastPvalue (Matrix *m, long long alpha) {
-
-
+  
+  
   map<long long, long long> *q = new map<long long, long long> [m->length+1];
   map<long long, long long>::iterator iter;
   
