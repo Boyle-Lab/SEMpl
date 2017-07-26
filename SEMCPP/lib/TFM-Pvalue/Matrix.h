@@ -100,7 +100,7 @@ public:
     for (int p = 0; p < length; p++) {
       double sum = mat[0][p] + mat[1][p] + mat[2][p] + mat[3][p];
       for (int k = 0; k < 4; k++) {
-        mat[k][p] = log((mat[k][p] + 0.25) /(sum + 1)) - log (background[k]); 
+        mat[k][p] = log2((mat[k][p] + 0.25) /(sum + 1)) - log2(background[k]); 
       }
     }
 #ifdef PRINTLOGRATIO
