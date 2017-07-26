@@ -71,9 +71,6 @@ void Enumerate_kmer(Dataset &data){
         cutoff = data.settings.threshold;
     }
 
-#ifdef DEBUG
-    cout << "\tcutoff: " << cutoff << endl;
-#endif
     if(cutoff == 0.0){
         cerr << "cutoff value unchanged within Enumerate_kmer.cpp\n\tEXITING" << endl;
         exit(1);

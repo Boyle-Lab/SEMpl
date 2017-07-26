@@ -42,7 +42,11 @@ EXECUTABLE=iterativeSEM
 
 all: $(EXECUTABLE)
 
+test: $(EXECUTABLE) libexport
+		nohup ./iterativeSEM -PWM examples/MA0114.1.pwm -merge_file examples/wgEncodeOpenChromDnaseHepg2Pk.narrowPeak.gz -big_wig examples/wgEncodeHaibTfbsHepg2Hnf4asc8987V0416101RawRep1.bigWig -TF_name HNF4A -output results/HNF4A/ -readcache results/HNF4A/HNF4A.cache.db -verbose > 1test.out 2> 1err.out &
 
+libexport:
+	export LD_LIBRARY_PATH="/lib/x86_64-linux-gnu:/home/cmorteru/SEM_CPP/SEMCPP/lib"
 
 $(EXECUTABLE): $(C++OBJ) $(SQLITEOBJ)
 		$(CXX) $(C++FLAGS) $(LIBLOC) -o $(EXECUTABLE) $(C++OBJ) $(SQLITEOBJ) $(TFMLIB) $(BIGWIGLIB) -ldl

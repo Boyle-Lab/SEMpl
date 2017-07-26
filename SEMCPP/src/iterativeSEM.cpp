@@ -141,10 +141,6 @@ int main(int argc, char **argv){
     if (data.settings.threshold < 0){
         data.settings.threshold = 0;
     }
-#ifdef DEBUG
-    cout << "pval: " << pVal << endl;
-    cout << "threshold: " << data.settings.threshold << endl;
-#endif
 
     cout << "--- Iteration 0 ---\n";
 
