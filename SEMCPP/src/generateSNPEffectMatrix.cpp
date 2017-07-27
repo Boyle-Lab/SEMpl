@@ -393,13 +393,12 @@ void create_baselines(Dataset &data, int length){
 
     
     for(const auto &pair : data.kmerHash){
-        scramble_kmers.push_back(pair.first);
+        enumerate_kmers.push_back(pair.first);
         // cout << "first: " << pair.first << endl << "second: " << pair.second << endl;
     }
-    enumerate_kmers = scramble_kmers;
-    // scramble_kmers and enumerate_kmers have same elements
 
     if(!data.settings.fastrun){
+        scramble_kmers = enumerate_kmers;
         for(auto it = scramble_kmers.begin(); 
             it != scramble_kmers.end(); 
             ++it){
@@ -475,6 +474,12 @@ void create_baselines(Dataset &data, int length){
         unique_copy(data.signal_cache_scramble.begin(),
                     data.signal_cache_scramble.end(),
                     iter);
+        #ifdef DEBUG
+            ofstream debug1(data.output_dir + "/BASELINE/Scrambled_kmer_filtered.signal");
+            for(auto val : data.signal_scramble_output){
+                debug1 << val << endl;
+            }
+        #endif
 
     } // !data.settings.fastrun
 
@@ -519,6 +524,13 @@ void create_baselines(Dataset &data, int length){
     unique_copy(data.signal_cache_enumerate.begin(),
                 data.signal_cache_enumerate.end(),
                 iter);
+
+    #ifdef DEBUG
+        ofstream debug(data.output_dir + "/BASELINE/Enumerated_kmer_filtered.signal");
+        for(auto val : data.signal_enumerate_output){
+            debug << val << endl;
+        }
+    #endif    
 
     findMaximumAverageSignalWrapper(data,
                     Dataset::accumSummary_type::accumSummary_dest::enumerated);

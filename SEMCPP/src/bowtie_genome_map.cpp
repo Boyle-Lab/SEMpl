@@ -65,14 +65,7 @@ void bowtie_genome_map(int length, const string& genome, const string& file,
             DNA = dat[4];
         }
         else if(dat[1] == "-"){
-            #ifdef DEBUG
-            // cout << "kmer:     " << dat[4] << endl;
-            #endif
             DNA = revCompDNA(dat[4]);
-            #ifdef DEBUG
-            // cout << "reversed: " << DNA << endl;
-            #endif
-
         }
         else{
             cerr << "unknown strand!\n";

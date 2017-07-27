@@ -87,7 +87,7 @@ void writeCache(Dataset &data, const string &cache,
     }
     sqlite3_stmt *staged_query = nullptr;
     msg = "INSERT OR IGNORE INTO kmer_cache VALUES(?,?)";
-    sqlite3_prepare_v2(cacheDB, msg.c_str(), static_cast<int>(msg.size()),
+    sqlite3_prepare_v2(cacheDB, msg.c_str(), -1,
                        &staged_query, NULL);
     problemEncountered(message, msg);
 
@@ -99,7 +99,7 @@ void writeCache(Dataset &data, const string &cache,
         grab_string_4_index(val, temp);
 
         #ifdef DEBUG
-        // cout << "\tkmer: " << "first: #" << temp << "#\tsecond:#" << val << '#' << endl;
+        // cerr << "\tkmer: " << "first: #" << temp << "#\tsecond:#" << val << '#' << endl;
         #endif
         
         message = sqlite3_bind_text(staged_query, 1, temp.c_str(), -1, SQLITE_TRANSIENT);

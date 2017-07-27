@@ -97,6 +97,7 @@ void grab_string_4_index(const string s, string &out){
 
 string revCompDNA(string dna){
     string ret = "";
+    reverse(dna.begin(), dna.end());
     for(size_t i = 0; i < dna.length(); ++i){
         switch(dna[i]){
             case 'A':

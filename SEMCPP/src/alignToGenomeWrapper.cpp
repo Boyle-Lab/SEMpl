@@ -27,15 +27,14 @@ static void align_SNPs(Dataset &data, int length,
                        const vector<char> &nucleotideStack){
     string name = "";
 
-    string CWD =  "./" + data.output_dir + "ALIGNMENT/";
+    const string CWD =  "./" + data.output_dir + "ALIGNMENT/";
+    const string genome = "./data/hg19";
 
     if(system( string("mkdir -p " + CWD).c_str() ) != 0){
         cerr << "problem running mkdir -p " << CWD << endl;
         exit(1);
     }
     
-
-    string genome = "";
 
     string fa_file = "";
 
@@ -56,7 +55,7 @@ static void align_SNPs(Dataset &data, int length,
             name = nucleotideStack[j] + string("_pos") + to_string(position);
             
                                       // nucleotide
-	        string genome = "./data/hg19";
+	        
             try{
                 // creates new_kmer vector from copying over data.kmerHash
                 // and changing a single nucleotide
@@ -68,6 +67,14 @@ static void align_SNPs(Dataset &data, int length,
                 exit(1);
             }
                         // CHECK THAT THIS IS CORRECT RELATIVE LOCATION
+            #ifdef DEBUG
+            // if(position == 4){
+            //     cerr << "new_kmer:\n";
+            //     for(auto val : new_kmer){
+            //         cerr << '#' << val << "#\n";
+            //     }
+            // }
+            #endif
 
             try{
                 checkCache(data, new_kmer, cache_to_align, data.cachefile,
@@ -78,6 +85,21 @@ static void align_SNPs(Dataset &data, int length,
                 cerr << "exception thrown from checkCache" << endl;
                 exit(1);
             }
+
+            #ifdef DEBUG
+            cerr << position << nucleotideStack[j] << " to_align: " << cache_to_align.size() << endl;
+            // if(position == 4){
+            //     cerr << "cache_to_align:\n";
+            //     for(auto val : cache_to_align){
+            //         cerr << '#' << val << "#\n";
+            //     }
+            //     cerr << "aligned:\n";
+            //     for(auto val : data.signal_cache[ { position, nucleotideStack[j] } ] ){
+            //         cerr << '#' << val << "#\n";
+            //     }
+            //     cerr << endl;
+            // }
+            #endif
             // pass in a sequence column, which is from output of checkCache
             // cachefile in Dataset is $cache from original algorithm!!!
 

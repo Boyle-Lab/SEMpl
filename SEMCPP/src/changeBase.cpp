@@ -21,9 +21,11 @@ void changeBase(const Dataset &data, int position, const char nucleotide, vector
         new_kmer_vec.push_back(new_kmer);
 
 #ifdef DEBUG
-        // cout << "\tDEBUG: " << pair.first << " has a firsthalf of " << firsthalf
-        //     << " and a second half of " << secondhalf << '\n'
-        //     << "\t\tthe new kmer is " << new_kmer << '\n';
+        // if(position == 4){
+        //     cerr << "\tDEBUG: #" << pair.first << "# has a firsthalf of #" << firsthalf
+        //         << "# and a second half of #" << secondhalf << '#' <<'\n'
+        //         << "\t\tthe new kmer is #" << new_kmer << '#' << '\n';
+        // }
 #endif
     }
 }

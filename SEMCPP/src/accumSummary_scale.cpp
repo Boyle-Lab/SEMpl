@@ -133,6 +133,11 @@ void accumSummary_scale(Dataset &data, const string &hfile,
                                static_cast<uint32_t>(upstart),
                                static_cast<uint32_t>(upend),
                                1);
+        if(!ptr){
+            cerr << "problem with bwGetValues!!!" << endl 
+                 << "\tEXITING" << endl;
+            exit(1);
+        }
 
         // cout << "\t for chrom: " << seqid << endl;
         // cout << "\tdeleted chrom" << endl;
