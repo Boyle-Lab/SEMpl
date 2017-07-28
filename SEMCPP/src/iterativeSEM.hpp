@@ -182,8 +182,9 @@ void checkCache(Dataset &data, const std::vector<std::string> &in_file,
 void combineBedFiles(Dataset &data);
 void Enumerate_kmer(Dataset &data);
 void filterDNaseWrapper(const Dataset &data);
-void findMaximumAverageSignalWrapper(Dataset &data,
-                                     Dataset::accumSummary_type::accumSummary_dest dest);
+void findMaximumAverageSignalWrapper(const std::vector<std::string> &alignments, 
+                                     double &mean_out, int &count_out, 
+                                     double &stdev_out, double &sterr_out);
 void generatePWMfromSEM(const Dataset &data);
 void generateRmeplot(Dataset &data);
 void generateRplot(const Dataset &data);

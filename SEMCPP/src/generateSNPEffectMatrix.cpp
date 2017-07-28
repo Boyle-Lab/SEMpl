@@ -296,13 +296,21 @@ void find_signal(Dataset &data, int length){
             cerr << "problem with algorithm usage" << endl;
             exit(1);
         }
-
+        #ifdef DEBUG
+            cerr << "\tsignal_output" << endl;
+            for(auto val : data.signal_output){
+                cerr << "\tval: #" << val << '#' << endl;
+            }
+        #endif
         try{
             if(data.settings.verbose){
                 cout << "\tfinding findMaximumAverageSignal..." << flush;
             }
-            findMaximumAverageSignalWrapper(data,
-                                            Dataset::accumSummary_type::accumSummary_dest::alignment);
+            findMaximumAverageSignalWrapper(data.signal_output,
+                                            data.Signal_data.alignment_maximum,
+                                            data.Signal_data.alignment_counter,
+                                            data.Signal_data.alignment_stdev,
+                                            data.Signal_data.alignment_sterr);
             if(data.settings.verbose){
                 cout << "FINISH" << endl;
             }
@@ -532,11 +540,21 @@ void create_baselines(Dataset &data, int length){
         }
     #endif    
 
-    findMaximumAverageSignalWrapper(data,
-                    Dataset::accumSummary_type::accumSummary_dest::enumerated);
-    findMaximumAverageSignalWrapper(data,
-                    Dataset::accumSummary_type::accumSummary_dest::scrambled);
+    if(!data.settings.fastrun){
+        findMaximumAverageSignalWrapper(data.signal_scramble_output,
+                                        data.Signal_data.scramble_maximum,
+                                        data.Signal_data.scramble_counter, 
+                                        data.Signal_data.scramble_stdev, 
+                                        data.Signal_data.scramble_sterr);
+    }
 
+
+
+    findMaximumAverageSignalWrapper(data.signal_enumerate_output,
+                                    data.Signal_data.enumerate_maximum,
+                                    data.Signal_data.enumerate_counter, 
+                                    data.Signal_data.enumerate_stdev, 
+                                    data.Signal_data.enumerate_sterr);
 
 }
 

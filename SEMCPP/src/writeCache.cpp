@@ -22,7 +22,7 @@ void writeCache(Dataset &data, const string &cache,
 
     // points to an output vector from running accumSummary_scale(args)
     const vector<string> *ptr = nullptr;
-    const vector<string> *max_ptr = nullptr;
+    const vector<double> *max_ptr = nullptr;
     switch (dest) {
         case Dataset::accumSummary_type::accumSummary_dest::none:
             cerr << "dest shouldn't be none!!!!\n";
@@ -100,17 +100,22 @@ void writeCache(Dataset &data, const string &cache,
     problemEncountered(message, msg);
 
 
-    string temp = "";
+    string temp = "", val = "";
+    #ifdef DEBUG
+    ofstream debug("written.txt");
+    #endif
 
     for(size_t idx = 0; idx < ptr->size(); ++idx){
 
-        val = ptr->at(idx) + '\t' + max_ptr->at(idx);
+        val = ptr->at(idx) + '\t' + to_string(max_ptr->at(idx));
+
         
 
         grab_string_4_index(val, temp);
 
+
         #ifdef DEBUG
-        // cerr << "\tkmer: " << "first: #" << temp << "#\tsecond:#" << val << '#' << endl;
+        debug << "\tkmer: " << "first: #" << temp << "#\tsecond:#" << val << '#' << endl;
         #endif
         
         message = sqlite3_bind_text(staged_query, 1, temp.c_str(), -1, SQLITE_TRANSIENT);

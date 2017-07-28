@@ -16,110 +16,60 @@ using namespace std;
 
 // NOTE: PASS scramble FOR BASELINE
 //              MAYBE
-void findMaximumAverageSignalWrapper(Dataset &data,
-                                     Dataset::accumSummary_type::accumSummary_dest dest){
+void findMaximumAverageSignalWrapper(const std::vector<std::string> &alignments, 
+                                     double &mean_out, int &counter_out, 
+                                     double &stdev_out, double &sterr_out){
 
-        vector<double> *max_ptr = nullptr;
-        //vector<string> *line_ptr = nullptr;
+    mean_out = 0.0;
 
-        switch (dest) {
-            case Dataset::accumSummary_type::accumSummary_dest::none:
-                cerr << "dest shouldn't be none!!!!\n";
-                exit(1);
-            break;
-            case Dataset::accumSummary_type::accumSummary_dest::enumerated:
-                max_ptr = &data.accumSummary_data.enum_accum_max;
-                //line_ptr = &data.accumSummary_data.enum_accum_lines;
-            break;
-            case Dataset::accumSummary_type::accumSummary_dest::scrambled:
-                max_ptr = &data.accumSummary_data.scramble_accum_max;
-                //line_ptr = &data.accumSummary_data.scramble_accum_lines;
-            break;
-            case Dataset::accumSummary_type::accumSummary_dest::alignment:
-                max_ptr = &data.accumSummary_data.align_accum_max;
-                //line_ptr = &data.accumSummary_data.align_accum_lines;
-            break;
-            default:
-                cerr << "there is no default for dest's switch statement!!!" 
-                     << endl;
-                exit(1);
-            break;
-        }
-
-        if(max_ptr == nullptr || max_ptr->empty()){
-            cerr << "corresponding accumSummary max data is missing!!!!"
-                 << endl;
-            exit(1);
-        }
+    if(alignments.empty()){
+        cerr << "corresponding findMaximumAverageSignalWrapper" 
+             << " data is missing!!!!"
+             << endl;
+        exit(1);
+    }
 
 
-        double sum = 0.0;
-        int counter = 0;
-        double mean = 0.0;
-        double stdev = 0.0;
-        double sterr = 0.0;
+    double sum = 0.0;
 
+    string line = "", val = "";
+
+    vector<double> values(alignments.size());
+    
+    for(size_t i = 0; i < alignments.size(); ++i){
         //Finds maximums of each line and stores into a vector called
         // maximums.
 
-        for(size_t i = 0; i < max_ptr->size(); ++i){
-            // checks if the value corresponds to "NA"
-            // if(max_ptr->at(i) != numeric_limits<double>::max()){
-            // if( !isnan( max_ptr->at(i) ) ) {
-            if( max_ptr->at(i) != NAN_VALUE ) {
-                sum += max_ptr->at(i);
-                ++counter;
-            }
+        line = alignments[i];
+        grab_string_last_index(line, val);
+        values[i] = stod(val);
+
+        if(values[i] != NAN_VALUE){
+            sum += values[i];
+            ++counter_out;
+        }
+    }
 
             // cout << "value at " << i << ": " << max_ptr->at(i) << endl;
-        }
+        
 
-        if(counter > 0){
-            mean = sum / counter;
-        }
-        // cout << "max_ptr->size(): " << max_ptr->size() << endl;
-        // cout << "mean: " << mean << endl << "sum: " << sum << endl 
-        //      << "counter: " << counter << endl;
+    if(counter_out > 0){
+        mean_out = sum / counter_out;
+    }
 
-        // The following is the calculations for the standard deviation
-        // and standard error.
-        double sqtotal = 0.0;
-        for (size_t i = 0; i < max_ptr->size(); i++){
-            sqtotal += pow( (mean - max_ptr->at(i)), 2.0);
-        }
-        stdev = pow( (sqtotal / ( max_ptr->size() - 1) ), 0.5);
-        sterr = stdev / pow(counter, 0.5);
+    double sqtotal = 0.0;
+    for(size_t i = 0; i < values.size(); ++i){
+        sqtotal += pow( (mean_out - values[i] ), 2.0);
+    }
+    stdev_out = pow( (sqtotal / (values.size() - 1) ), 0.5);
+    sterr_out = stdev_out / pow(counter_out, 0.5);
+
+
+
 
         // print OUT_HANDLE "$file\t$maximum\t$count\t$stdev\t$sterr\n";
 
-        switch (dest) {
-            case Dataset::accumSummary_type::accumSummary_dest::enumerated:
-                data.Signal_data.enumerate_maximum = mean;
-                data.Signal_data.enumerate_counter = counter;
-                data.Signal_data.enumerate_stdev = stdev;
-                data.Signal_data.enumerate_sterr = sterr;
-            break;
-            case Dataset::accumSummary_type::accumSummary_dest::scrambled:
-                data.Signal_data.scramble_maximum = mean;
-                data.Signal_data.scramble_counter = counter;
-                data.Signal_data.scramble_stdev = stdev;
-                data.Signal_data.scramble_sterr = sterr;
-            break;
-            case Dataset::accumSummary_type::accumSummary_dest::alignment:
-                data.Signal_data.alignment_maximum = mean;
-                data.Signal_data.alignment_counter = counter;
-                data.Signal_data.alignment_stdev = stdev;
-                data.Signal_data.alignment_sterr = sterr;
-            break;
-            case Dataset::accumSummary_type::accumSummary_dest::none:
-                cerr << "dest shouldn't be none!!!!\n";
-                exit(1);
-            break;
-            default:
-                cerr << "there is no default for dest's switch statement!!!\n";
-                exit(1);
-            break;
-        }
-
+        
+    
 
 }

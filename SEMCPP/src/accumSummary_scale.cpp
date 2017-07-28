@@ -26,15 +26,15 @@ void accumSummary_scale(Dataset &data, const string &hfile,
 // clear accum data of corresponding type
     switch (dest) {
             case Dataset::accumSummary_type::accumSummary_dest::enumerated:
-                data.accumSummary_data.enum_accum_max.clear();
+                // data.accumSummary_data.enum_accum_max.clear();
                 data.accumSummary_data.enum_accum_lines.clear();
             break;
             case Dataset::accumSummary_type::accumSummary_dest::scrambled:
-                data.accumSummary_data.scramble_accum_max.clear();
+                // data.accumSummary_data.scramble_accum_max.clear();
                 data.accumSummary_data.scramble_accum_lines.clear();
             break;
             case Dataset::accumSummary_type::accumSummary_dest::alignment: 
-                data.accumSummary_data.align_accum_max.clear();
+                // data.accumSummary_data.align_accum_max.clear();
                 data.accumSummary_data.align_accum_lines.clear();
             break;
             case Dataset::accumSummary_type::accumSummary_dest::none:
@@ -197,6 +197,8 @@ void accumSummary_scale(Dataset &data, const string &hfile,
         }
         // if max is maximum possible double value, then it is not applicable
 
+        line += '\t' + to_string(max);
+
         switch (dest) {
             case Dataset::accumSummary_type::accumSummary_dest::none:
                 cerr << "dest shouldn't be none!!!!" << endl;
@@ -204,15 +206,15 @@ void accumSummary_scale(Dataset &data, const string &hfile,
             break;
             case Dataset::accumSummary_type::accumSummary_dest::enumerated:
                 data.accumSummary_data.enum_accum_lines.push_back(line);
-                data.accumSummary_data.enum_accum_max.push_back(max);
+                // data.accumSummary_data.enum_accum_max.push_back(max);
             break;
             case Dataset::accumSummary_type::accumSummary_dest::scrambled:
                 data.accumSummary_data.scramble_accum_lines.push_back(line);
-                data.accumSummary_data.scramble_accum_max.push_back(max);
+                // data.accumSummary_data.scramble_accum_max.push_back(max);
             break;
             case Dataset::accumSummary_type::accumSummary_dest::alignment:          
                 data.accumSummary_data.align_accum_lines.push_back(line);
-                data.accumSummary_data.align_accum_max.push_back(max);
+                // data.accumSummary_data.align_accum_max.push_back(max);
             break;
             default:
                 cerr << "there is no default for dest's switch statement!!!" << endl;

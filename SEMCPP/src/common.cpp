@@ -94,6 +94,28 @@ void grab_string_4_index(const string s, string &out){
     out = string(ptr, ptr2 - ptr - 1);
 }
 
+void grab_string_last_index(const string s, string &out){
+    auto pos = s.find_last_of('\t');
+    out = s.substr(pos + 1);
+}
+
+// REQUIRES: idx is valid with respect to s, idx is at least 1
+void grab_string_at_index(const string s, string &out, const size_t idx){
+    auto ptr = s.c_str();
+    for(size_t i = 0; i < idx - 1; ++i){
+        while(!isspace(*ptr)){
+            ++ptr;
+        }
+        ++ptr;
+    }
+    auto ptr2 = ptr;
+    while(!isspace(*ptr2)){
+        ++ptr2;
+    }
+    ++ptr2;
+    out = string(ptr, ptr2 - ptr - 1);
+}
+
 
 string revCompDNA(string dna){
     string ret = "";
