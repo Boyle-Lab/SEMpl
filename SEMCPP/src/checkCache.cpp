@@ -33,7 +33,7 @@ static void checkDone(const int message, const string &s);
 //       -out_file is built into the function within the switch statements
 // IMPORTANT: to_align is the kmers that need to be aligned to genome
 //            signal_cache_whatever are the alignments!!!
-void checkCache(Dataset &data, const vector<string> &in_file, vector<string> &to_align,
+void checkCache(Dataset &data, vector<string> &in_file, vector<string> &to_align,
                 const string &cachefile, Dataset::accumSummary_type::accumSummary_dest dest,
                 int position, char bp){
 
@@ -211,13 +211,13 @@ void checkCache(Dataset &data, const vector<string> &in_file, vector<string> &to
 
         switch (dest) {
             case Dataset::accumSummary_type::accumSummary_dest::alignment:
-                data.signal_cache[ {position, bp} ] = signal_cache_data;
+                swap(data.signal_cache[ {position, bp} ] , signal_cache_data);
             break;
             case Dataset::accumSummary_type::accumSummary_dest::scrambled:
-                data.signal_cache_scramble = signal_cache_data;
+                swap(data.signal_cache_scramble, signal_cache_data);
             break;
             case Dataset::accumSummary_type::accumSummary_dest::enumerated:
-                data.signal_cache_enumerate = signal_cache_data;
+                swap(data.signal_cache_enumerate, signal_cache_data);
             break;
             case Dataset::accumSummary_type::accumSummary_dest::none:
                 cerr << "none shouldn't happen!!" << endl;
@@ -277,7 +277,8 @@ void checkCache(Dataset &data, const vector<string> &in_file, vector<string> &to
         }
 	//cout << "Binding to cache" << endl;
 
-        to_align = in_file;
+        // to_align = in_file;
+        swap(to_align, in_file);
         for(const auto &kmer : in_file){
             message = sqlite3_bind_text(insert_into_seen_cache_query, 1, 
                       kmer.c_str(), -1, SQLITE_TRANSIENT);

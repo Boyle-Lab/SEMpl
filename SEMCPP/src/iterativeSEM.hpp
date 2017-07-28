@@ -171,7 +171,7 @@ void bowtie_genome_map(int length, const std::string& genome,
 void changeBase(const Dataset &data, int position, const char nucleotide, 
                 std::vector<std::string> &new_kmer_vec, 
                 const std::string &genome);
-void checkCache(Dataset &data, const std::vector<std::string> &in_file,
+void checkCache(Dataset &data, std::vector<std::string> &in_file,
                 std::vector<std::string> &out_cache, const std::string &cachefile,
                 Dataset::accumSummary_type::accumSummary_dest dest,
                 int position = -1, char bp = 'Q');
