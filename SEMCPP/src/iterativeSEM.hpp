@@ -21,7 +21,7 @@
 
 
 
-#define NAN_VALUE -28.0
+#define NAN_VALUE -256.0
 
 /*
  example execution from command line
@@ -65,12 +65,8 @@ struct Dataset {
 	struct accumSummary_type{
 	    //Alignment summary data
         enum class accumSummary_dest{alignment, scrambled, enumerated, none};
-		// lines of output from accumSummary_scale.pl
-        // making change to support storing all accum_summary_data
-		// std::vector<std::string> align_accum_lines;
-        std::vector<std::string> align_accum_lines;
 
-		// max of output from accumSummary_scale.pl
+        std::vector<std::string> align_accum_lines;
 		std::vector<double> align_accum_max;
 
 		//baseline scramble kmer summary data

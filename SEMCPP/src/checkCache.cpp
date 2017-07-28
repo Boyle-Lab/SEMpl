@@ -37,7 +37,7 @@ void checkCache(Dataset &data, const vector<string> &in_file, vector<string> &to
                 const string &cachefile, Dataset::accumSummary_type::accumSummary_dest dest,
                 int position, char bp){
 
-    vector<string> signal_data;
+    vector<string> signal_cache_data;
 
 
     bool newcache = fileExists(cachefile);
@@ -83,82 +83,62 @@ void checkCache(Dataset &data, const vector<string> &in_file, vector<string> &to
         }
 
         msg = "SELECT count(*) FROM seen_cache WHERE kmer=? AND iter!=?";
-        sqlite3_stmt* seen_query = NULL;
+        sqlite3_stmt* amount_seen_query = NULL;
         message = sqlite3_prepare_v2(cacheDB, msg.c_str(), 
                                      static_cast<int>(msg.size()), 
-                                     &seen_query, NULL);
+                                     &amount_seen_query, NULL);
         problemEncountered(message, msg);
 
         msg = "SELECT kmer, alignment FROM kmer_cache WHERE kmer=?";
-        sqlite3_stmt* data_query = NULL;
+        sqlite3_stmt* cache_signal_data_query = NULL;
         message = sqlite3_prepare_v2(cacheDB, msg.c_str(), 
                                      static_cast<int>(msg.size()), 
-                                     &data_query, NULL);
+                                     &cache_signal_data_query, NULL);
         problemEncountered(message, msg);
 
         msg = "INSERT OR IGNORE INTO seen_cache VALUES(?, ?)";
-        sqlite3_stmt* staged_query = NULL;
+        sqlite3_stmt* insert_into_seen_cache_query = NULL;
         message = sqlite3_prepare_v2(cacheDB, msg.c_str(), 
                                      static_cast<int>(msg.size()), 
-                                     &staged_query, NULL);
+                                     &insert_into_seen_cache_query, NULL);
         problemEncountered(message, msg);
 
-        int num_col = 0;
+        // int num_col = 0;
 
         for(const string &kmer : in_file){
             // cout << kmer.c_str() << endl;
-            message = sqlite3_bind_text(data_query, 1, kmer.c_str(),
+            message = sqlite3_bind_text(cache_signal_data_query, 1, kmer.c_str(),
                       -1, SQLITE_TRANSIENT);
-            problemEncountered(message, "bind_text for data_query");
+            problemEncountered(message, "bind_text for cache_signal_data_query");
 
-            message = sqlite3_step(data_query);
+            message = sqlite3_step(cache_signal_data_query);
 
-            num_col = sqlite3_column_count(data_query);
+            // num_col = sqlite3_column_count(cache_signal_data_query);
 #ifdef DEBUG
-            // cout << "There are " << num_col << " columns in data_query\n";
-            if(num_col < 0) {
-                cerr << "Number of columns from data_query is less than 0!!\n\tEXITING" << endl;
-                exit(1);
-            }
-            if(num_col != 2) {
-                cerr << "Number of columns from data_query is not 2!!\n\tEXITING" << endl;
-                exit(1);
-            }
+            // cout << "There are " << num_col << " columns in cache_signal_data_query\n";
+            // if(num_col < 0) {
+            //     cerr << "Number of columns from cache_signal_data_query is less than 0!!\n\tEXITING" << endl;
+            //     exit(1);
+            // }
+            // if(num_col != 2) {
+            //     cerr << "Number of columns from cache_signal_data_query is not 2!!\n\tEXITING" << endl;
+            //     exit(1);
+            // }
 #endif
             // CHECKING THE NUMBER OF COLS WORKS ONLY FOR THE PERL API
             // I BELIEVE THIS API RETURNS A NULL IF SOMETHING DOESN'T EXIST
-            // UPDATE: GOOGLE 
+            // UPDATE: GOOGLE THIS
 
 //          grabs the alignment of current kmers
-            const char* text = (char*)sqlite3_column_text(data_query, 1);
+            const char* text = (char*)sqlite3_column_text(cache_signal_data_query, 1);
             
             if(text){
                 #ifdef DEBUG
                 // cerr << "\tfound: #" << kmer << '#' << endl
                      // << "\tcorresponding align: #" << text << '#' << endl;
                 #endif
-                signal_data.emplace_back(text);
-                // switch (dest) {
-                //     case Dataset::accumSummary_type::accumSummary_dest::alignment:
-                        
-                //     break;
-                //     case Dataset::accumSummary_type::accumSummary_dest::scrambled:
-                //         data.signal_cache_scramble.emplace_back(text);
-                //     break;
-                //     case Dataset::accumSummary_type::accumSummary_dest::enumerated:
-                //         data.signal_cache_enumerate.emplace_back(text);
-                //     break;
-                //     case Dataset::accumSummary_type::accumSummary_dest::none:
-                //         cerr << "none shouldn't happen!!" << endl;
-                //         exit(1);
-                //     break;
-                //     default:
-                //         cerr << "default shouldn't happen!!" << endl;
-                //         exit(1);
-                //     break;
-                // }
-
-                // sqlite3_free((char*)text);
+                signal_cache_data.emplace_back(text);
+                
                 text = NULL;
                 
             }
@@ -167,24 +147,31 @@ void checkCache(Dataset &data, const vector<string> &in_file, vector<string> &to
                 #ifdef DEBUG
                 // cerr << "not found: " << kmer << endl;
                 #endif
-                message = sqlite3_bind_text(seen_query, 1, kmer.c_str(),
+                message = sqlite3_bind_text(amount_seen_query, 1, kmer.c_str(),
                           -1, SQLITE_TRANSIENT);
-                problemEncountered(message, "bind_text for seen_query");
+                problemEncountered(message, "bind_text for amount_seen_query");
                 // int sqlite3_bind_int(sqlite3_stmt*, int, int);
-                message = sqlite3_bind_int(seen_query, 2, data.settings.iteration);
-                problemEncountered(message, "bind_int for seen_query");
+                message = sqlite3_bind_int(amount_seen_query, 2, data.settings.iteration);
+                problemEncountered(message, "bind_int for amount_seen_query");
 
-                num_col = sqlite3_column_count(seen_query);
-                if(num_col < 1){
-                    cerr << "num_col for seen_query is less than 1!!\n\tEXITING" << '\n';
-                    exit(1);
-                }
-                message = sqlite3_step(seen_query);
+                // num_col = sqlite3_column_count(amount_seen_query);
+                // if(num_col < 1){
+                //     cerr << "num_col for amount_seen_query is less than 1!!\n\tEXITING" << '\n';
+                //     exit(1);
+                // }
+                message = sqlite3_step(amount_seen_query);
                 isRowReady(message);
 
                 // message is holding the int value now, 
                 // count[0], not a code
-                message = sqlite3_column_int(seen_query, 0);
+                #ifdef DEBUG
+                    if(sqlite3_column_type(amount_seen_query, 0) != SQLITE_INTEGER){
+                        cerr << "incorrect column_type on amount_seen_query\n\tEXITING"
+                             << endl;
+                        exit(1);
+                    }
+                #endif
+                message = sqlite3_column_int(amount_seen_query, 0);
                 // cout << message << endl;
                 if(message > 0){
                     // don't print for processing
@@ -196,41 +183,41 @@ void checkCache(Dataset &data, const vector<string> &in_file, vector<string> &to
                     #ifdef DEBUG
                     // cerr << "print" << endl;
                     #endif
-                    message = sqlite3_bind_text(staged_query, 1, kmer.c_str(),
+                    message = sqlite3_bind_text(insert_into_seen_cache_query, 1, kmer.c_str(),
                                 static_cast<int>(kmer.size()), SQLITE_TRANSIENT);
-                    problemEncountered(message, "bind_text for staged_query");
+                    problemEncountered(message, "bind_text for insert_into_seen_cache_query");
                     // int sqlite3_bind_int(sqlite3_stmt*, int, int);
-                    message = sqlite3_bind_int(staged_query, 2, data.settings.iteration);
-                    problemEncountered(message, "bind_int for staged_query");
+                    message = sqlite3_bind_int(insert_into_seen_cache_query, 2, data.settings.iteration);
+                    problemEncountered(message, "bind_int for insert_into_seen_cache_query");
 
                     // return by reference
                     to_align.push_back(kmer);
 
-                    message = sqlite3_step(staged_query);
-                    checkDone(message, "staged query execution line 204");
-                    sqlite3_reset(staged_query);
-                    sqlite3_clear_bindings(staged_query);
+                    message = sqlite3_step(insert_into_seen_cache_query);
+                    checkDone(message, "staged query execution line 197");
+                    sqlite3_reset(insert_into_seen_cache_query);
+                    sqlite3_clear_bindings(insert_into_seen_cache_query);
                 }
 
-                sqlite3_reset(seen_query);
-                sqlite3_clear_bindings(seen_query);
+                sqlite3_reset(amount_seen_query);
+                sqlite3_clear_bindings(amount_seen_query);
             }
 
-            sqlite3_reset(seen_query);
-            sqlite3_clear_bindings(seen_query);
-            sqlite3_reset(data_query);
-            sqlite3_clear_bindings(data_query);
+            sqlite3_reset(amount_seen_query);
+            sqlite3_clear_bindings(amount_seen_query);
+            sqlite3_reset(cache_signal_data_query);
+            sqlite3_clear_bindings(cache_signal_data_query);
         }
 
         switch (dest) {
             case Dataset::accumSummary_type::accumSummary_dest::alignment:
-                data.signal_cache[ {position, bp} ] = signal_data;
+                data.signal_cache[ {position, bp} ] = signal_cache_data;
             break;
             case Dataset::accumSummary_type::accumSummary_dest::scrambled:
-                data.signal_cache_scramble = signal_data;
+                data.signal_cache_scramble = signal_cache_data;
             break;
             case Dataset::accumSummary_type::accumSummary_dest::enumerated:
-                data.signal_cache_enumerate = signal_data;
+                data.signal_cache_enumerate = signal_cache_data;
             break;
             case Dataset::accumSummary_type::accumSummary_dest::none:
                 cerr << "none shouldn't happen!!" << endl;
@@ -277,41 +264,38 @@ void checkCache(Dataset &data, const vector<string> &in_file, vector<string> &to
         problemEncountered(message, "create unique index on seen_cache");
         sqlite3_free(z_err_msg);
 
-        sqlite3_stmt *staged_query = NULL;
+        sqlite3_stmt *insert_into_seen_cache_query = NULL;
         msg = "INSERT OR IGNORE INTO seen_cache VALUES(?,?)";
         message = sqlite3_prepare_v2(cacheDB, msg.c_str(), 
                                      static_cast<int>(msg.size()), 
-                                     &staged_query, NULL);
+                                     &insert_into_seen_cache_query, NULL);
         problemEncountered(message, msg);
 
-        if(staged_query == NULL){
-            cerr << "staged_query shouldn't be NULL\n";
+        if(insert_into_seen_cache_query == NULL){
+            cerr << "insert_into_seen_cache_query shouldn't be NULL\n";
             exit(1);
         }
 	//cout << "Binding to cache" << endl;
 
         to_align = in_file;
         for(const auto &kmer : in_file){
-            message = sqlite3_bind_text(staged_query, 1, kmer.c_str(),
-                      static_cast<int>(kmer.size()), SQLITE_TRANSIENT);
+            message = sqlite3_bind_text(insert_into_seen_cache_query, 1, 
+                      kmer.c_str(), -1, SQLITE_TRANSIENT);
             problemEncountered(message, "bind text for inserting into seen_cache");
-            message = sqlite3_bind_int(staged_query, 2, data.settings.iteration);
+            message = sqlite3_bind_int(insert_into_seen_cache_query, 2, data.settings.iteration);
             problemEncountered(message, "bind int for inserting into seen_cache");
 
-	        // to_align.push_back(kmer);
-            // line 268
+            message = sqlite3_step(insert_into_seen_cache_query);
 
-            message = sqlite3_step(staged_query);
+            checkDone(message, "insert_into_seen_cache_query");
 
-            checkDone(message, "build_statement");
-
-            sqlite3_reset(staged_query);
-            sqlite3_clear_bindings(staged_query);
+            sqlite3_reset(insert_into_seen_cache_query);
+            sqlite3_clear_bindings(insert_into_seen_cache_query);
         }
-	//cout << "Finalizing staged_query" << endl;
-        message = sqlite3_finalize(staged_query);
+	//cout << "Finalizing insert_into_seen_cache_query" << endl;
+        message = sqlite3_finalize(insert_into_seen_cache_query);
         
-        problemEncountered(message, "finalize staged_query");
+        problemEncountered(message, "finalize insert_into_seen_cache_query");
     }
 
     message = sqlite3_close_v2(cacheDB);
@@ -344,7 +328,3 @@ static void isRowReady(const int message){
         exit(1);
     }
 }
-
-// static const char* convert_to_const_char(const unsigned char* store){
-//     return reinterpret_cast<const char*>(store);
-// }
