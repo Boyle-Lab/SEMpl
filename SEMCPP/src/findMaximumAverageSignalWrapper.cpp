@@ -21,6 +21,9 @@ void findMaximumAverageSignalWrapper(const std::vector<std::string> &alignments,
                                      double &stdev_out, double &sterr_out){
 
     mean_out = 0.0;
+    counter_out = 0;
+    stdev_out = 0.0;
+    sterr_out = 0.0;
 
     if(alignments.empty()){
         cerr << "corresponding findMaximumAverageSignalWrapper" 

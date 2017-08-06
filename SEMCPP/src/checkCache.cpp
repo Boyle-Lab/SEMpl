@@ -134,8 +134,8 @@ void checkCache(Dataset &data, vector<string> &in_file, vector<string> &to_align
             
             if(text){
                 #ifdef DEBUG
-                // cerr << "\tfound: #" << kmer << '#' << endl
-                     // << "\tcorresponding align: #" << text << '#' << endl;
+                cerr << "\tfound: #" << kmer << '#' << endl
+                     << "\tcorresponding align: #" << text << '#' << endl;
                 #endif
                 signal_cache_data.emplace_back(text);
                 

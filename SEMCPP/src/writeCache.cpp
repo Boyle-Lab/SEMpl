@@ -22,33 +22,52 @@ void writeCache(Dataset &data, const string &cache,
 
     // points to an output vector from running accumSummary_scale(args)
     const vector<string> *ptr = nullptr;
-    const vector<double> *max_ptr = nullptr;
+    // const vector<double> *max_ptr = nullptr;
     switch (dest) {
         case Dataset::accumSummary_type::accumSummary_dest::none:
-            cerr << "dest shouldn't be none!!!!\n";
+            cerr << "dest shouldn't be none!!!!" << endl;
             exit(1);
         break;
         case Dataset::accumSummary_type::accumSummary_dest::enumerated:
             ptr = &data.accumSummary_data.enum_accum_lines;
-            max_ptr = &data.accumSummary_data.enum_accum_max;
+            // max_ptr = &data.accumSummary_data.enum_accum_max;
         break;
         case Dataset::accumSummary_type::accumSummary_dest::scrambled:
             ptr = &data.accumSummary_data.scramble_accum_lines;
-            max_ptr = &data.accumSummary_data.scramble_accum_max;
+            // max_ptr = &data.accumSummary_data.scramble_accum_max;
         break;
         case Dataset::accumSummary_type::accumSummary_dest::alignment:
             ptr = &data.accumSummary_data.align_accum_lines;
-            max_ptr = &data.accumSummary_data.align_accum_max;
+            // max_ptr = &data.accumSummary_data.align_accum_max;
         break;
         default:
-            cerr << "there is no default for dest's switch statement!!!\n";
+            cerr << "there is no default for dest's switch statement!!!" << endl;
             exit(1);
         break;
     }
-    if(ptr->size() != max_ptr->size()){
-        cerr << "ptr size mismatch!\n\tEXITING" << endl;
-        exit(1);
-    }
+    // if(ptr->size() != max_ptr->size()){
+    //     cerr << "ptr size mismatch!\n\tEXITING" << endl;
+    //     switch(dest){
+    //         case Dataset::accumSummary_type::accumSummary_dest::none:
+    //         cerr << "none" << endl;
+    //         exit(1);
+    //     break;
+    //     case Dataset::accumSummary_type::accumSummary_dest::enumerated:
+    //         cerr << "enumerated" << endl;
+    //     break;
+    //     case Dataset::accumSummary_type::accumSummary_dest::scrambled:
+    //         cerr << "scrambled" << endl;
+    //     break;
+    //     case Dataset::accumSummary_type::accumSummary_dest::alignment:
+    //         cerr << "align" << endl;
+    //     break;
+    //     default:
+    //         cerr << "default" << endl;;
+    //         exit(1);
+    //     break;
+    //     }
+    //     exit(1);
+    // }
 
     // points to an output vector from running accumSummary_scale(args)
 
@@ -107,7 +126,7 @@ void writeCache(Dataset &data, const string &cache,
 
     for(size_t idx = 0; idx < ptr->size(); ++idx){
 
-        val = ptr->at(idx) + '\t' + to_string(max_ptr->at(idx));
+        val = ptr->at(idx);
 
         
 
@@ -124,7 +143,7 @@ void writeCache(Dataset &data, const string &cache,
         problemEncountered(message, "bind text 2 for staged_query, writeCache");
         message = sqlite3_step(staged_query);
         if(message != SQLITE_DONE){
-            cerr << "Build statement is not done!\n\tEXITING\n";
+            cerr << "Build statement is not done!\n\tEXITING" << endl;
             exit(1);
         }
         sqlite3_reset(staged_query);

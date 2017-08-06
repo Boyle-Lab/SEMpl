@@ -274,11 +274,14 @@ void find_signal(Dataset &data, int length){
             if(data.settings.verbose){
                 cout << "\tcopying..." << flush; 
             }
-            auto iter = copy(data.accumSummary_data.align_accum_lines.begin(),
-                             data.accumSummary_data.align_accum_lines.end(),
-                             data.signal_output.begin());
+            auto iter = data.signal_output.begin();
+            if(!data.accumSummary_data.align_accum_lines.empty() ){
+                iter = copy(data.accumSummary_data.align_accum_lines.begin(),
+                                 data.accumSummary_data.align_accum_lines.end(),
+                                 data.signal_output.begin() );
+            }
             if(data.settings.verbose){
-                cout << "FINISH" << endl;
+                cout << "FINISH " << data.accumSummary_data.align_accum_lines.size() << endl;
             }
 
             //  FILLS data.signal_enumerate_output !!!!!!!!!!!!
@@ -289,7 +292,7 @@ void find_signal(Dataset &data, int length){
                         data.signal_cache[ {position, bp} ].end(),
                         iter);
             if(data.settings.verbose){
-                cout << "FINISH" << endl;
+                cout << "FINISH " << data.signal_cache[ {position, bp} ].size() << endl;
             }
         }
         catch(...){
@@ -298,8 +301,18 @@ void find_signal(Dataset &data, int length){
         }
         #ifdef DEBUG
             cerr << "\tsignal_output" << endl;
-            for(auto val : data.signal_output){
-                cerr << "\tval: #" << val << '#' << endl;
+            // for(auto val : data.signal_output){
+            //     cerr << "\tval: #" << val << '#' << endl;
+            // }
+            cerr << "\tone" << endl;
+            ofstream one("one.txt");
+            for(auto val : data.signal_cache[ {position, bp} ] ){
+                one << val << endl;
+            }
+            ofstream two("two.txt");
+            cerr << "\ttwo" << endl;
+            for(auto val : data.accumSummary_data.align_accum_lines){
+                two << val << endl;
             }
         #endif
         try{
@@ -314,7 +327,11 @@ void find_signal(Dataset &data, int length){
             if(data.settings.verbose){
                 cout << "FINISH" << endl;
             }
-
+        }
+        catch(...){
+            cerr << "problem with findMaximumAverageSignalWrapper(args)" << endl;
+            exit(1);
+        }
             // iteratively fills sig_deets
 
 
@@ -328,43 +345,45 @@ void find_signal(Dataset &data, int length){
                 cout << "\tpos: " << position << "  bp: " << bp << endl;
             }
 #endif
+            try{
+                auto iter = data.sig_deets_maximum.insert( { {position, bp}, 
+                                                    data.Signal_data.alignment_maximum} );
+                
+                    // cout << '\t' << data.Signal_data.alignment_maximum << "  max inserted" << endl;
+                
+                if(!iter.second){
+                    cerr << "duplicate key inserted into sig_deets_maximum" << endl;
+                    exit(1);
+                }
+                // second pair type
+                auto iter1 = data.sig_deets_counter.insert( { {position, bp}, 
+                                                    data.Signal_data.alignment_counter} );
+                    // cout << '\t' << data.Signal_data.alignment_counter << "  counter inserted" << endl;
+                if(!iter1.second){
+                    cerr << "duplicate key inserted into sig_deets_counter" << endl;
+                    exit(1);
+                }
+                iter = data.sig_deets_stdev.insert( { {position, bp}, 
+                                                    data.Signal_data.alignment_stdev} );
+                    // cout << '\t' << data.Signal_data.alignment_stdev << "  stdev inserted" << endl;
+                if(!iter.second){
+                    cerr << "duplicate key inserted into sig_deets_stdev" << endl;
+                    exit(1);
+                }
+                iter = data.sig_deets_sterr.insert( { {position, bp}, 
+                                                    data.Signal_data.alignment_sterr} );
+                if(!iter.second){
+                    cerr << "duplicate key inserted into sig_deets_sterr" << endl;
+                    exit(1);
+                }
+            }
+            catch(...){
+                cerr << "exception thrown when inserting alignment data" << endl;
+                exit(1);
+            }
 
-            auto iter = data.sig_deets_maximum.insert( { {position, bp}, 
-                                                data.Signal_data.alignment_maximum} );
-            
-                // cout << '\t' << data.Signal_data.alignment_maximum << "  max inserted" << endl;
-            
-            if(!iter.second){
-                cerr << "duplicate key inserted into sig_deets_maximum" << endl;
-                exit(1);
-            }
-            // second pair type
-            auto iter1 = data.sig_deets_counter.insert( { {position, bp}, 
-                                                data.Signal_data.alignment_counter} );
-                // cout << '\t' << data.Signal_data.alignment_counter << "  counter inserted" << endl;
-            if(!iter1.second){
-                cerr << "duplicate key inserted into sig_deets_counter" << endl;
-                exit(1);
-            }
-            iter = data.sig_deets_stdev.insert( { {position, bp}, 
-                                                data.Signal_data.alignment_stdev} );
-                // cout << '\t' << data.Signal_data.alignment_stdev << "  stdev inserted" << endl;
-            if(!iter.second){
-                cerr << "duplicate key inserted into sig_deets_stdev" << endl;
-                exit(1);
-            }
-            iter = data.sig_deets_sterr.insert( { {position, bp}, 
-                                                data.Signal_data.alignment_sterr} );
-            if(!iter.second){
-                cerr << "duplicate key inserted into sig_deets_sterr" << endl;
-                exit(1);
-            }
-
-        }
-        catch(...){
-            cerr << "problem with findMaximumAverageSignalWrapper(args)" << endl;
-            exit(1);
-        }
+        
+        
         free(arr);    
     }
 
@@ -506,9 +525,15 @@ void create_baselines(Dataset &data, int length){
                           data.output_dir + "/BASELINE/Enumerated_kmer.fa",
                           data.output_dir + "/BASELINE/Enumerated_kmer_filtered.bed",
                           data.settings.verbose);
+        try{
         accumSummary_scale(data, data.bigwig_file,
                            data.output_dir + "/BASELINE/Enumerated_kmer_filtered.bed",
                            length, Dataset::accumSummary_type::accumSummary_dest::enumerated);
+        }
+        catch(...){
+            cerr << "problem with accumSummary_scale on enumerated!!\n\tEXITING" << endl;
+            exit(1);
+        }
         if(data.settings.writecache){
             writeCache(data, data.cachefile,
                        Dataset::accumSummary_type::accumSummary_dest::enumerated);
