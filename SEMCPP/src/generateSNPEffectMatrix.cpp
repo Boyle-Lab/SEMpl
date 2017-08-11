@@ -1,7 +1,4 @@
 
-// generateSNPEffectMatrix.pl --PWM <PWM_file>
-//    --merge_file <merge file> --big_wig <bigwig file>
-//    --TF_name <TF_name> [options] ...
 // Required Options:
 //  --PWM PWM input file
 //  --merge_file DNAse-seq file
@@ -51,20 +48,6 @@ void Enumerate_kmer(Dataset &data);
 void generateSNPEffectMatrix(Dataset &data) {
 	// default options are built into settings within data 
     // in iterativeSEM.hpp
-  //
-  // f(data.output_dir.empty()){
-  // data.output_dir = "results/" + data.TF_name + "/";
-  //
-  //
-  // ifstream test_file(data.output_dir);
-  // if(test_file){
-  //   // directory exists
-  // }
-  // else{
-  //   string s = "mkdir -p ";
-  //   s += data.output_dir;
-  //   system(s.c_str());
-  // }
 
 	if(data.cachefile.empty()){
 		data.cachefile = data.output_dir + "/CACHE.db";
@@ -541,10 +524,6 @@ void create_baselines(Dataset &data, int length){
         }
     }
 
-    // SHOULD THERE BE AN ERROR CHECK IF signal_cache_enumerate IS EMPTY????
-    if(data.signal_cache_enumerate.empty()){
-        cerr << "\tdata.signal_cache_enumerate is empty!!!! IDK" << endl;
-    }
     sort(data.signal_cache_enumerate.begin(),
          data.signal_cache_enumerate.end());
     data.signal_enumerate_output.resize(data.signal_cache_enumerate.size()

@@ -208,7 +208,7 @@ void checkCache(Dataset &data, vector<string> &in_file, vector<string> &to_align
             sqlite3_reset(cache_signal_data_query);
             sqlite3_clear_bindings(cache_signal_data_query);
         }
-
+        // store computations found in cache
         switch (dest) {
             case Dataset::accumSummary_type::accumSummary_dest::alignment:
                 swap(data.signal_cache[ {position, bp} ] , signal_cache_data);
