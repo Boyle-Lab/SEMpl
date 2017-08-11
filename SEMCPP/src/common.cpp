@@ -95,8 +95,15 @@ void grab_string_4_index(const string s, string &out){
 }
 
 string grab_string_last_index(const string &s){
-    auto pos = s.find_last_of('\t');
-    return s.substr(pos + 1);
+    auto pos1 = s.find_last_of('\t');
+    // auto pos2 = s.find_last_of(' ');
+    // if(pos1 > s.length() + 1) pos1 = 0;
+    // if(pos2 > s.length() + 1) pos2 = 0;
+    // return s.substr(pos2 + 1);
+    // if(pos1 > pos2){
+    return s.substr(pos1 + 1);
+    // }
+    // return s.substr(pos2 + 1);
 }
 
 // REQUIRES: idx is valid with respect to s, idx is at least 1

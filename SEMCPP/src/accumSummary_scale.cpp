@@ -95,7 +95,9 @@ void accumSummary_scale(Dataset &data, const string &hfile,
 	// double *values = nullptr;
 
 
-	while(getline(input, line)){
+	while( getline(input, line) ){
+
+        max = 0.0;
 		// initialize vairables
         temp.clear();
 		chrom = nullptr;
@@ -133,9 +135,9 @@ void accumSummary_scale(Dataset &data, const string &hfile,
 
 
         bwOverlappingIntervals_t *ptr = bwGetValues(bwFile, chrom, 
-                               static_cast<uint32_t>(upstart),
-                               static_cast<uint32_t>(upend),
-                               1);
+                                        static_cast<uint32_t>(upstart),
+                                        static_cast<uint32_t>(upend),
+                                        1);
         if(!ptr){
             cerr << "problem with bwGetValues!!!" << endl 
                  << "\tEXITING" << endl;
@@ -194,6 +196,7 @@ void accumSummary_scale(Dataset &data, const string &hfile,
         free(ptr->end);
         free(ptr->value);
         free(ptr);
+
 
         if( (static_cast<float>(nan_count) / static_cast<float>(ptr->l) ) > 0.10){
             max = NAN_VALUE;

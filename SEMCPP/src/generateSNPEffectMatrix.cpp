@@ -314,7 +314,7 @@ void find_signal(Dataset &data, int length){
             for(auto val : data.accumSummary_data.align_accum_lines){
                 two << val << endl;
             }
-            
+
         #endif
         try{
             if(data.settings.verbose){
@@ -550,9 +550,12 @@ void create_baselines(Dataset &data, int length){
     data.signal_enumerate_output.resize(data.signal_cache_enumerate.size()
                                       + data.accumSummary_data.enum_accum_lines.size());
     // returns iterator to one past the location of the last copy
-    auto iter = copy(data.accumSummary_data.enum_accum_lines.begin(),
-                     data.accumSummary_data.enum_accum_lines.end(),
-                     data.signal_enumerate_output.begin());
+    auto iter = data.signal_enumerate_output.begin();
+    if( !data.accumSummary_data.enum_accum_lines.empty() ){
+        iter = copy(data.accumSummary_data.enum_accum_lines.begin(),
+                         data.accumSummary_data.enum_accum_lines.end(),
+                         data.signal_enumerate_output.begin());
+    }
 
     //  FILLS data.signal_enumerate_output !!!!!!!!!!!!
     unique_copy(data.signal_cache_enumerate.begin(),
