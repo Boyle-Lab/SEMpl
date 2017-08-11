@@ -51,10 +51,10 @@ void findMaximumAverageSignalWrapper(const std::vector<std::string> &alignments,
         for(size_t i = 0; i < alignments.size(); ++i){
             //Finds maximums of each line and stores into a vector called
             // maximums.
+            line = alignments[i];
     #ifdef DEBUG
             debug << "line: #" << line << '#' << " i: " << i << endl;
     #endif
-            line = alignments[i];
 
             // removed from last try block
             val = grab_string_last_index(line);

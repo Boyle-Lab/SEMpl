@@ -268,7 +268,7 @@ void find_signal(Dataset &data, int length){
             if(data.settings.verbose){
                 cout << "FINISH" << endl;
             }
-            data.signal_output.resize(data.signal_cache[{position, bp}].size()
+            data.signal_output.resize(data.signal_cache[ {position, bp} ].size()
                                     + data.accumSummary_data.align_accum_lines.size());
             // returns iterator to one past the location of the last copy
             if(data.settings.verbose){
@@ -314,6 +314,7 @@ void find_signal(Dataset &data, int length){
             for(auto val : data.accumSummary_data.align_accum_lines){
                 two << val << endl;
             }
+            
         #endif
         try{
             if(data.settings.verbose){
