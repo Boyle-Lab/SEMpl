@@ -22,7 +22,7 @@ std::string grab_string_at_index(const std::string &str, const size_t index,
 
 std::string grab_string_at_index_white(const std::string &str, const size_t index);
 
-void grab_string_last_index(const std::string s, std::string &out);
+std::string grab_string_last_index(const std::string &s);
 
 void GetFilesInDirectory(std::vector<std::string> &out, 
 						 const std::string &directory);

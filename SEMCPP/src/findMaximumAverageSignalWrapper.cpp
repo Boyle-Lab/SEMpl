@@ -37,22 +37,72 @@ void findMaximumAverageSignalWrapper(const std::vector<std::string> &alignments,
 
     string line = "", val = "";
 
-    vector<double> values(alignments.size());
+#ifdef DEBUG
+    ofstream debug("fMASW.txt");
+#endif
+
+    vector<double> values(alignments.size(), 0.0);
+#ifdef DEBUG
+    debug << "align size " << alignments.size() << endl;
+    debug << "values size " << values.size() << endl;
+#endif
     
-    for(size_t i = 0; i < alignments.size(); ++i){
-        //Finds maximums of each line and stores into a vector called
-        // maximums.
+    
+        for(size_t i = 0; i < alignments.size(); ++i){
+            //Finds maximums of each line and stores into a vector called
+            // maximums.
+    #ifdef DEBUG
+            debug << "line: #" << line << '#' << " i: " << i << endl;
+    #endif
+            line = alignments[i];
 
-        line = alignments[i];
-        grab_string_last_index(line, val);
-        values[i] = stod(val);
+            // removed from last try block
+            val = grab_string_last_index(line);
+    #ifdef DEBUG
+            debug << "val:#" << val << '#' << endl;
+    #endif
+            try{
+                values.at(i) = stod(val);
+            }
+            catch(invalid_argument e){
+                cerr << "hee" << e.what() << endl;
+                cerr << "val: #" << val << '#' << endl;
+                exit(1);
+            }
+            catch(out_of_range e){
+                cerr << "from .at: " << !(i < values.size() ) << endl;
+                cerr << e.what() << endl;
+                exit(1);
+            }
+            catch(...){
+                cerr << "problem iterating findMaximumAverageSignalWrapper" << endl;
+                exit(1);
+            }
+    #ifdef DEBUG
+            debug << "\tval: #" << values.at(i) << '#' << endl;
+    #endif 
+    
+    #ifdef DEBUG 
+            debug << "here1" << endl;
+    #endif
 
-        if(values[i] != NAN_VALUE){
-            sum += values[i];
-            ++counter_out;
+            if(values.at(i) != NAN_VALUE){
+                #ifdef DEBUG
+                    debug << "here2 val: #" << values.at(i) << '#' << endl
+                          << '#' << sum << '#' << endl;
+                #endif
+                sum += values.at(i);
+                #ifdef DEBUG
+                    debug << "here3" << endl;
+                #endif
+                ++counter_out;
+                #ifdef DEBUG
+                    debug << "here4: #" << counter_out << '#' << endl;
+                #endif
+            }
         }
-    }
-
+    
+    
             // cout << "value at " << i << ": " << max_ptr->at(i) << endl;
         
 

@@ -94,9 +94,9 @@ void grab_string_4_index(const string s, string &out){
     out = string(ptr, ptr2 - ptr - 1);
 }
 
-void grab_string_last_index(const string s, string &out){
+string grab_string_last_index(const string &s){
     auto pos = s.find_last_of('\t');
-    out = s.substr(pos + 1);
+    return s.substr(pos + 1);
 }
 
 // REQUIRES: idx is valid with respect to s, idx is at least 1
