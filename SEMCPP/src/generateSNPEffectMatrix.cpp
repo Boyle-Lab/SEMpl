@@ -258,7 +258,7 @@ void find_signal(Dataset &data, int length){
                 cout << "\tcopying..." << flush; 
             }
             auto iter = data.signal_output.begin();
-            if(!data.accumSummary_data.align_accum_lines.empty() ){
+            if(data.accumSummary_data.align_accum_lines.size() != 0 ){
                 iter = copy(data.accumSummary_data.align_accum_lines.begin(),
                                  data.accumSummary_data.align_accum_lines.end(),
                                  data.signal_output.begin() );
@@ -271,12 +271,13 @@ void find_signal(Dataset &data, int length){
             if(data.settings.verbose){
                 cout << "\tunique copying..." << flush;
             }
-            unique_copy(data.signal_cache[ {position, bp} ].begin(),
+            auto end_iter3 = unique_copy(data.signal_cache[ {position, bp} ].begin(),
                         data.signal_cache[ {position, bp} ].end(),
                         iter);
             if(data.settings.verbose){
                 cout << "FINISH " << data.signal_cache[ {position, bp} ].size() << endl;
             }
+            data.signal_output.resize(end_iter3 - data.signal_output.begin() );
         }
         catch(...){
             cerr << "problem with algorithm usage" << endl;
@@ -299,6 +300,7 @@ void find_signal(Dataset &data, int length){
             }
 
         #endif
+
         try{
             if(data.settings.verbose){
                 cout << "\tfinding findMaximumAverageSignal..." << flush;
@@ -476,15 +478,19 @@ void create_baselines(Dataset &data, int length){
         data.signal_scramble_output.resize(data.signal_cache_scramble.size()
                                           + data.accumSummary_data.scramble_accum_lines.size());
         // returns iterator to one past the location of the last copy
-        auto iter = copy(data.accumSummary_data.scramble_accum_lines.begin(),
-                         data.accumSummary_data.scramble_accum_lines.end(),
-                         data.signal_scramble_output.begin());
+        auto iter = data.signal_scramble_output.begin();
+        if(data.accumSummary_data.scramble_accum_lines.size() != 0){
+            iter = copy(data.accumSummary_data.scramble_accum_lines.begin(),
+                             data.accumSummary_data.scramble_accum_lines.end(),
+                             data.signal_scramble_output.begin());
+        }
         //  FILLS data.signal_scramble_output !!!!!!!!!!!!
         // iter is the next position to have a value inserted at of
         // data.signal_scramble_output
-        unique_copy(data.signal_cache_scramble.begin(),
+        auto end_iter2 = unique_copy(data.signal_cache_scramble.begin(),
                     data.signal_cache_scramble.end(),
                     iter);
+        data.signal_scramble_output.resize(end_iter2 - data.signal_scramble_output.begin());
         #ifdef DEBUG
             ofstream debug1(data.output_dir + "/BASELINE/Scrambled_kmer_filtered.signal");
             for(auto val : data.signal_scramble_output){
@@ -510,9 +516,9 @@ void create_baselines(Dataset &data, int length){
                           data.output_dir + "/BASELINE/Enumerated_kmer_filtered.bed",
                           data.settings.verbose);
         try{
-        accumSummary_scale(data, data.bigwig_file,
-                           data.output_dir + "/BASELINE/Enumerated_kmer_filtered.bed",
-                           length, Dataset::accumSummary_type::accumSummary_dest::enumerated);
+            accumSummary_scale(data, data.bigwig_file,
+                               data.output_dir + "/BASELINE/Enumerated_kmer_filtered.bed",
+                              length, Dataset::accumSummary_type::accumSummary_dest::enumerated);
         }
         catch(...){
             cerr << "problem with accumSummary_scale on enumerated!!\n\tEXITING" << endl;
@@ -530,16 +536,17 @@ void create_baselines(Dataset &data, int length){
                                       + data.accumSummary_data.enum_accum_lines.size());
     // returns iterator to one past the location of the last copy
     auto iter = data.signal_enumerate_output.begin();
-    if( !data.accumSummary_data.enum_accum_lines.empty() ){
+    if( data.accumSummary_data.enum_accum_lines.size() != 0 ){
         iter = copy(data.accumSummary_data.enum_accum_lines.begin(),
                          data.accumSummary_data.enum_accum_lines.end(),
                          data.signal_enumerate_output.begin());
     }
 
     //  FILLS data.signal_enumerate_output !!!!!!!!!!!!
-    unique_copy(data.signal_cache_enumerate.begin(),
+    auto end_iter1 = unique_copy(data.signal_cache_enumerate.begin(),
                 data.signal_cache_enumerate.end(),
                 iter);
+    data.signal_enumerate_output.resize(end_iter1 - data.signal_enumerate_output.begin());
 
     #ifdef DEBUG
         ofstream debug(data.output_dir + "/BASELINE/Enumerated_kmer_filtered.signal");
@@ -548,7 +555,10 @@ void create_baselines(Dataset &data, int length){
         }
     #endif    
 
+
+
     if(!data.settings.fastrun){
+        if(data.settings.verbose) cout << "scram" << flush;
         findMaximumAverageSignalWrapper(data.signal_scramble_output,
                                         data.Signal_data.scramble_maximum,
                                         data.Signal_data.scramble_counter, 
@@ -557,7 +567,7 @@ void create_baselines(Dataset &data, int length){
     }
 
 
-
+    if(data.settings.verbose) cout << "enum" << flush;
     findMaximumAverageSignalWrapper(data.signal_enumerate_output,
                                     data.Signal_data.enumerate_maximum,
                                     data.Signal_data.enumerate_counter, 

@@ -41,11 +41,13 @@ void findMaximumAverageSignalWrapper(const std::vector<std::string> &alignments,
     ofstream debug("fMASW.txt");
 #endif
 
-    vector<double> values(alignments.size(), 0.0);
+    vector<double> values;
 #ifdef DEBUG
     debug << "align size " << alignments.size() << endl;
-    debug << "values size " << values.size() << endl;
+    // debug << "values size " << values.size() << endl;
 #endif
+
+    double max = 0.0;
     
     
         for(size_t i = 0; i < alignments.size(); ++i){
@@ -61,37 +63,39 @@ void findMaximumAverageSignalWrapper(const std::vector<std::string> &alignments,
     #ifdef DEBUG
             debug << "val:#" << val << '#' << endl;
     #endif
-            try{
-                values.at(i) = stod(val);
-            }
-            catch(invalid_argument e){
-                cerr << "hee" << e.what() << endl;
-                cerr << "val: #" << val << '#' << endl;
-                exit(1);
-            }
-            catch(out_of_range e){
-                cerr << "from .at: " << !(i < values.size() ) << endl;
-                cerr << e.what() << endl;
-                exit(1);
-            }
-            catch(...){
-                cerr << "problem iterating findMaximumAverageSignalWrapper" << endl;
-                exit(1);
-            }
+            max = stod(val);
+            // try{
+            //     values.at(i) = stod(val);
+            // }
+            // catch(invalid_argument e){
+            //     cerr << "hee" << e.what() << endl;
+            //     cerr << "val: #" << val << '#' << endl;
+            //     exit(1);
+            // }
+            // catch(out_of_range e){
+            //     cerr << "from .at: " << !(i < values.size() ) << endl;
+            //     cerr << e.what() << endl;
+            //     exit(1);
+            // }
+            // catch(...){
+            //     cerr << "problem iterating findMaximumAverageSignalWrapper" << endl;
+            //     exit(1);
+            // }
     #ifdef DEBUG
-            debug << "\tval: #" << values.at(i) << '#' << endl;
+            debug << "\tval: #" << max << '#' << endl;
     #endif 
     
     #ifdef DEBUG 
             debug << "here1" << endl;
     #endif
 
-            if(values.at(i) != NAN_VALUE){
+            if(max != NAN_VALUE){
+                values.push_back(max);
                 #ifdef DEBUG
-                    debug << "here2 val: #" << values.at(i) << '#' << endl
+                    debug << "here2 val: #" << max << '#' << endl
                           << '#' << sum << '#' << endl;
                 #endif
-                sum += values.at(i);
+                sum += max;
                 #ifdef DEBUG
                     debug << "here3" << endl;
                 #endif
