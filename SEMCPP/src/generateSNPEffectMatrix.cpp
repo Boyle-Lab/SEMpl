@@ -77,7 +77,7 @@ void generateSNPEffectMatrix(Dataset &data) {
 	//Step 2: Change one base at each location in k-mers and align to genome
     // ALSO: print output to file
 
-
+// mean needs to be higher, also needs more count
 
     cout << "\tstep two" << endl;
     align_to_genome(data);
@@ -516,6 +516,7 @@ void create_baselines(Dataset &data, int length){
                           data.output_dir + "/BASELINE/Enumerated_kmer_filtered.bed",
                           data.settings.verbose);
         try{
+        
             accumSummary_scale(data, data.bigwig_file,
                                data.output_dir + "/BASELINE/Enumerated_kmer_filtered.bed",
                               length, Dataset::accumSummary_type::accumSummary_dest::enumerated);
@@ -565,6 +566,12 @@ void create_baselines(Dataset &data, int length){
                                         data.Signal_data.scramble_stdev, 
                                         data.Signal_data.scramble_sterr);
     }
+    #ifdef DEBUG
+    ofstream enum_out("Enumerated_kmer_filtered.signal");
+    for(auto val : data.signal_enumerate_output){
+        enum_out << val << endl;
+    }
+    #endif
 
 
     if(data.settings.verbose) cout << "enum" << flush;

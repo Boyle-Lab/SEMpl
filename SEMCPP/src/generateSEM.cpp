@@ -98,9 +98,13 @@ void generateSEM(const Dataset &data) {
                 SNPEffect[ {loc, bp} ] = log2(score / enum_);
                 STDErr[ {loc, bp} ] = sterr / enum_;
 
-                if(loc > max){
-                    max = loc;
-                }
+                max = getLength(data);
+
+                // if(loc > max){
+                //   max = loc + 1;
+                //   // max = loc;
+                //   // why does it do this?
+                // }
             }
         }
     }

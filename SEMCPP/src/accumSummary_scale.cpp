@@ -59,7 +59,7 @@ void accumSummary_scale(Dataset &data, const string &hfile,
     	exit(1);
 	}
 
-	int dist = 500;
+	const int dist = 500;
 	// int total_size = dist * 2 + scale;
 	float max = 0.0;
 	// int hitcount = 0;
@@ -94,11 +94,19 @@ void accumSummary_scale(Dataset &data, const string &hfile,
 	// pointer to hold double values from bigwig library function;
 	// double *values = nullptr;
 
+    vector<float> output;
+
+    int hitcount = 0;
+
+    double *double_ptr = nullptr;
+
 
 	while( getline(input, line) ){
 
-        max = 0.0;
-		// initialize vairables
+        output.clear();
+
+        // max = 0.0;
+		// initialize variables
         temp.clear();
 		chrom = nullptr;
 		split_string(line, splitBy, temp);
@@ -133,57 +141,91 @@ void accumSummary_scale(Dataset &data, const string &hfile,
 		chrom = new char[seqid.length() + 1];
 		strcpy(chrom, seqid.c_str());
 
+        double_ptr = bwStats(bwFile, chrom, static_cast<uint32_t>(upstart), 
+                             static_cast<uint32_t>(upend),
+                             static_cast<uint32_t>(upend - upstart), 
+                             bwStatsType::mean);
+                        // 0 corresponds to "mean"
 
-        bwOverlappingIntervals_t *ptr = bwGetValues(bwFile, chrom, 
-                                        static_cast<uint32_t>(upstart),
-                                        static_cast<uint32_t>(upend),
-                                        1);
-        if(!ptr){
-            cerr << "problem with bwGetValues!!!" << endl 
-                 << "\tEXITING" << endl;
-            exit(1);
-        }
+
+
+        // bwOverlappingIntervals_t *ptr = bwGetValues(bwFile, chrom, 
+        //                                 static_cast<uint32_t>(upstart),
+        //                                 static_cast<uint32_t>(upend),
+        //                                 1);
+        // if(!ptr){
+        //     cerr << "problem with bwGetValues!!!" << endl 
+        //          << "\tEXITING" << endl;
+        //     exit(1);
+        // }
 
         // cout << "\t for chrom: " << seqid << endl;
         // cout << "\tdeleted chrom" << endl;
 		delete [] chrom;
 
+        hitcount = 0;
 
-        int nan_count = 0;
+
 
         try{
+
+            #ifdef DEBUG
+            ofstream overlapping("overlap.txt");
+
+            overlapping << temp[1] << ' ' << static_cast<uint32_t>(start) << endl
+                        << temp[2] << ' ' << static_cast<uint32_t>(end) << endl
+                        << seqid << endl;
+
+            // overlapping << "m: " << ptr->m << " l: " << ptr->l << endl;
+
+            #endif
             // '+' is found
             // cout << "\tline 179" << endl;
     		if(direction.find('+') != string::npos){
-    			for(int k = 0; k < static_cast<int>(ptr->l); ++k){
-                    ptr->value[k] = roundf(ptr->value[k] * 1000.0) / 1000.0;
-                    if(!isnan( ptr->value[k] )){
-                        // output[k] = signal_array[k];
-                        if(ptr->value[k] > max){
-                            max = ptr->value[k];
-                        }
+    			for(int k = 0; k < static_cast<int>(upend - upstart); ++k){
+                    #ifdef DEBUG
+                    overlapping << double_ptr[k] << endl;
+                    #endif
+                    // ptr->value[k] = roundf(ptr->value[k] * 1000.0) / 1000.0;
+                    if(!isnan( double_ptr[k] )){
+                        output.push_back(double_ptr[k]);
+                        // if(ptr->value[k] > max){
+                        //     max = ptr->value[k];
+                        // }
                     }
                     else{
+                        output.push_back(NAN_VALUE);
                         // output[k] = "N";
                         // signal_array_is_nan.at(k) = true;
-                        ++nan_count;
+                        // ++hitcount;
                     }
                 }
             }
-    		else{
-    			for(int k = static_cast<int>(ptr->l) - 1; k >= 0; --k){
-                    if(!isnan( ptr->value[k] )){
-                        ptr->value[k] = roundf(ptr->value[k] * 1000.0) / 1000.0;
+    		else if(direction.find('-') != string::npos){
+    			for(int k = static_cast<int>(upend - upstart) - 1; k >= 0; --k){
+                    #ifdef DEBUG
+                    overlapping << double_ptr[k] << endl;
+                    #endif
+                    if(!isnan( double_ptr[k] )){
+                        output.push_back(double_ptr[k]);
+
+                        // ptr->value[k] = roundf(ptr->value[k] * 1000.0) / 1000.0;
                         // output[k] = signal_array[k];
-                        if(ptr->value[k] > max){
-                            max = ptr->value[k];
-                        }
+                        // if(ptr->value[k] > max){
+                        //     max = ptr->value[k];
+                        // }
                     }
                     else{
+                        output.push_back(NAN_VALUE);
+
                         // output[k] = "N";
-                        ++nan_count;
+                        // ++hitcount;
                     }
                 }
+            }
+            else{
+                cerr << "unable to find direction" << endl;
+                exit(1);
             }
         }
         catch(...){
@@ -191,14 +233,32 @@ void accumSummary_scale(Dataset &data, const string &hfile,
             exit(1);
         }
 
+        free(double_ptr);
 
-        free(ptr->start);
-        free(ptr->end);
-        free(ptr->value);
-        free(ptr);
+        // free(ptr->start);
+        // free(ptr->end);
+        // free(ptr->value);
+        // free(ptr);
+
+        #ifdef DEBUG
+        ofstream out("output.txt");
+        for(auto val : output){
+            out << val << endl;
+        }
+
+        #endif
 
 
-        if( (static_cast<float>(nan_count) / static_cast<float>(ptr->l) ) > 0.10){
+        for(size_t i = 0; i < output.size(); ++i){
+            if(output[i] > max){
+                max = output[i];
+            }
+            if(output[i] != NAN_VALUE){
+                ++hitcount;
+            }
+        }
+
+        if( static_cast<double>(hitcount) / static_cast<double>( output.size() )  < 0.90){
             max = NAN_VALUE;
         }
         // if max is maximum possible double value, then it is not applicable
