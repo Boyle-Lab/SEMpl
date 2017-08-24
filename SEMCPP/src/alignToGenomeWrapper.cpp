@@ -80,6 +80,8 @@ static void align_SNPs(Dataset &data, int length,
                 checkCache(data, new_kmer, cache_to_align, data.cachefile,
                         Dataset::accumSummary_type::accumSummary_dest::alignment,
                         position, nucleotideStack[j]);
+                // new_kmer and cache to align would be swapped if there is no cache
+                // rather than assigned, much faster
             }
             catch(...){
                 cerr << "exception thrown from checkCache" << endl;
@@ -88,19 +90,19 @@ static void align_SNPs(Dataset &data, int length,
 
             #ifdef DEBUG
             cerr << position << nucleotideStack[j] << " to_align: " << cache_to_align.size() << endl;
-            cerr << '\t' << " amount already aligned: " << new_kmer.size() - cache_to_align.size() << endl;
-            cerr << '\t' << " new_kmer.size() " << new_kmer.size() << endl;
-            // if(position == 4){
-            //     cerr << "cache_to_align:\n";
-            //     for(auto val : cache_to_align){
-            //         cerr << '#' << val << "#\n";
-            //     }
-            //     cerr << "aligned:\n";
-            //     for(auto val : data.signal_cache[ { position, nucleotideStack[j] } ] ){
-            //         cerr << '#' << val << "#\n";
-            //     }
-            //     cerr << endl;
-            // }
+            // cerr << '\t' << " amount already aligned: " << new_kmer.size() - cache_to_align.size() << endl;
+            // cerr << '\t' << " new_kmer.size() " << new_kmer.size() << endl;
+            if(position == 0){
+                cerr << "cache_to_align:\n";
+                for(auto val : cache_to_align){
+                    cerr << '#' << val << "#\n";
+                }
+                cerr << "aligned:\n";
+                for(auto val : data.signal_cache[ { position, nucleotideStack[j] } ] ){
+                    cerr << '#' << val << "#\n";
+                }
+                cerr << endl;
+            }
             #endif
             // pass in a sequence column, which is from output of checkCache
             // cachefile in Dataset is $cache from original algorithm!!!
