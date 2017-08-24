@@ -144,7 +144,7 @@ void accumSummary_scale(Dataset &data, const string &hfile,
         double_ptr = bwStats(bwFile, chrom, static_cast<uint32_t>(upstart), 
                              static_cast<uint32_t>(upend),
                              static_cast<uint32_t>(upend - upstart), 
-                             bwStatsType::mean);
+                             bwStatsType::max);
                         // 0 corresponds to "mean"
 
 

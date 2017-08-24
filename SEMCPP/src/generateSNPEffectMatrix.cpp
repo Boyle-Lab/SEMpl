@@ -264,7 +264,7 @@ void find_signal(Dataset &data, int length){
                                  data.signal_output.begin() );
             }
             if(data.settings.verbose){
-                cout << "FINISH " << data.accumSummary_data.align_accum_lines.size() << endl;
+                cout << "FINISH (calculated)" << data.accumSummary_data.align_accum_lines.size() << endl;
             }
 
             //  FILLS data.signal_enumerate_output !!!!!!!!!!!!
@@ -275,7 +275,7 @@ void find_signal(Dataset &data, int length){
                         data.signal_cache[ {position, bp} ].end(),
                         iter);
             if(data.settings.verbose){
-                cout << "FINISH " << data.signal_cache[ {position, bp} ].size() << endl;
+                cout << "FINISH (cache)" << data.signal_cache[ {position, bp} ].size() << endl;
             }
             data.signal_output.resize(end_iter3 - data.signal_output.begin() );
         }

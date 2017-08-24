@@ -89,6 +89,7 @@ static void align_SNPs(Dataset &data, int length,
             #ifdef DEBUG
             cerr << position << nucleotideStack[j] << " to_align: " << cache_to_align.size() << endl;
             cerr << '\t' << " amount already aligned: " << new_kmer.size() - cache_to_align.size() << endl;
+            cerr << '\t' << " new_kmer.size() " << new_kmer.size() << endl;
             // if(position == 4){
             //     cerr << "cache_to_align:\n";
             //     for(auto val : cache_to_align){
