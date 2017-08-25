@@ -156,8 +156,8 @@ void accumSummary_scale(Dataset &data, const string &hfile,
             // cout << "\tline 179" << endl;
     		if(direction.find('+') != string::npos){
     			for(int k = 0; k < total_size; ++k){
-                    ptr->value[k] = roundf(ptr->value[k] * 1000.0) / 1000.0;
                     if(!isnan( ptr->value[k] )){
+                        ptr->value[k] = roundf(ptr->value[k] * 1000.0) / 1000.0;
                         // output[k] = signal_array[k];
                         if(ptr->value[k] > max){
                             max = ptr->value[k];
