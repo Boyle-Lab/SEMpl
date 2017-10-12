@@ -108,22 +108,25 @@ int main(int argc, char **argv){
         }
     } 
 
+    // must have pwm file
 	if(data.PWM_file.empty()){
 		cout << "No PWM file given" << endl;
 		exit(1);
 	}
-
+    // must have output directory
 	if(data.output_dir.empty()){
 		cout << "No output file given" << endl;
 		exit(1);
 	}
-
+    // must have a transcription factor name
     if(data.TF_name.empty()){
         cout << "No TF name given" << endl;
     }
 
-// data.cachefile.empty() checks if the string is empty, not the actual file
-	if(data.cachefile.empty())  data.cachefile = data.output_dir + "/CACHE.db";
+    // if no database given, assume default location
+	if(data.cachefile.empty())  {
+        data.cachefile = data.output_dir + "/CACHE.db";
+    }
 
     vector<double> pvals;
     pvals.reserve(total_iterations + 1);
@@ -138,8 +141,8 @@ int main(int argc, char **argv){
 
     read_pwm(data, data.PWM_file);
     data.settings.threshold = get_threshold(data, pVal);
-    if (data.settings.threshold < 0){
-        data.settings.threshold = 0;
+    if (data.settings.threshold < 0.0){
+        data.settings.threshold = 0.0;
     }
 
     cout << "--- Iteration 0 ---\n";
@@ -156,7 +159,9 @@ int main(int argc, char **argv){
         exit(1);
     }
     try{
-        generatePWMfromSEM(data);
+        generatePWMfromSEM(data, 
+                           data.output_dir + "/" + data.TF_name + ".sem",
+                           data.output_dir + "/" + data.TF_name + ".pwm");
     }
     catch(...){
         cerr << "Problem with generatePWMfromSEM!!!\n\tEXITING\n";
@@ -165,7 +170,7 @@ int main(int argc, char **argv){
 
     pvals.erase(pvals.begin());
 
-
+    // get first p-value
     data.settings.threshold = get_threshold(data, pvals.front());
     pvals.erase(pvals.begin());
     if (data.settings.threshold < 0){
@@ -189,25 +194,33 @@ int main(int argc, char **argv){
     data.settings.fastrun = false;
     for (int iteration = 1; iteration < total_iterations; ++iteration){
 	    
-        // iterID = rand() % 16777216;
+        // output the results from comparing kmers
         ofstream outFile(data.output_dir + "/kmer_similarity.out");
         if(iteration > 1 && converge < 10){
-            // int j = iteration - 1;
             total_1 = same = diff = total_diff = 0;
+            // for every key-value pair, find if the kmer is found was found in 
+            // the other kmer key-value map
             for(const auto &kmer_val_pair : kmers){
                 if(data.kmerHash.find(kmer_val_pair.first) != data.kmerHash.end()){
+                    // an iterator was found that was not the end iterator
+                    // therefore the kmer exists in both
                     ++same;
                 }
                 else{
+                    // an end iterator was returned
+                    // kmer doesn't exist
                     ++diff;
                 }
                 ++total_1;
             }
 
             if(diff == 0){
+                // all kmers are the same
+                // converge increases
                 ++converge;
             }
             else{
+                // reset converge
                 converge = 0;
             }
             kmers = data.kmerHash;
@@ -226,7 +239,7 @@ int main(int argc, char **argv){
             generateSNPEffectMatrix(data);
             // kmerHash should be filled in after the above line, within data!!!!
 
-            generatePWMfromSEM(data);
+            generatePWMfromSEM(data, /* fill me input */, /* fill me output */);
 
             pVal = pvals.front();
             pvals.erase(pvals.begin());
@@ -267,26 +280,17 @@ int main(int argc, char **argv){
 // in the .pwm file specified
 string read_pwm(Dataset &data, string file){
     ifstream fin(file);
-    // string s = "";
-    // fin.ignore(10000, '\n');
-    // int i = 0;
-    // while(getline(fin, s)){
-    //     if(i == 0 || i == 13){
-    //         fin.ignore(10000, '\n');
-    //     }
-    //     cout << s << endl;
-    // }
 #ifdef DEBUG
     assert(fin);
 #endif
 
-
-    // fin.ignore(10000, '\n');
     string s = "";
-    fin >> s >> s >> s;
+    // ignore first line of pwm
+    fin.ignore(10000, '\n');
     for(int i = 0; i < Dataset::PWM::NUM_ROWS; ++i){
         // THE EXAMPLE FILE USES A TAB CHARACTER
         fin.ignore(10000, '\t');
+        // ignore first character (row number)
         for(int j = 0; j < Dataset::PWM::NUM_COLUMNS; ++j){
             fin >> data.PWM_data.matrix_arr[i][j];
 #ifdef DEBUG

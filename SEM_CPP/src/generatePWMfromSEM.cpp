@@ -21,15 +21,17 @@ void static parse_pwm(const string &pwm, map<char, vector<double> > &map);
 //MODIFIES: modifies data, specifically pwm
 //EFFECTS: Creates a pwm matrix from the previous sem matrix in same
 //         directory
-void generatePWMfromSEM(const Dataset & data){
+void generatePWMfromSEM(const Dataset & data, 
+                        string input, // input SEM file
+                        string output){ // output PWM file
 
     // raw baseline is the output from running findMaximumAverageSignal... on
     // "enumerate" data
 
     // sem file for TF
-    string rawInput = data.output_dir + "/" + data.TF_name + ".sem";
+    // string rawInput = data.output_dir + "/" + data.TF_name + ".sem";
     // pwm file for TF
-    string pwmOutput = data.output_dir + "/" + data.TF_name + ".pwm";
+    // string pwmOutput = data.output_dir + "/" + data.TF_name + ".pwm";
 
 
     double avgScore = data.Signal_data.enumerate_maximum;
@@ -131,6 +133,11 @@ void generatePWMfromSEM(const Dataset & data){
     OUTF << "DE\t" + data.TF_name + '\n';
 
     int rowsum = 0;
+    #ifdef DEBUG
+        assert(A.size() == C.size());
+        assert(A.size() == G.size());
+        assert(A.size() == T.size());
+    #endif
     for(size_t i = 0; i < A.size(); ++i){
         rowsum = A[i] + C[i] + G[i] + T[i];
 
@@ -199,6 +206,7 @@ static void parse_pwm(const string &pwm, map<char, vector<double> > &motif){
             motif['T'].push_back(static_cast<double>(fields_int[4]) /
                                static_cast<double>(rowsum) );
 
+            // clear for next line of pwm
             fields.clear();
             fields_int.clear();
         }

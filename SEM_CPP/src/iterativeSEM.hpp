@@ -181,7 +181,7 @@ void filterDNaseWrapper(const Dataset &data);
 void findMaximumAverageSignalWrapper(const std::vector<std::string> &alignments, 
                                      double &mean_out, int &count_out, 
                                      double &stdev_out, double &sterr_out);
-void generatePWMfromSEM(const Dataset &data);
+void generatePWMfromSEM(const Dataset &data, string input, string output);
 void generateRmeplot(Dataset &data);
 void generateRplot(const Dataset &data);
 void generateSelfInfo(Dataset &data);
