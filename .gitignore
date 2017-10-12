@@ -14,3 +14,7 @@ results
 perf.data*
 *test*
 *err*
+*[1-9].txt
+*[1-9]
+*.out
+*debug*
