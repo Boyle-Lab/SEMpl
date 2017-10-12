@@ -26,8 +26,11 @@ void generatePWMfromSEM(const Dataset & data){
     // raw baseline is the output from running findMaximumAverageSignal... on
     // "enumerate" data
 
+    // sem file for TF
     string rawInput = data.output_dir + "/" + data.TF_name + ".sem";
+    // pwm file for TF
     string pwmOutput = data.output_dir + "/" + data.TF_name + ".pwm";
+
 
     double avgScore = data.Signal_data.enumerate_maximum;
     avgScore = avgScore * avgScore;
@@ -63,23 +66,26 @@ void generatePWMfromSEM(const Dataset & data){
 
     while(getline(INF, line, '\n')){
 
+        // split line into fields_str by tab
         split_string(line, "\t", fields_str);
+        // resize the double vector to match number of fields in line
         fields_dbl.resize(fields_str.size());
 
         for(size_t i = 1; i < 5; ++i){
             try{
+                // copied from line 62 of perl version
                 fields_dbl.at(i) = avgScore * pow(2, stod(fields_str.at(i) ) );
             }
             catch(...){
                 cerr << "Something has been caught!!\n\tEXITING\n";
                 exit(1);
             }
-
+            // if a field is below minimum score, adjust minimum score
             if(fields_dbl[i] < minimumScore){
                 minimumScore = fields_dbl[i];
             }
         }
-
+        // copied directly from line 69 of perl version
         AA.push_back(fields_dbl[1]);
         CC.push_back(fields_dbl[2]);
         GG.push_back(fields_dbl[3]);
@@ -88,10 +94,10 @@ void generatePWMfromSEM(const Dataset & data){
     }
     INF.close();
 
-
+    double rowmin = 0, denom = 0.0;
     for(size_t i = 0; i < AA.size(); ++i){
-        double rowmin = minimumScore;
-        double denom = 0.0;
+        rowmin = minimumScore;
+        denom = 0.0;
         denom += (AA[i] - rowmin) / (avgScore - rowmin);
         denom += (CC[i] - rowmin) / (avgScore - rowmin);
         denom += (GG[i] - rowmin) / (avgScore - rowmin);
@@ -111,6 +117,7 @@ void generatePWMfromSEM(const Dataset & data){
                                     * ( 1000.0 / denom ) + 0.5 ) );
     }
 
+    // p-value
     double alpha = 0.05;
 
     ofstream OUTF(pwmOutput);
@@ -120,10 +127,12 @@ void generatePWMfromSEM(const Dataset & data){
         exit(1);
     }
 
+    // formatting
     OUTF << "DE\t" + data.TF_name + '\n';
 
+    int rowsum = 0;
     for(size_t i = 0; i < A.size(); ++i){
-        int rowsum = A[i] + C[i] + G[i] + T[i];
+        rowsum = A[i] + C[i] + G[i] + T[i];
 
         OUTF << i + '\t';
         OUTF << static_cast<int>( (static_cast<double>(A[i]) * alpha)
@@ -150,7 +159,11 @@ void generatePWMfromSEM(const Dataset & data){
 
 }
 
+// REQUIRES: PWM within pwm file is formatted according to example
 static void parse_pwm(const string &pwm, map<char, vector<double> > &motif){
+    // clear motif for sanity
+    motif.clear();
+    // pwm is the filename containing a position weight matrix
     ifstream IN_HANDLE(pwm);
 
     if(!IN_HANDLE){
@@ -161,6 +174,7 @@ static void parse_pwm(const string &pwm, map<char, vector<double> > &motif){
     string line = "";
     vector<string> fields;
     vector<int> fields_int;
+    // while getline works successfully
     while(getline(IN_HANDLE, line, '\n')){
         // getline removes the newline character
         // if neither of those strings are present in the current line
@@ -168,16 +182,14 @@ static void parse_pwm(const string &pwm, map<char, vector<double> > &motif){
          && ( line.find("XX") == string::npos ) ){
             split_string(line, "\t", fields);
 
-            fields_int.push_back(-1);
-
             for(size_t i = 0; i < fields.size(); ++i){
-                if(i == 0) continue;
                 fields_int.push_back(stoi(fields[i]));
             }
 
             int rowsum = fields_int[1] + fields_int[2]
                        + fields_int[3] + fields_int[4];
-
+            // fill motif, which is a map from char to vector,
+            // stores integers corresponding to a char
             motif['A'].push_back(static_cast<double>(fields_int[1]) /
                                static_cast<double>(rowsum) );
             motif['C'].push_back(static_cast<double>(fields_int[2]) /
