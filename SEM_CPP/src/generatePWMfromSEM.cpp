@@ -35,7 +35,8 @@ void generatePWMfromSEM(const Dataset & data,
 
 
     double avgScore = data.Signal_data.enumerate_maximum;
-    avgScore = avgScore * avgScore;
+    avgScore *= avgScore;
+    // second power
     if(avgScore == 0){
         cerr << "avgScore shouldn't be 0!!!!!!\n\tEXITING\n";
         exit(1);
@@ -50,7 +51,7 @@ void generatePWMfromSEM(const Dataset & data,
     vector<int> C;
     vector<int> G;
 
-    ifstream INF(rawInput);
+    ifstream INF(input);
 
     if(INF){
         cerr << "INF is not good!!!!!\n\tEXITING\n";
@@ -122,7 +123,7 @@ void generatePWMfromSEM(const Dataset & data,
     // p-value
     double alpha = 0.05;
 
-    ofstream OUTF(pwmOutput);
+    ofstream OUTF(output);
 
     if(!OUTF){
         cerr << "OUTF is not good!!!!!\n\tEXITING\n";
@@ -198,13 +199,13 @@ static void parse_pwm(const string &pwm, map<char, vector<double> > &motif){
             // fill motif, which is a map from char to vector,
             // stores integers corresponding to a char
             motif['A'].push_back(static_cast<double>(fields_int[1]) /
-                               static_cast<double>(rowsum) );
+                                 static_cast<double>(rowsum) );
             motif['C'].push_back(static_cast<double>(fields_int[2]) /
-                               static_cast<double>(rowsum) );
+                                 static_cast<double>(rowsum) );
             motif['G'].push_back(static_cast<double>(fields_int[3]) /
-                               static_cast<double>(rowsum) );
+                                 static_cast<double>(rowsum) );
             motif['T'].push_back(static_cast<double>(fields_int[4]) /
-                               static_cast<double>(rowsum) );
+                                 static_cast<double>(rowsum) );
 
             // clear for next line of pwm
             fields.clear();
