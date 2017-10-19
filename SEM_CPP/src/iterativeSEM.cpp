@@ -223,6 +223,8 @@ int main(int argc, char **argv){
                 // reset converge
                 converge = 0;
             }
+            // assign current kmerHash to kmers
+            // so on the next iteration a comparison can be made
             kmers = data.kmerHash;
 
         }
@@ -286,6 +288,8 @@ string read_pwm(Dataset &data, string file){
 
     string s = "";
     // ignore first line of pwm
+    fin >> s >> s;
+    // s now contains second field
     fin.ignore(10000, '\n');
     for(int i = 0; i < Dataset::PWM::NUM_ROWS; ++i){
         // THE EXAMPLE FILE USES A TAB CHARACTER
