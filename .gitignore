@@ -18,3 +18,4 @@ perf.data*
 *[1-9]
 *.out
 *debug*
+*.dat
