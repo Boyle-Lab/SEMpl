@@ -30,7 +30,7 @@ static void create_kmer(const Dataset &data,
                         const double cutoff);
 static void parse_pwm(const Dataset &data,
                       map<pair<int, char>, double> &pwmHash,
-                      const vector<char> &nucleotideStack,
+                      vector<char> &nucleotideStack,
                       vector<double> &bestCase);
 
 // REQUIRES: within data, PWM_data is filled in
@@ -39,7 +39,10 @@ static void parse_pwm(const Dataset &data,
 // note: for now, searches for a pre-calculated cutoff
 void Enumerate_kmer(Dataset &data){
     map< pair<int, char>, double> pwmHash;
-    const vector<char> nucleotideStack {'A', 'C', 'G', 'T'};
+    //                      default nucleotide ordering,
+    //                      will check in parse_pwm
+    //                      for nucleotide ordering (columns) within pwm
+    vector<char> nucleotideStack {'A', 'C', 'G', 'T'};
     vector<double> bestCase;
     double cutoff = 0.0;
 
@@ -105,7 +108,7 @@ void Enumerate_kmer(Dataset &data){
 
 static void parse_pwm(const Dataset &data,
                       map<pair<int, char>, double> &pwmHash,
-                      const vector<char> &nucleotideStack,
+                      vector<char> &nucleotideStack,
                       vector<double> &bestCase){
 
   // modifiedFields is indexed from 1 in original implementation
@@ -114,10 +117,12 @@ static void parse_pwm(const Dataset &data,
   // but there are 13 total rows
     bestCase.clear();
     pwmHash.clear();
+
+
     
 
     int sum = 0;
-    for(int i = 0; i < Dataset::PWM::NUM_ROWS; ++i){
+    for(int i = 0; i < (int)data.PWM_data.matrix_arr[0].size(); ++i){
         sum = 0;
         map<int, double> modifiedFields;
         modifiedFields[0] = -10000000000.0;
@@ -173,7 +178,7 @@ static void create_kmer(const Dataset &data,
         try{
             // DO NOT USE to_string(args) on char!!!!!!
             temp = nucleotideStack[i];
-            retHash[ temp ] = pwmHash.at( {1, nucleotideStack[i] } );
+            retHash[temp] = pwmHash.at( {1, nucleotideStack[i] } );
         }
         catch(...){
             cerr << "line 184 Enumerate_kmer.cpp " << i << ' ' 
@@ -193,9 +198,6 @@ static void create_kmer(const Dataset &data,
         exit(1);
     }
 
-    std::vector<std::string> to_erase;
-    std::vector<std::pair<std::string, double> > to_add;
-    
     double maxscore = 0.0, score = 0.0;
     int length = 0;
     string key = "";

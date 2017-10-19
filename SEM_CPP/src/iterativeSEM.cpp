@@ -241,7 +241,9 @@ int main(int argc, char **argv){
             generateSNPEffectMatrix(data);
             // kmerHash should be filled in after the above line, within data!!!!
 
-            generatePWMfromSEM(data, /* fill me input */, /* fill me output */);
+            generatePWMfromSEM(data,
+                               data.output_dir + "/" + data.TF_name + ".sem",
+                               data.output_dir + "/" + data.TF_name + ".pwm");
 
             pVal = pvals.front();
             pvals.erase(pvals.begin());
@@ -285,26 +287,62 @@ string read_pwm(Dataset &data, string file){
 #ifdef DEBUG
     assert(fin);
 #endif
+    data.PWM_data.matrix_arr.clear();
 
     string s = "";
     // ignore first line of pwm
     fin >> s >> s;
+
+
     // s now contains second field
     fin.ignore(10000, '\n');
-    for(int i = 0; i < Dataset::PWM::NUM_ROWS; ++i){
-        // THE EXAMPLE FILE USES A TAB CHARACTER
-        fin.ignore(10000, '\t');
-        // ignore first character (row number)
-        for(int j = 0; j < Dataset::PWM::NUM_COLUMNS; ++j){
-            fin >> data.PWM_data.matrix_arr[i][j];
-#ifdef DEBUG
-            // cout << data.PWM_data.matrix_arr[i][j] << ' ';
-#endif
+    fin.ignore(10000, '\t');
+    int matrix_element = -1;
+    for(int column = 0; column < data.PWM_data.NUM_COLUMNS; ++column){
+        // adds a vector for each column
+        data.PWM_data.matrix_arr.push_back(vector<int>());
+    }
+
+    // while fin reads in the first element of a row
+    while(fin >> matrix_element){
+        #ifdef DEBUG
+            // cerr << matrix_element << endl;
+        #endif
+        // adding a row
+        data.PWM_data.matrix_arr[0].push_back(matrix_element);
+        for(int index = 1; index < data.PWM_data.NUM_COLUMNS; ++index){
+            fin >> matrix_element;
+            data.PWM_data.matrix_arr[index].push_back(matrix_element);
         }
+
+
+        // THE EXAMPLE FILE USES A TAB CHARACTER
+        // ignore until tab of next line, which ignores the 1st field
+        // of the next line also
+        // ignore first character (row number)
 #ifdef DEBUG
+        assert(data.PWM_data.matrix[0].size() == data.PWM_data.matrix[1].size());
+        assert(data.PWM_data.matrix[0].size() == data.PWM_data.matrix[2].size());
+        assert(data.PWM_data.matrix[0].size() == data.PWM_data.matrix[3].size());
         // cout << endl;
 #endif
         fin.ignore(10000, '\n');
+        fin.ignore(10000, '\t');
     }
+#ifdef DEBUG
+    // verifies to stdout that we are storing the matrix
+        for(int j = 0; j < (int)data.PWM_data.matrix_arr[0].size() ; ++j){
+            cout << j << '\t';
+            for(int i = 0; i < (int)data.PWM_data.matrix_arr.size(); ++i){
+            // fin >> data.PWM_data.matrix_arr[i][j];
+
+            
+                cout << data.PWM_data.matrix_arr[i][j] << '\t';
+
+            }
+            cout << endl;
+        }
+#endif
+    exit(1);
     return s;
 }

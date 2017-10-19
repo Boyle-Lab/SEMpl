@@ -61,6 +61,8 @@ void generateSNPEffectMatrix(Dataset &data) {
 	}
 
 
+    // clears the result caches, as in the caches that get filled
+    // with pre-computed kmers
     data.signal_cache.clear();
     data.signal_cache_scramble.clear();
     data.signal_cache_enumerate.clear();
@@ -70,15 +72,14 @@ void generateSNPEffectMatrix(Dataset &data) {
 	//Step 1: Generate Enumerated k-mers
 	cout << "Creating enumerated kmers from PWM file" << endl;
     cout << "\tstep one" << endl;
+
     int length = generate_kmers(data);
     // generate_kmers(data);
     // data.kmerHash is now filled in!!!!
 
 	//Step 2: Change one base at each location in k-mers and align to genome
     // ALSO: print output to file
-
-// mean needs to be higher, also needs more count
-
+    
     cout << "\tstep two" << endl;
     align_to_genome(data);
 
@@ -114,7 +115,11 @@ int generate_kmers(Dataset &data){
     Enumerate_kmer(data);
   // data.kmerHash is now filled in!!!
 
-    return Dataset::PWM::NUM_ROWS;
+    // length of kmers
+    // is constant, as the example has constant length
+    // will need to check this if pwm's have dfferent number
+    // of rows
+    return data.PWM_data.matrix_arr[0].size();
 
   // convert_PWM_format.pl is effectively performed within Enumerate_kmer(args)
 
@@ -151,7 +156,7 @@ void find_signal(Dataset &data, int length){
 
     // signal is big_wig
     data.accumSummary_data.align_accum_lines.clear();
-    data.accumSummary_data.align_accum_max.clear();
+    // data.accumSummary_data.align_accum_max.clear();
 
     vector<string> files;
     string cachefile = "";

@@ -49,11 +49,11 @@ struct Dataset {
 	// a struct to contain and manage the PWM data as given in the example file
 	struct PWM{
 
-	    static const int NUM_ROWS = 13, NUM_COLUMNS = 4;
+	    // static const int NUM_ROWS = 13;
+        static const int NUM_COLUMNS = 4;
 
 	    // holds the integer values of the matrix
-	    std::array<std::array<int, NUM_COLUMNS>, NUM_ROWS> matrix_arr;
-	    // holds the modified SEM version of the PWM
+	    std::vector<std::vector<int>> matrix_arr;
 	    // std::array<std::array<int, NUM_COLUMNS>, NUM_ROWS> sem_arr;
 
 	};
