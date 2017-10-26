@@ -50,7 +50,13 @@ void Enumerate_kmer(Dataset &data){
     data.kmerHash.clear();
 
     try{
+        #ifdef DEBUG
+        cout << "\tparsing pwm..." << flush;
+        #endif
         parse_pwm(data, pwmHash, nucleotideStack, bestCase);
+        #ifdef DEBUG
+        cout << "FINISH" << endl;
+        #endif
     }
     catch(...){
         cerr << "exception thrown from parse_pwm" << endl;
@@ -119,23 +125,29 @@ static void parse_pwm(const Dataset &data,
     pwmHash.clear();
 
 
-    
+    assert(nucleotideStack.size() == data.PWM_data.matrix_arr.size());
 
     int sum = 0;
-    for(int i = 0; i < (int)data.PWM_data.matrix_arr[0].size(); ++i){
+
+    // matrix_arr's first index is the column
+    // matrix_arr's second index is the row
+
+    for(int row = 0; row < (int)data.PWM_data.matrix_arr[0].size(); ++row){
+        // cout << row << endl;
         sum = 0;
         map<int, double> modifiedFields;
-        modifiedFields[0] = -10000000000.0;
-        for(int j = 0; j < Dataset::PWM::NUM_COLUMNS; ++j){
-            sum += data.PWM_data.matrix_arr[i][j];
-        }
 
-        for(int j = 0; j < Dataset::PWM::NUM_COLUMNS; ++j){
-            modifiedFields[j+1] = log2((static_cast<double>(data.PWM_data.matrix_arr[i][j]) + 0.25)
+        for(int column = 0; column < (int)data.PWM_data.matrix_arr.size(); ++column){
+            // sums each row
+            sum += data.PWM_data.matrix_arr[column][row];
+
+        }
+        // cout << "sum: " << sum << endl;
+        for(int column = 0; column < (int)data.PWM_data.matrix_arr.size(); ++column){
+            modifiedFields[column+1] = log2((static_cast<double>(data.PWM_data.matrix_arr[column][row]) + 0.25)
                                      / (static_cast<double>(sum) + 1.0)) - log2(0.25);
         }
 #ifdef DEBUG
-
         size_t sz = modifiedFields.size();
 #endif
         // TEST ME!!!
@@ -143,8 +155,8 @@ static void parse_pwm(const Dataset &data,
         // TEST ME!!!
         bestCase.push_back(findMax(modifiedFields));
         try{
-            for(int k = 0; k < Dataset::PWM::NUM_COLUMNS /*+ 1*/; ++k){
-                pwmHash[ { i + 1, nucleotideStack[k] } ] = modifiedFields.at(k + 1);
+            for(int column = 0; column < (int)data.PWM_data.matrix_arr.size(); ++column){
+                pwmHash[ { row + 1, nucleotideStack[column] } ] = modifiedFields.at(column + 1);
             }
         }
         catch(...){
@@ -174,18 +186,20 @@ static void create_kmer(const Dataset &data,
         cout << "Generating kmer list.\n";
     }
     string temp = "";
-    for(size_t i = 0; i < nucleotideStack.size(); ++i){
+    for(size_t nucleotide = 0; nucleotide < nucleotideStack.size(); ++nucleotide){
         try{
             // DO NOT USE to_string(args) on char!!!!!!
-            temp = nucleotideStack[i];
-            retHash[temp] = pwmHash.at( {1, nucleotideStack[i] } );
+            temp = nucleotideStack[nucleotide];
+            // use of temp to construct string from char of nucleotideStack
+            // then pass as key to retHash, as retHash takes strings
+            retHash[temp] = pwmHash.at( {1, nucleotideStack[nucleotide] } );
         }
         catch(...){
-            cerr << "line 184 Enumerate_kmer.cpp " << i << ' ' 
-                 << nucleotideStack[i] << endl;
+            cerr << "line 184 Enumerate_kmer.cpp " << nucleotide << ' '
+                 << nucleotideStack[nucleotide] << endl;
             exit(1);
         }
-    }
+    } // end for
     vector<double> maxScores(bestCase.size() + 1);
     try{
         maxScores.at(bestCase.size()) = 0;
@@ -212,7 +226,7 @@ static void create_kmer(const Dataset &data,
             }
             catch(...){
                 cerr << "out of range line 229 Enumerate_kmer.cpp" << endl
-                     << "i: " << i << ' ' << key << ' ' 
+                     << "i: " << i << ' ' << key << ' '
                      << score << endl;
                 exit(1);
             }
@@ -224,7 +238,7 @@ static void create_kmer(const Dataset &data,
                 exit(1);
             }
             if(maxscore < cutoff){
-               
+
             }
             else{
                 for(size_t j = 0; j < nucleotideStack.size(); j++){
@@ -248,15 +262,15 @@ static double get_cutoff(const Dataset &data){
 
     if(!IN_HANDLE){
         cerr << "Failure to open src/PWM_SCORES_FINAL.txt\n\tEXITING" << endl;
-        exit(1); 
+        exit(1);
     }
 
     while(getline(IN_HANDLE, curr_line)){
         if(curr_line.find(data.TF_name) != string::npos){
           // assumes that there is whitespace between the name and the value
             stringstream parse; // seems good
-            parse << curr_line; 
-            parse >> curr_line; 
+            parse << curr_line;
+            parse >> curr_line;
             double a = 0.0;
             parse >> a;
             if(data.settings.verbose){
@@ -281,4 +295,3 @@ static double findMax(const map<int, double> &v){
     }
     return max;
 }
-
