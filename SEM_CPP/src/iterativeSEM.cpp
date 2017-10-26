@@ -197,6 +197,7 @@ int main(int argc, char **argv){
         // output the results from comparing kmers
         ofstream outFile(data.output_dir + "/kmer_similarity.out");
         if(iteration > 1 && converge < 10){
+            // compare new and old kmers
             total_1 = same = diff = total_diff = 0;
             // for every key-value pair, find if the kmer is found was found in 
             // the other kmer key-value map
@@ -236,11 +237,13 @@ int main(int argc, char **argv){
             newOutput << data.output_dir << "/" << "it" << iteration << "/";
             if (converge == 9){
 		        data.settings.fastrun = true;
+                // the folder containing the final iteration data
                 final_run = newOutput.str();
             }
             generateSNPEffectMatrix(data);
             // kmerHash should be filled in after the above line, within data!!!!
 
+            // generate final PWM from final SEM
             generatePWMfromSEM(data,
                                data.output_dir + "/" + data.TF_name + ".sem",
                                data.output_dir + "/" + data.TF_name + ".pwm");
@@ -321,28 +324,31 @@ string read_pwm(Dataset &data, string file){
         // of the next line also
         // ignore first character (row number)
 #ifdef DEBUG
-        assert(data.PWM_data.matrix[0].size() == data.PWM_data.matrix[1].size());
-        assert(data.PWM_data.matrix[0].size() == data.PWM_data.matrix[2].size());
-        assert(data.PWM_data.matrix[0].size() == data.PWM_data.matrix[3].size());
+        assert(data.PWM_data.matrix_arr[0].size() == data.PWM_data.matrix_arr[1].size());
+        assert(data.PWM_data.matrix_arr[0].size() == data.PWM_data.matrix_arr[2].size());
+        assert(data.PWM_data.matrix_arr[0].size() == data.PWM_data.matrix_arr[3].size());
         // cout << endl;
 #endif
         fin.ignore(10000, '\n');
         fin.ignore(10000, '\t');
-    }
+    } // end while
 #ifdef DEBUG
     // verifies to stdout that we are storing the matrix
-        for(int j = 0; j < (int)data.PWM_data.matrix_arr[0].size() ; ++j){
-            cout << j << '\t';
-            for(int i = 0; i < (int)data.PWM_data.matrix_arr.size(); ++i){
-            // fin >> data.PWM_data.matrix_arr[i][j];
+    cout << "\tPWM\n";
+    // matrix_arr's first index is the column
+    // matrix_arr's second index is the row
+        for(int row = 0; row < (int)data.PWM_data.matrix_arr[0].size() ; ++row){
+            cout << row << '\t';
+            for(int column = 0; column < (int)data.PWM_data.matrix_arr.size(); ++column){
+            // fin >> data.PWM_data.matrix_arr[column][row];
 
             
-                cout << data.PWM_data.matrix_arr[i][j] << '\t';
+                cout << data.PWM_data.matrix_arr[column][row] << '\t';
 
             }
             cout << endl;
         }
 #endif
-    exit(1);
+    // exit(1);
     return s;
 }
