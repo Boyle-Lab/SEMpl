@@ -51,7 +51,7 @@ int main(int argc, char **argv){
         {0, 0, 0, 0}
     };
     char c = '\0';
-    
+
     while( (c = static_cast<char>(getopt_long_only(argc, argv, "p:m:b:t:o:c:v", long_opts, &index)) ) != -1){
         switch (c) {
             case 'p':
@@ -87,7 +87,7 @@ int main(int argc, char **argv){
             case 'c':
             if(optarg){
                 data.cachefile = optarg;
-            
+
 #ifdef DEBUG
                 cout << "\tcachefile flag: " << optarg << '\n';
 #endif
@@ -106,7 +106,7 @@ int main(int argc, char **argv){
                 cout << "unknown option!" << c << '\n';
                 break;
         }
-    } 
+    }
 
     // must have pwm file
 	if(data.PWM_file.empty()){
@@ -159,7 +159,7 @@ int main(int argc, char **argv){
         exit(1);
     }
     try{
-        generatePWMfromSEM(data, 
+        generatePWMfromSEM(data,
                            data.output_dir + "/" + data.TF_name + ".sem",
                            data.output_dir + "/" + data.TF_name + ".pwm");
     }
@@ -193,13 +193,13 @@ int main(int argc, char **argv){
     // kmers is old k-mer or previous data.kmerHash
     data.settings.fastrun = false;
     for (int iteration = 1; iteration < total_iterations; ++iteration){
-	    
+
         // output the results from comparing kmers
         ofstream outFile(data.output_dir + "/kmer_similarity.out");
         if(iteration > 1 && converge < 10){
             // compare new and old kmers
             total_1 = same = diff = total_diff = 0;
-            // for every key-value pair, find if the kmer is found was found in 
+            // for every key-value pair, find if the kmer is found was found in
             // the other kmer key-value map
             for(const auto &kmer_val_pair : kmers){
                 if(data.kmerHash.find(kmer_val_pair.first) != data.kmerHash.end()){
@@ -342,7 +342,7 @@ string read_pwm(Dataset &data, string file){
             for(int column = 0; column < (int)data.PWM_data.matrix_arr.size(); ++column){
             // fin >> data.PWM_data.matrix_arr[column][row];
 
-            
+
                 cout << data.PWM_data.matrix_arr[column][row] << '\t';
 
             }

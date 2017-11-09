@@ -91,7 +91,7 @@ struct Dataset {
 	};
 	// contains data from findMaximumAverageSignalWrapper
 	struct MaximumAverageSignalData{
-        
+
         double scramble_maximum = 0.0;
         int scramble_counter = 0;
         double scramble_stdev = 0.0;
@@ -105,7 +105,7 @@ struct Dataset {
         double alignment_stdev = 0.0;
         double alignment_sterr = 0.0;
 
-        
+
         double enumerate_maximum = 0.0;
         int enumerate_counter = 0;
         double enumerate_stdev = 0.0;
@@ -139,7 +139,7 @@ struct Dataset {
 
     std::map<std::string, double> kmerHash;
 
-    // std::vector<std::pair<std::pair<int, char>, 
+    // std::vector<std::pair<std::pair<int, char>,
     //             std::vector<std::string> > > signal_cache;
     std::map< std::pair<int, char>, std::vector<std::string> > signal_cache;
 
@@ -171,8 +171,8 @@ void alignToGenomeWrapper(Dataset &data, int iteration,
 void bowtie_genome_map(int length, const std::string& genome,
                         const std::string& file, const std::string& final_output,
                         bool verbose);
-void changeBase(const Dataset &data, int position, const char nucleotide, 
-                std::vector<std::string> &new_kmer_vec, 
+void changeBase(const Dataset &data, int position, const char nucleotide,
+                std::vector<std::string> &new_kmer_vec,
                 const std::string &genome);
 void checkCache(Dataset &data, std::vector<std::string> &in_file,
                 std::vector<std::string> &out_cache, const std::string &cachefile,
@@ -181,8 +181,8 @@ void checkCache(Dataset &data, std::vector<std::string> &in_file,
 void combineBedFiles(Dataset &data);
 void Enumerate_kmer(Dataset &data);
 void filterDNaseWrapper(const Dataset &data);
-void findMaximumAverageSignalWrapper(const std::vector<std::string> &alignments, 
-                                     double &mean_out, int &count_out, 
+void findMaximumAverageSignalWrapper(const std::vector<std::string> &alignments,
+                                     double &mean_out, int &count_out,
                                      double &stdev_out, double &sterr_out);
 void generatePWMfromSEM(const Dataset &data, std::string input, std::string output);
 void generateRmeplot(Dataset &data);

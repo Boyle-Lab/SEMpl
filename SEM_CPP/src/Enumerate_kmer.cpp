@@ -191,24 +191,37 @@ static void create_kmer(const Dataset &data,
             // DO NOT USE to_string(args) on char!!!!!!
             temp = nucleotideStack[nucleotide];
             // use of temp to construct string from char of nucleotideStack
-            // then pass as key to retHash, as retHash takes strings
+
+            // then pass as key to retHash, as retHash takes strings for keys
             retHash[temp] = pwmHash.at( {1, nucleotideStack[nucleotide] } );
         }
         catch(...){
-            cerr << "line 184 Enumerate_kmer.cpp " << nucleotide << ' '
+            cerr << "line " << __LINE__ << "Enumerate_kmer.cpp " << nucleotide << ' '
                  << nucleotideStack[nucleotide] << endl;
             exit(1);
         }
     } // end for
+    #ifdef DEBUG
+    // verified that retHash and kmerHash from original algorithm
+    // has the same contents at this step in the program
+        // for(auto i : retHash){
+        //     cerr << "rethash: " << i.first << ' ' << i.second << endl;
+        // }
+        // exit(1);
+    #endif
     vector<double> maxScores(bestCase.size() + 1);
+    // will contain data necessary to prune searchpaths (kmer permutations)
     try{
         maxScores.at(bestCase.size()) = 0;
+        // if kmer is of full length (number of rows in pwm)
+        // then maximum score that can be added is 0
         for(int i = static_cast<int>(bestCase.size()) - 1; i >= 0; --i){
+            // constructs maximum possible score at each position of any kmer
             maxScores.at(i) = maxScores.at(i+1) + bestCase.at(i);
         }
     }
     catch(...){
-        cerr << "line 207 or 205 out of range error" << endl;
+        cerr << "line " << __LINE__ << " out of range error" << endl;
         exit(1);
     }
 
@@ -225,7 +238,7 @@ static void create_kmer(const Dataset &data,
                 maxscore = maxScores.at(length) + score;
             }
             catch(...){
-                cerr << "out of range line 229 Enumerate_kmer.cpp" << endl
+                cerr << "out of range line " << __LINE__ << " Enumerate_kmer.cpp" << endl
                      << "i: " << i << ' ' << key << ' '
                      << score << endl;
                 exit(1);
@@ -234,7 +247,7 @@ static void create_kmer(const Dataset &data,
                 retHash.erase(iter++);
             }
             catch(...){
-                cerr << "line 239 Enumerate_kmer.cpp" << endl;
+                cerr << "line " << __LINE__ << "Enumerate_kmer.cpp" << endl;
                 exit(1);
             }
             if(maxscore < cutoff){
