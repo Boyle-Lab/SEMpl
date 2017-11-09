@@ -52,6 +52,9 @@ test: $(EXECUTABLE) libexport
 			-readcache results/HNF4A/HNF4A.cache.db -verbose > 1test.out 2> 1err.out &
 
 libexport:
+	@cd lib/libBigWig-master && make && mv libBigWig.so ../
+	@cd lib/TFM-Pvalue && make SEMCPPobj && mv libTFMpvalue.so ../
+	@cd lib/bowtie-1.0.0 && make && mv libbowtie.so ../
 	export LD_LIBRARY_PATH="/lib/x86_64-linux-gnu:/home/cmorteru/SEM_CPP/SEMCPP/lib"
 
 $(EXECUTABLE): $(C++OBJ) $(SQLITEOBJ)
@@ -75,4 +78,4 @@ clean:
 		rm -f obj/*.o
 		rm -f $(EXECUTABLE)
 
-.PHONY: all clean lib
+.PHONY: all clean lib libexport
