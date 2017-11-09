@@ -191,6 +191,7 @@ static void create_kmer(const Dataset &data,
             // DO NOT USE to_string(args) on char!!!!!!
             temp = nucleotideStack[nucleotide];
             // use of temp to construct string from char of nucleotideStack
+
             // then pass as key to retHash, as retHash takes strings for keys
             retHash[temp] = pwmHash.at( {1, nucleotideStack[nucleotide] } );
         }
