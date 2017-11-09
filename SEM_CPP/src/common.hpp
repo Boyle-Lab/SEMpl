@@ -12,19 +12,19 @@ std::string revCompDNA(std::string DNA);
 
 bool fileExists(const std::string &filename);
 
-void split_string(const std::string &str, const std::string &splitBy, 
+void split_string(const std::string &str, const std::string &splitBy,
 		   std::vector<std::string>& tokens);
-void split_string_white(const std::string &str, 
+void split_string_white(const std::string &str,
 		   std::vector<std::string>& tokens);
 
-std::string grab_string_at_index(const std::string &str, const size_t index, 
+std::string grab_string_at_index(const std::string &str, const size_t index,
 								 const std::string &split);
 
 std::string grab_string_at_index_white(const std::string &str, const size_t index);
 
 std::string grab_string_last_index(const std::string &s);
 
-void GetFilesInDirectory(std::vector<std::string> &out, 
+void GetFilesInDirectory(std::vector<std::string> &out,
 						 const std::string &directory);
 
 int getLength(const Dataset &data);

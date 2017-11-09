@@ -11,7 +11,7 @@ void pwm_to_tfm(Dataset & data){
 	data.TFM_data.letter_array[1].clear();
 	data.TFM_data.letter_array[2].clear();
 	data.TFM_data.letter_array[3].clear();
-	for(int i = 0; i < Dataset::PWM::NUM_ROWS; ++i){
+	for(int i = 0; i < (int)data.PWM_data.matrix_arr.size(); ++i){
 		data.TFM_data.letter_array[0].push_back(data.PWM_data.matrix_arr[i][0]);
 		data.TFM_data.letter_array[1].push_back(data.PWM_data.matrix_arr[i][1]);
 		data.TFM_data.letter_array[2].push_back(data.PWM_data.matrix_arr[i][2]);

@@ -1,3 +1,5 @@
+// Cody Morterud and Colten Williams
+
 
 // Required Options:
 //  --PWM PWM input file
@@ -46,7 +48,7 @@ int generate_kmers(Dataset &data);
 void Enumerate_kmer(Dataset &data);
 
 void generateSNPEffectMatrix(Dataset &data) {
-	// default options are built into settings within data 
+	// default options are built into settings within data
     // in iterativeSEM.hpp
 
 	if(data.cachefile.empty()){
@@ -61,6 +63,8 @@ void generateSNPEffectMatrix(Dataset &data) {
 	}
 
 
+    // clears the result caches, as in the caches that get filled
+    // with pre-computed kmers
     data.signal_cache.clear();
     data.signal_cache_scramble.clear();
     data.signal_cache_enumerate.clear();
@@ -70,14 +74,13 @@ void generateSNPEffectMatrix(Dataset &data) {
 	//Step 1: Generate Enumerated k-mers
 	cout << "Creating enumerated kmers from PWM file" << endl;
     cout << "\tstep one" << endl;
+
     int length = generate_kmers(data);
     // generate_kmers(data);
     // data.kmerHash is now filled in!!!!
 
 	//Step 2: Change one base at each location in k-mers and align to genome
     // ALSO: print output to file
-
-// mean needs to be higher, also needs more count
 
     cout << "\tstep two" << endl;
     align_to_genome(data);
@@ -114,7 +117,11 @@ int generate_kmers(Dataset &data){
     Enumerate_kmer(data);
   // data.kmerHash is now filled in!!!
 
-    return Dataset::PWM::NUM_ROWS;
+    // length of kmers
+    // is constant, as the example has constant length
+    // will need to check this if pwm's have dfferent number
+    // of rows
+    return data.PWM_data.matrix_arr[0].size();
 
   // convert_PWM_format.pl is effectively performed within Enumerate_kmer(args)
 
@@ -134,7 +141,7 @@ void align_to_genome(Dataset &data){
 // assumes filterDNaseWrapper_output is filled from previous function
 // and that the output is sorted, and contains only unique string values
 
-// NOTE: iteratively constructs the output from 
+// NOTE: iteratively constructs the output from
 //       findMaximumAverageSignalWrapper(args),
 //       as opposed to aggregately, as done in the original algorithm
 void find_signal(Dataset &data, int length){
@@ -151,7 +158,6 @@ void find_signal(Dataset &data, int length){
 
     // signal is big_wig
     data.accumSummary_data.align_accum_lines.clear();
-    data.accumSummary_data.align_accum_max.clear();
 
     vector<string> files;
     string cachefile = "";
@@ -246,7 +252,7 @@ void find_signal(Dataset &data, int length){
             if(data.settings.verbose){
                 cout << "\tsorting..." << flush;
             }
-            sort(data.signal_cache[ {position, bp} ].begin(), 
+            sort(data.signal_cache[ {position, bp} ].begin(),
                  data.signal_cache[ {position, bp} ].end() );
             if(data.settings.verbose){
                 cout << "FINISH" << endl;
@@ -255,7 +261,7 @@ void find_signal(Dataset &data, int length){
                                     + data.accumSummary_data.align_accum_lines.size());
             // returns iterator to one past the location of the last copy
             if(data.settings.verbose){
-                cout << "\tcopying..." << flush; 
+                cout << "\tcopying..." << flush;
             }
             auto iter = data.signal_output.begin();
             if(data.accumSummary_data.align_accum_lines.size() != 0 ){
@@ -332,31 +338,31 @@ void find_signal(Dataset &data, int length){
             }
 #endif
             try{
-                auto iter = data.sig_deets_maximum.insert( { {position, bp}, 
+                auto iter = data.sig_deets_maximum.insert( { {position, bp},
                                                     data.Signal_data.alignment_maximum} );
-                
+
                     // cout << '\t' << data.Signal_data.alignment_maximum << "  max inserted" << endl;
-                
+
                 if(!iter.second){
                     cerr << "duplicate key inserted into sig_deets_maximum" << endl;
                     exit(1);
                 }
                 // second pair type
-                auto iter1 = data.sig_deets_counter.insert( { {position, bp}, 
+                auto iter1 = data.sig_deets_counter.insert( { {position, bp},
                                                     data.Signal_data.alignment_counter} );
                     // cout << '\t' << data.Signal_data.alignment_counter << "  counter inserted" << endl;
                 if(!iter1.second){
                     cerr << "duplicate key inserted into sig_deets_counter" << endl;
                     exit(1);
                 }
-                iter = data.sig_deets_stdev.insert( { {position, bp}, 
+                iter = data.sig_deets_stdev.insert( { {position, bp},
                                                     data.Signal_data.alignment_stdev} );
                     // cout << '\t' << data.Signal_data.alignment_stdev << "  stdev inserted" << endl;
                 if(!iter.second){
                     cerr << "duplicate key inserted into sig_deets_stdev" << endl;
                     exit(1);
                 }
-                iter = data.sig_deets_sterr.insert( { {position, bp}, 
+                iter = data.sig_deets_sterr.insert( { {position, bp},
                                                     data.Signal_data.alignment_sterr} );
                 if(!iter.second){
                     cerr << "duplicate key inserted into sig_deets_sterr" << endl;
@@ -368,9 +374,9 @@ void find_signal(Dataset &data, int length){
                 exit(1);
             }
 
-        
-        
-        free(arr);    
+
+
+        free(arr);
     }
 
 }
@@ -404,7 +410,7 @@ void create_baselines(Dataset &data, int length){
     // final output from processing enumerated kmer data
     vector<string> enumerate_cache_to_align;
 
-    
+
     for(const auto &pair : data.kmerHash){
         enumerate_kmers.push_back(pair.first);
         // cout << "first: " << pair.first << endl << "second: " << pair.second << endl;
@@ -412,8 +418,8 @@ void create_baselines(Dataset &data, int length){
 
     if(!data.settings.fastrun){
         scramble_kmers = enumerate_kmers;
-        for(auto it = scramble_kmers.begin(); 
-            it != scramble_kmers.end(); 
+        for(auto it = scramble_kmers.begin();
+            it != scramble_kmers.end();
             ++it){
             random_shuffle(it->begin(), it->end());
         }
@@ -511,12 +517,12 @@ void create_baselines(Dataset &data, int length){
     if(!enumerate_cache_to_align.empty()){
         seq_col_to_fa(enumerate_cache_to_align,
                       data.output_dir + "/BASELINE/Enumerated_kmer.fa");
-        bowtie_genome_map(length, "../data/hg19", 
+        bowtie_genome_map(length, "../data/hg19",
                           data.output_dir + "/BASELINE/Enumerated_kmer.fa",
                           data.output_dir + "/BASELINE/Enumerated_kmer_filtered.bed",
                           data.settings.verbose);
         try{
-        
+
             accumSummary_scale(data, data.bigwig_file,
                                data.output_dir + "/BASELINE/Enumerated_kmer_filtered.bed",
                               length, Dataset::accumSummary_type::accumSummary_dest::enumerated);
@@ -554,7 +560,7 @@ void create_baselines(Dataset &data, int length){
         for(auto val : data.signal_enumerate_output){
             debug << val << endl;
         }
-    #endif    
+    #endif
 
 
 
@@ -562,8 +568,8 @@ void create_baselines(Dataset &data, int length){
         if(data.settings.verbose) cout << "scram" << flush;
         findMaximumAverageSignalWrapper(data.signal_scramble_output,
                                         data.Signal_data.scramble_maximum,
-                                        data.Signal_data.scramble_counter, 
-                                        data.Signal_data.scramble_stdev, 
+                                        data.Signal_data.scramble_counter,
+                                        data.Signal_data.scramble_stdev,
                                         data.Signal_data.scramble_sterr);
     }
     #ifdef DEBUG
@@ -577,8 +583,8 @@ void create_baselines(Dataset &data, int length){
     if(data.settings.verbose) cout << "enum" << flush;
     findMaximumAverageSignalWrapper(data.signal_enumerate_output,
                                     data.Signal_data.enumerate_maximum,
-                                    data.Signal_data.enumerate_counter, 
-                                    data.Signal_data.enumerate_stdev, 
+                                    data.Signal_data.enumerate_counter,
+                                    data.Signal_data.enumerate_stdev,
                                     data.Signal_data.enumerate_sterr);
 
 }
