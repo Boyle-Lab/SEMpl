@@ -42,7 +42,6 @@ EXECUTABLE=iterativeSEM
 
 all: $(EXECUTABLE)
 
-# ./iterativeSEM -PWM examples/MA0114.1.pwm -merge_file examples/wgEncodeOpenChromDnaseHepg2Pk.narrowPeak.gz			-big_wig examples/wgEncodeHaibTfbsHepg2Hnf4asc8987V0416101RawRep1.bigWig -TF_name HNF4A -output results/HNF4A/ -readcache results/HNF4A/HNF4A.cache.db -verbose
 
 test: $(EXECUTABLE)
 		nohup ./iterativeSEM -PWM examples/MA0114.1.pwm \
