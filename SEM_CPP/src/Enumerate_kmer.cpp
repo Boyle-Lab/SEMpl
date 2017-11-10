@@ -191,7 +191,6 @@ static void create_kmer(const Dataset &data,
             // DO NOT USE to_string(args) on char!!!!!!
             temp = nucleotideStack[nucleotide];
             // use of temp to construct string from char of nucleotideStack
-
             // then pass as key to retHash, as retHash takes strings for keys
             retHash[temp] = pwmHash.at( {1, nucleotideStack[nucleotide] } );
         }
@@ -218,6 +217,9 @@ static void create_kmer(const Dataset &data,
         for(int i = static_cast<int>(bestCase.size()) - 1; i >= 0; --i){
             // constructs maximum possible score at each position of any kmer
             maxScores.at(i) = maxScores.at(i+1) + bestCase.at(i);
+            #ifdef DEBUG
+            // cout << "maxscores[" << i << "] " << maxScores[i] << endl;
+            #endif
         }
     }
     catch(...){
