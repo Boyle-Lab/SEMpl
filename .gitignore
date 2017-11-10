@@ -4,7 +4,6 @@
 ../kent/
 ../.DS_Store
 ../Bio-BigFile-1.07/
-examples
 obj/
 *.clang_complete
 *.so
