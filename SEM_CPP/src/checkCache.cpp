@@ -105,6 +105,10 @@ void checkCache(Dataset &data, vector<string> &in_file, vector<string> &to_align
 
         // int num_col = 0;
 
+	//utilize sqlite transactions to speed this all up
+	sqlite3_exec(cacheDB, "BEGIN TRANSACTION", NULL, NULL, NULL);
+	sqlite3_exec(cacheDB, "PRAGMA journal_mode = MEMORY", NULL, NULL, NULL);
+
         for(const string &kmer : in_file){
             // cout << kmer.c_str() << endl;
             message = sqlite3_bind_text(cache_signal_data_query, 1, kmer.c_str(),
@@ -131,16 +135,16 @@ void checkCache(Dataset &data, vector<string> &in_file, vector<string> &to_align
 
 //          grabs the alignment of current kmers
             const char* text = (char*)sqlite3_column_text(cache_signal_data_query, 1);
-            
+
             if(text){
                 #ifdef DEBUG
                 // cerr << "\tfound: #" << kmer << '#' << endl
                 //      << "\tcorresponding align: #" << text << '#' << endl;
                 #endif
                 signal_cache_data.emplace_back(text);
-                
+
                 text = NULL;
-                
+
             }
             else{
                 // not found
@@ -162,7 +166,7 @@ void checkCache(Dataset &data, vector<string> &in_file, vector<string> &to_align
                 message = sqlite3_step(amount_seen_query);
                 isRowReady(message);
 
-                // message is holding the int value now, 
+                // message is holding the int value now,
                 // count[0], not a code
                 #ifdef DEBUG
                     if(sqlite3_column_type(amount_seen_query, 0) != SQLITE_INTEGER){
@@ -208,6 +212,13 @@ void checkCache(Dataset &data, vector<string> &in_file, vector<string> &to_align
             sqlite3_reset(cache_signal_data_query);
             sqlite3_clear_bindings(cache_signal_data_query);
         }
+
+        sqlite3_exec(cacheDB, "COMMIT TRANSACTION", NULL, NULL, NULL);
+
+	//probably should finalize all of these - this is a memory leak otherwise
+        message = sqlite3_finalize(insert_into_seen_cache_query);
+        problemEncountered(message, "finalize insert_into_seen_cache_query");
+
         // store computations found in cache
         switch (dest) {
             case Dataset::accumSummary_type::accumSummary_dest::alignment:
