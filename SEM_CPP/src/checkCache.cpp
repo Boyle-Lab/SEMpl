@@ -79,7 +79,7 @@ void checkCache(Dataset &data, vector<string> &in_file, vector<string> &to_align
 
     if(newcache){
         if(data.settings.verbose){
-            // cout << "Cache does exist\n";
+            cout << "Cache does exist\n" << flush;
         }
 
         msg = "SELECT count(*) FROM seen_cache WHERE kmer=? AND iter!=?";
@@ -233,13 +233,13 @@ void checkCache(Dataset &data, vector<string> &in_file, vector<string> &to_align
     }
     else{
         if(data.settings.verbose){
-            cout << "No existing cache!\n";
+            cout << "No existing cache!\n" << flush;
         }
     // BLOB? why is it a BLOB? I used "text" not "blob", will need to ask about this
 
         // sqlite3_stmt *build_statement = NULL;
         char *z_err_msg = NULL;
-        //cout << "Creating Table kmer_cache" << endl;
+        //cout << "Creating Table kmer_cache" << flush;
         msg = "CREATE TABLE kmer_cache (kmer TEXT PRIMARY KEY NOT NULL, alignment BLOB)";
         message = sqlite3_exec(cacheDB, msg.c_str(), NULL, NULL, &z_err_msg);
         if(message != SQLITE_OK){
@@ -247,18 +247,18 @@ void checkCache(Dataset &data, vector<string> &in_file, vector<string> &to_align
             exit(1);
         }
         sqlite3_free(z_err_msg);
-       
-	    //cout << "Creating Unique Index kmerIDX" << endl;
+
+	//cout << "Creating Unique Index kmerIDX" << flush;
         msg = "CREATE UNIQUE INDEX kmerIDX ON kmer_cache(kmer)";
         message = sqlite3_exec(cacheDB, msg.c_str(), NULL, NULL, &z_err_msg);
         problemEncountered(message, "create unique index on kmer_cache");
         sqlite3_free(z_err_msg);
-        
+
         msg = "CREATE TABLE seen_cache (kmer TEXT PRIMARY KEY NOT NULL, iter INT NOT NULL)";
         message = sqlite3_exec(cacheDB, msg.c_str(), NULL, NULL, &z_err_msg);
         problemEncountered(message, "create table seen_cache");
         sqlite3_free(z_err_msg);
-        
+
         msg = "CREATE UNIQUE INDEX seenIDX ON seen_cache(kmer)";
         message = sqlite3_exec(cacheDB, msg.c_str(), NULL, NULL, &z_err_msg);
         problemEncountered(message, "create unique index on seen_cache");
@@ -275,10 +275,12 @@ void checkCache(Dataset &data, vector<string> &in_file, vector<string> &to_align
             cerr << "insert_into_seen_cache_query shouldn't be NULL\n";
             exit(1);
         }
-	//cout << "Binding to cache" << endl;
+	cout << "Binding to cache" << endl << flush;
 
-        // to_align = in_file;
-        swap(to_align, in_file);
+	//utilize sqlite transactions to speed this all up
+	sqlite3_exec(cacheDB, "BEGIN TRANSACTION", NULL, NULL, NULL);
+	sqlite3_exec(cacheDB, "PRAGMA journal_mode = MEMORY", NULL, NULL, NULL);
+
         for(const auto &kmer : in_file){
             message = sqlite3_bind_text(insert_into_seen_cache_query, 1, 
                       kmer.c_str(), -1, SQLITE_TRANSIENT);
@@ -293,10 +295,16 @@ void checkCache(Dataset &data, vector<string> &in_file, vector<string> &to_align
             sqlite3_reset(insert_into_seen_cache_query);
             sqlite3_clear_bindings(insert_into_seen_cache_query);
         }
+
+	sqlite3_exec(cacheDB, "COMMIT TRANSACTION", NULL, NULL, NULL);
+
 	//cout << "Finalizing insert_into_seen_cache_query" << endl;
         message = sqlite3_finalize(insert_into_seen_cache_query);
-        
         problemEncountered(message, "finalize insert_into_seen_cache_query");
+
+        // to_align = in_file;
+        swap(to_align, in_file);
+
     }
 
     message = sqlite3_close_v2(cacheDB);
