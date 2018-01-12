@@ -2,9 +2,22 @@
 #include "common.hpp"
 #include <iostream>
 #include <cstdlib>
+#include <sstream>
 using namespace std;
 
 
+//From https://stackoverflow.com/questions/478898/how-to-execute-a-command-and-get-output-of-command-within-c-using-posix
+std::stringstream exec(const char* cmd) {
+    std::array<char, 128> buffer;
+    std::stringstream result;
+    std::shared_ptr<FILE> pipe(popen(cmd, "r"), pclose);
+    if (!pipe) throw std::runtime_error("popen() failed!");
+    while (!feof(pipe.get())) {
+        if (fgets(buffer.data(), 128, pipe.get()) != nullptr)
+            result << buffer.data();
+    }
+    return result;
+}
 
 
 // if I understand correctly, bowtie places output in the filename specified
@@ -21,23 +34,10 @@ void bowtie_genome_map(int length, const string& genome, const string& file,
     //const char *argvs[9] = {"./bin/bowtie", "--quiet", "-a", "-v 0", 
     //                        genome.c_str(), "-f", file.c_str(), "temp.dat" };
 
-    const string temp_file = "temp_bowtie.dat";
+    string cmd = "./bin/bowtie --threads 5 --quiet -a -v 0 ./data/hg19 -f " + file;
 
-    string cmd = "./bin/bowtie --quiet -a -v 0 ./data/hg19 -f " 
-                 + file + ' ' + temp_file;
-    
-    
     if(verbose){
         cout << "Running command: " << cmd << "\n\tRunning...." << flush;
-    }
-    
-    if(system(cmd.c_str()) != 0){
-        cerr << "problem running " << cmd << endl;
-        exit(1);
-    }
-
-    if(verbose){
-        cout << "FINISH" << endl;
     }
 
 
@@ -47,18 +47,14 @@ void bowtie_genome_map(int length, const string& genome, const string& file,
         exit(1);
     }
 
-    ifstream IN(temp_file);
-    if(!IN){
-        cerr << "Failure to open \"" << file << "\".\n";
-        exit(1);
-    }
 
+    std::stringstream IN = exec(cmd.c_str());
     string map_line = "";
     vector<string> dat;
     string DNA = "";
-    while(getline(IN, map_line)){
+    while(std::getline(IN, map_line, '\n')){
         #ifdef DEBUG
-            // cout << map_line << endl;
+           //cout << map_line << endl << flush;
         #endif
         split_string(map_line, "\t", dat);
         if(dat[1] == "+"){
@@ -79,5 +75,11 @@ void bowtie_genome_map(int length, const string& genome, const string& file,
 
         dat.clear();
     }
-    IN.close();
+
+    if(verbose){
+        cout << "FINISH" << endl;
+    }
+
+
 }
+
