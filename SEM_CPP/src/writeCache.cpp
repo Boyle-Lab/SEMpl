@@ -79,6 +79,10 @@ void writeCache(Dataset &data, const string &cache,
     message = sqlite3_open(cache.c_str(), &cacheDB);
     problemEncountered(message, "open");
 
+    //utilize sqlite transactions to speed this all up
+    sqlite3_exec(cacheDB, "BEGIN TRANSACTION", NULL, NULL, NULL);
+    sqlite3_exec(cacheDB, "PRAGMA journal_mode = MEMORY", NULL, NULL, NULL);
+
     if(newcache){
 
     }
@@ -149,6 +153,8 @@ void writeCache(Dataset &data, const string &cache,
         sqlite3_reset(staged_query);
         sqlite3_clear_bindings(staged_query);
     }
+
+    sqlite3_exec(cacheDB, "COMMIT TRANSACTION", NULL, NULL, NULL);
 
     message = sqlite3_finalize(staged_query);
     problemEncountered(message, "finalize staged_query");
