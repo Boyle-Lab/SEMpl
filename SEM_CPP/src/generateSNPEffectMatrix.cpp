@@ -62,6 +62,12 @@ void generateSNPEffectMatrix(Dataset &data) {
 		cout << "\nGenerating SEM for " << data.TF_name << endl;
 	}
 
+    if(data.settings.verbose){
+        cout << "\tMaking directories" << endl;
+    }
+    string cmd = "mkdir -p " + data.output_dir;
+    system(cmd.c_str());
+
 
     // clears the result caches, as in the caches that get filled
     // with pre-computed kmers
@@ -83,17 +89,18 @@ void generateSNPEffectMatrix(Dataset &data) {
     // ALSO: print output to file
 
     cout << "\tstep two" << endl;
-    align_to_genome(data);
+    //align_to_genome(data);
 
     //Step 3: Filter using DNase data and finding the signal at each location
     // ALSO: read in output of filterDNaseWrapper back to memory
     // writes the *_filtered files
     cout << "\tstep three" << endl;
-    filterDNaseWrapper(data);
+    //filterDNaseWrapper(data);
 
     //Step 4: Find the signal using chIP-seq data
-    cout << "\tstep four" << endl;
+    cout << "\tstep four" << endl << flush;
     find_signal(data, length);
+exit(0);
 
     //Step 5: Generate baselines
     cout << "\tstep five" << endl;
@@ -115,12 +122,16 @@ int generate_kmers(Dataset &data){
     }
 
     Enumerate_kmer(data);
-  // data.kmerHash is now filled in!!!
+    // data.kmerHash is now filled in!!!
 
     // length of kmers
     // is constant, as the example has constant length
     // will need to check this if pwm's have dfferent number
     // of rows
+    #ifdef DEBUG
+        // correct value for the example data
+        // assert(data.PWM_data.matrix_arr[0].size() == 13);
+    #endif
     return data.PWM_data.matrix_arr[0].size();
 
   // convert_PWM_format.pl is effectively performed within Enumerate_kmer(args)
@@ -133,6 +144,7 @@ int generate_kmers(Dataset &data){
 void align_to_genome(Dataset &data){
     if(data.settings.verbose){
         cout << "Aligning SNPs in kmers to the genome\n";
+
     }
         // align all to genome
     alignToGenomeWrapper(data, data.settings.iteration, "./data/hg19");
@@ -180,7 +192,8 @@ void find_signal(Dataset &data, int length){
     int position = 0;
 
     for(const string &file : files){
-        if(file.find("filtered") == string::npos){
+        if(file.find("bed") == string::npos){
+        //if(file.find("filtered") == string::npos){
             continue;
         }
         if(data.settings.verbose){
@@ -432,7 +445,7 @@ void create_baselines(Dataset &data, int length){
         bowtie_genome_map(length, "../data/hg19",
                           data.output_dir + "/BASELINE/Scrambled_kmer.fa",
                           data.output_dir + "/BASELINE/Scrambled_kmer.bed",
-                          data.settings.verbose);
+                          data.DNase_file, data.settings.verbose);
 
         // NEED TO CHECK THAT THIS IS THE RIGHT RELATIVE DIRECTORY
         cmd = "./bin/bedtools intersect -a " + data.output_dir
@@ -520,7 +533,7 @@ void create_baselines(Dataset &data, int length){
         bowtie_genome_map(length, "../data/hg19",
                           data.output_dir + "/BASELINE/Enumerated_kmer.fa",
                           data.output_dir + "/BASELINE/Enumerated_kmer_filtered.bed",
-                          data.settings.verbose);
+                          data.DNase_file, data.settings.verbose);
         try{
 
             accumSummary_scale(data, data.bigwig_file,
