@@ -50,7 +50,7 @@ struct Dataset {
 	struct PWM{
 
 	    // static const int NUM_ROWS = 13;
-        static const int NUM_COLUMNS = 4;
+            static const int NUM_COLUMNS = 4;
 
 	    // holds the integer values of the matrix
 	    std::vector<std::vector<int>> matrix_arr;
@@ -170,7 +170,7 @@ void alignToGenomeWrapper(Dataset &data, int iteration,
                             std::string genome);
 void bowtie_genome_map(int length, const std::string& genome,
                         const std::string& file, const std::string& final_output,
-                        bool verbose);
+                        const std::string& dnase_file, bool verbose);
 void changeBase(const Dataset &data, int position, const char nucleotide,
                 std::vector<std::string> &new_kmer_vec,
                 const std::string &genome);
