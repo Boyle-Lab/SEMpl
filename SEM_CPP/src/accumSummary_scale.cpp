@@ -157,7 +157,7 @@ void accumSummary_scale(Dataset &data, const string &hfile,
 	    		if(direction.find('+') != string::npos){
 	    			for(int k = 0; k < total_size; ++k){
 		                    if(!isnan( ptr->value[k] )){
-		                        ptr->value[k] = roundf(ptr->value[k] * 1000.0) / 1000.0;
+		                        ptr->value[k] = roundf(ptr->value[k] * 10000.0) / 10000.0;
 		                        // output[k] = signal_array[k];
 		//			cout << ptr->value[k] << endl << flush;
 		                        if(ptr->value[k] > max){
@@ -170,7 +170,7 @@ void accumSummary_scale(Dataset &data, const string &hfile,
 	   	       else{
     				for(int k = total_size - 1; k >= 0; --k){
                 		    if(!isnan( ptr->value[k] )){
-                		        ptr->value[k] = roundf(ptr->value[k] * 1000.0) / 1000.0;
+                		        ptr->value[k] = roundf(ptr->value[k] * 10000.0) / 10000.0;
                 		        // output[k] = signal_array[k];
                 		        if(ptr->value[k] > max){
                 		            max = ptr->value[k];
@@ -191,12 +191,13 @@ void accumSummary_scale(Dataset &data, const string &hfile,
 	        free(ptr->value);
 	        free(ptr);
 
-		//cerr << "Hitcount: " << hitcount << " Total size: " << total_size << "Max: " << max << endl;
+		cerr << "Hitcount: " << hitcount << " Total size: " << total_size << "Max: " << max;
 
 	        if( (static_cast<float>(hitcount) / static_cast<float>(total_size) ) < 0.90){
 	            max = NAN_VALUE;
 	        }
 	        // if max is maximum possible double value, then it is not applicable
+		cerr << " New max: " << max << endl;
 
 	        line += '\t' + to_string(max);
 
