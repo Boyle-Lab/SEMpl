@@ -97,13 +97,13 @@ void accumSummary_scale(Dataset &data, const string &hfile,
 
 	while( getline(input, line) ){
 
-        max = 0.0;
+	        max = 0.0;
 		// initialize variables
-        temp.clear();
+        	temp.clear();
 		chrom = nullptr;
 		split_string(line, splitBy, temp);
 		seqid = temp[0];
-        upstart = 0, upend = 0;
+       		upstart = 0, upend = 0;
 
 		// if lines begins with chr
 		if(temp[0][0] == 'c'){
@@ -121,9 +121,9 @@ void accumSummary_scale(Dataset &data, const string &hfile,
 			seqid = "chr" + temp[0];
 		}
 		start = stoi(temp[1]) - 1;
-        #ifdef DEBUG
-        // cerr << "temp[1]: #" << temp[1] << "# stoi: #" << start + 1 << '#' << endl;
-        #endif
+#ifdef DEBUG
+        	// cerr << "temp[1]: #" << temp[1] << "# stoi: #" << start + 1 << '#' << endl;
+#endif
 		end = stoi(temp[2]);
 		direction = temp[4];
 
@@ -134,69 +134,71 @@ void accumSummary_scale(Dataset &data, const string &hfile,
 		strcpy(chrom, seqid.c_str());
 
 
-        bwOverlappingIntervals_t *ptr = bwGetValues(bwFile, chrom, 
+        	bwOverlappingIntervals_t *ptr = bwGetValues(bwFile, chrom, 
                                         static_cast<uint32_t>(upstart),
                                         static_cast<uint32_t>(upend),
                                         1);
-        if(!ptr){
-            cerr << "problem with bwGetValues!!!" << endl 
-                 << "\tEXITING" << endl;
-            exit(1);
-        }
+        	if(!ptr){
+        	    cerr << "problem with bwGetValues!!!" << endl 
+        	         << "\tEXITING" << endl;
+        	    exit(1);
+        	}
 
-        // cout << "\t for chrom: " << seqid << endl;
-        // cout << "\tdeleted chrom" << endl;
+	        // cout << "\t for chrom: " << seqid << endl;
+	        // cout << "\tdeleted chrom" << endl;
 		delete [] chrom;
 
 
-        int hitcount = 0;
+	        int hitcount = 0;
 
-        try{
-            // '+' is found
-            // cout << "\tline 179" << endl;
-    		if(direction.find('+') != string::npos){
-    			for(int k = 0; k < total_size; ++k){
-                    if(!isnan( ptr->value[k] )){
-                        ptr->value[k] = roundf(ptr->value[k] * 1000.0) / 1000.0;
-                        // output[k] = signal_array[k];
-                        if(ptr->value[k] > max){
-                            max = ptr->value[k];
-                        }
-                        ++hitcount;
-                    }
-                }
-            }
-    		else{
-    			for(int k = total_size - 1; k >= 0; --k){
-                    if(!isnan( ptr->value[k] )){
-                        ptr->value[k] = roundf(ptr->value[k] * 1000.0) / 1000.0;
-                        // output[k] = signal_array[k];
-                        if(ptr->value[k] > max){
-                            max = ptr->value[k];
-                        }
-                        ++hitcount;
-                    }
-                }
-            }
-        }
-        catch(...){
-            cerr << "nan exception thrown" << endl;
-            exit(1);
-        }
-
-
-        free(ptr->start);
-        free(ptr->end);
-        free(ptr->value);
-        free(ptr);
+	        try{
+	            // '+' is found
+	             //cout << "\tline 179" << endl << flush;
+	    		if(direction.find('+') != string::npos){
+	    			for(int k = 0; k < total_size; ++k){
+		                    if(!isnan( ptr->value[k] )){
+		                        ptr->value[k] = roundf(ptr->value[k] * 1000.0) / 1000.0;
+		                        // output[k] = signal_array[k];
+		//			cout << ptr->value[k] << endl << flush;
+		                        if(ptr->value[k] > max){
+		                            max = ptr->value[k];
+		                        }
+		                        ++hitcount;
+		                    }
+		                }
+	               }
+	   	       else{
+    				for(int k = total_size - 1; k >= 0; --k){
+                		    if(!isnan( ptr->value[k] )){
+                		        ptr->value[k] = roundf(ptr->value[k] * 1000.0) / 1000.0;
+                		        // output[k] = signal_array[k];
+                		        if(ptr->value[k] > max){
+                		            max = ptr->value[k];
+                		        }
+                		        ++hitcount;
+               			     }
+               			 }
+            		}
+	        }
+	        catch(...){
+	            cerr << "nan exception thrown" << endl;
+	            exit(1);
+	        }
 
 
-        if( (static_cast<float>(hitcount) / static_cast<float>(total_size) ) < 0.90){
-            max = NAN_VALUE;
-        }
-        // if max is maximum possible double value, then it is not applicable
+	        free(ptr->start);
+	        free(ptr->end);
+	        free(ptr->value);
+	        free(ptr);
 
-        line += '\t' + to_string(max);
+		//cerr << "Hitcount: " << hitcount << " Total size: " << total_size << "Max: " << max << endl;
+
+	        if( (static_cast<float>(hitcount) / static_cast<float>(total_size) ) < 0.90){
+	            max = NAN_VALUE;
+	        }
+	        // if max is maximum possible double value, then it is not applicable
+
+	        line += '\t' + to_string(max);
 
         switch (dest) {
             case Dataset::accumSummary_type::accumSummary_dest::none:
