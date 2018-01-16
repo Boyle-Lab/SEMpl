@@ -133,11 +133,12 @@ void accumSummary_scale(Dataset &data, const string &hfile,
 		chrom = new char[seqid.length() + 1];
 		strcpy(chrom, seqid.c_str());
 
+		//cerr << "Upstart: " << upstart << " Upend: " << upend << " Chr: " << chrom << endl;
 
         	bwOverlappingIntervals_t *ptr = bwGetValues(bwFile, chrom, 
                                         static_cast<uint32_t>(upstart),
                                         static_cast<uint32_t>(upend),
-                                        1);
+                                        0);
         	if(!ptr){
         	    cerr << "problem with bwGetValues!!!" << endl 
         	         << "\tEXITING" << endl;
@@ -155,7 +156,9 @@ void accumSummary_scale(Dataset &data, const string &hfile,
 	            // '+' is found
 	             //cout << "\tline 179" << endl << flush;
 	    		if(direction.find('+') != string::npos){
-	    			for(int k = 0; k < total_size; ++k){
+	    			for(int k = 0; k < (int)(ptr->l); ++k){
+//	    			for(int k = 0; k < total_size; ++k){
+//					cerr << k << ": " << ptr->value[k] << " ";
 		                    if(!isnan( ptr->value[k] )){
 		                        ptr->value[k] = roundf(ptr->value[k] * 10000.0) / 10000.0;
 		                        // output[k] = signal_array[k];
@@ -168,7 +171,8 @@ void accumSummary_scale(Dataset &data, const string &hfile,
 		                }
 	               }
 	   	       else{
-    				for(int k = total_size - 1; k >= 0; --k){
+    				for(int k = (int)(ptr->l) - 1; k >= 0; --k){
+//    				for(int k = total_size - 1; k >= 0; --k){
                 		    if(!isnan( ptr->value[k] )){
                 		        ptr->value[k] = roundf(ptr->value[k] * 10000.0) / 10000.0;
                 		        // output[k] = signal_array[k];
@@ -193,7 +197,10 @@ void accumSummary_scale(Dataset &data, const string &hfile,
 
 		cerr << "Hitcount: " << hitcount << " Total size: " << total_size << "Max: " << max;
 
-	        if( (static_cast<float>(hitcount) / static_cast<float>(total_size) ) < 0.90){
+		// Bug in BigWig reading -- 0s seem to not appear
+		// Setting this only for all NAs for now
+//	        if( (static_cast<float>(hitcount) / static_cast<float>(total_size) ) < 0.90){
+		if(max == 0) {
 	            max = NAN_VALUE;
 	        }
 	        // if max is maximum possible double value, then it is not applicable
