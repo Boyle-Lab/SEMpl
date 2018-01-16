@@ -1,6 +1,18 @@
 #include "common.hpp"
 using namespace std;
 
+// getlength accesses first(?) element of kmerHash and returns the key length
+int getLength(const Dataset &data){
+    // cout << data.kmerHash.size() << endl;
+    if(data.kmerHash.empty()){
+        std::cerr << "data.kmerHash is empty!!!!\n\tEXITING" << std::endl;
+        exit(1);
+    }
+    #ifdef DEBUG
+    cerr << "getLength: #" << data.kmerHash.begin()->first << "# size" << data.kmerHash.begin()->first.size() << endl;
+    #endif
+    return static_cast<int>(data.kmerHash.begin()->first.size());
+}
 
 // function taken from internet that splits  a string by a character
 void split_string(const string &str, const string &splitBy, vector<string>& tokens)
@@ -42,7 +54,7 @@ void split_string(const string &str, const string &splitBy, vector<string>& toke
 
 
 // REQUIRES: index is within str
-string grab_string_at_index(const string &str, const size_t index, 
+string grab_string_at_index(const string &str, const size_t index,
                             const string &split){
     if(index >= str.size()){
         cerr << "grab_string_at_index bad arguments!\n\tEXITING";
@@ -248,14 +260,15 @@ bool fileExists(const string &filename){
   return (stat (filename.c_str(), &buffer) == 0);
 }
 
-// getlength accesses first(?) element of kmerHash and returns the key length
-int getLength(const Dataset &data){
-    if(data.kmerHash.empty()){
-        std::cerr << "data.kmerHash is empty!!!!\n\tEXITING" << std::endl;
-        exit(1);
+//From https://stackoverflow.com/questions/478898/how-to-execute-a-command-and-get-output-of-command-within-c-using-posix
+std::stringstream exec(const char* cmd) {
+    std::array<char, 128> buffer;
+    std::stringstream result;
+    std::shared_ptr<FILE> pipe(popen(cmd, "r"), pclose);
+    if (!pipe) throw std::runtime_error("popen() failed!");
+    while (!feof(pipe.get())) {
+        if (fgets(buffer.data(), 128, pipe.get()) != nullptr)
+            result << buffer.data();
     }
-    #ifdef DEBUG
-    cerr << "getLength: #" << data.kmerHash.begin()->first << "# size" << data.kmerHash.begin()->first.size() << endl;
-    #endif
-    return static_cast<int>(data.kmerHash.begin()->first.size());
+    return result;
 }
