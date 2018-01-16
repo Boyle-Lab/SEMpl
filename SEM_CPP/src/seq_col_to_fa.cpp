@@ -20,6 +20,8 @@ bool seq_col_to_fa(const vector<string> &column, const string &file){
         OUTF << '>' << val << '\n' << val << '\n';
     }
 
+    OUTF.close();
+
     // how to proceed?
 
     return true;
