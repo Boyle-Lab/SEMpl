@@ -30,16 +30,20 @@ double get_threshold(Dataset & data, double pval){
 	cerr << "INITIAL MATRIX" << endl;
 #endif
 
-	for(int i = 0; i < Dataset::TFMdata::LETTER_NUM; ++i){
-		for(int j = 0; j < static_cast<int>(data.TFM_data.letter_array[i].size()); ++j){
-			temp_out << data.TFM_data.letter_array[i][j] << '\t';
-#ifdef VERBOSE
-			cerr << data.TFM_data.letter_array[i][j] << '\t';
-#endif
+
+
+    cout << "row size " << data.TFM_data.letter_array.size() << " col size " << data.TFM_data.letter_array[0].size() << endl << flush;
+    for(int column = 0; column < (int)data.TFM_data.letter_array.size(); ++column){
+        for(int row = 0; row < static_cast<int>(data.TFM_data.letter_array[0].size()); ++row){
+
+			temp_out << data.TFM_data.letter_array[column][row] << '\t';
+// #ifdef VERBOSE
+			cerr << data.TFM_data.letter_array[column][row] << '\t';
+// #endif
 		}
-#ifdef VERBOSE
+// #ifdef VERBOSE
 		cerr << endl;
-#endif	
+// #endif
 		temp_out << '\n';
 	}
 
@@ -69,19 +73,19 @@ double get_threshold(Dataset & data, double pval){
 
   // cerr << "### PvalueToScore (pv  " << requestedPvalue << ") #########################################" << endl;
 
-  
-  
+
+
   m.computesIntegerMatrix(initialGranularity);
   long long max = m.maxScore+ceil(m.errorMax+0.5);
   long long min = m.minScore;
   double pv = 0.0;
   long long score = 0;
-  
+
   for (double granularity = initialGranularity; granularity >= maxGranularity; granularity /= decrgr) {
-    
+
     // cerr << "Computing rounded matrix with granularity " << granularity << endl;
 
-    
+
     m.computesIntegerMatrix(granularity);
 
     // cerr << "Score range : " << m.scoreRange << endl;
@@ -92,8 +96,8 @@ double get_threshold(Dataset & data, double pval){
     // cerr << "Computing score for requested pvalue " << requestedPvalue << endl;
 
 
-    double ppv = 0.0;    
-    
+    double ppv = 0.0;
+
 
     score = m.lookForScore(min, max, requestedPvalue, &pv, &ppv);
 
@@ -103,11 +107,11 @@ double get_threshold(Dataset & data, double pval){
     // cerr << "Rounded score : " << score << endl;
     // cerr << "Real score    : " << ((score-m.offset)/m.granularity) << endl;
 
-    // cerr << "Memory        : " << m.totalMapSize << " " << totalSize << endl;    
-    
+    // cerr << "Memory        : " << m.totalMapSize << " " << totalSize << endl;
+
     min = (score - ceil(m.errorMax+0.5)) * decrgr;
     max = (score + ceil(m.errorMax+0.5)) * decrgr;
-    
+
 
     // cerr << "***********************************************" << endl;
 
@@ -115,13 +119,13 @@ double get_threshold(Dataset & data, double pval){
 
       // cerr << "#####  STOP Pvalue computed  #####" << endl;
 
-      if (!forcedGranularity) {        
+      if (!forcedGranularity) {
         break;
       }
     }
 
   }
-  
+
   // if (OPTIONS['h']) {
   //   // cout << "Score          : " << ((score-m.offset)/m.granularity) << endl;
   //   // cout << "Pvalue         : " << pv << endl;
@@ -130,8 +134,8 @@ double get_threshold(Dataset & data, double pval){
   //   // cout << "Total map size : " << totalSize << endl;
   //   // cout << "Total op       : " << totalOp << endl;
 
-  // } else {  
-  //   if (OPTIONS['i']) {
+  // } else {
+  //   if (OPTIONS['column']) {
   //     cout << score << " ";
   //   }
   //   // cout << ((score-m.offset)/m.granularity) << " ";
@@ -142,7 +146,7 @@ double get_threshold(Dataset & data, double pval){
 
   //   // cout << endl;
   // }
-  
+
 	return ((score - m.offset ) / m.granularity );
 
 }
