@@ -30,13 +30,12 @@ static void create_kmer(const Dataset &data,
                         const double cutoff);
 static void parse_pwm(const Dataset &data,
                       map<pair<int, char>, double> &pwmHash,
-                      vector<char> &nucleotideStack,
+                      const vector<char> &nucleotideStack,
                       vector<double> &bestCase);
 
 // REQUIRES: within data, PWM_data is filled in
 // EFFECTS: created enumerated kmers using a cutoff and a PWM matrix, returns the map
 //          the result is data.kmerHash
-// note: for now, searches for a pre-calculated cutoff
 void Enumerate_kmer(Dataset &data){
     map< pair<int, char>, double> pwmHash;
     //                      default nucleotide ordering,
@@ -62,22 +61,29 @@ void Enumerate_kmer(Dataset &data){
         cerr << "exception thrown from parse_pwm" << endl;
         exit(1);
     }
-  // pwmHash is now filled in, along with bestCase
+
+    // pwmHash is now filled in, along with bestCase
     if(data.settings.threshold < 0.0){
         // indicated in iterativeSEM.hpp that if
         // data.settings.threshold < 0.0, then the value
         // should be treated as not defined, for purposes of
         // replicating the perl version
         if(data.settings.verbose){
-            cout << "\tNo cutoff defined, so searching for pre-calculated cutoff.\n";
+            cout << "\tNo cutoff defined, so searching for pre-calculated cutoff." << endl;
         }
         cutoff = get_cutoff(data);
+        #ifdef DEBUG
+            cout << "\t\tusing cutoff: " << cutoff << endl;
+        #endif
     }
     else{
         if(data.settings.verbose){
-            cout << "\tUsing user defined cutoff.\n";
+            cout << "\tUsing user defined cutoff." << endl;
         }
         cutoff = data.settings.threshold;
+        #ifdef DEBUG
+            cout << "\t\tusing cutoff: " << cutoff << endl;
+        #endif
     }
 
     if(cutoff == 0.0){
@@ -104,17 +110,20 @@ void Enumerate_kmer(Dataset &data){
 
 
 #ifdef DEBUG
-    ofstream OUT("Enumerated_kmers.txt");
+    ofstream OUT(data.output_dir + "Enumerated_kmers.txt");
     for(auto val : data.kmerHash){
         OUT << val.first << '\t' << val.second << endl;
     }
     data.size_of_kmerHash = data.kmerHash.size();
+    // cout << "exit " << __LINE__ << endl;
+    // exit(1);
+    // cout << data.size_of_kmerHash << endl;
 #endif
 }
 
 static void parse_pwm(const Dataset &data,
                       map<pair<int, char>, double> &pwmHash,
-                      vector<char> &nucleotideStack,
+                      const vector<char> &nucleotideStack,
                       vector<double> &bestCase){
 
   // modifiedFields is indexed from 1 in original implementation
@@ -132,10 +141,12 @@ static void parse_pwm(const Dataset &data,
     // matrix_arr's first index is the column
     // matrix_arr's second index is the row
 
+    map<int, double> modifiedFields;
+
     for(int row = 0; row < (int)data.PWM_data.matrix_arr[0].size(); ++row){
         // cout << row << endl;
         sum = 0;
-        map<int, double> modifiedFields;
+        modifiedFields.clear();
 
         for(int column = 0; column < (int)data.PWM_data.matrix_arr.size(); ++column){
             // sums each row
@@ -303,7 +314,7 @@ static double get_cutoff(const Dataset &data){
 // EFFECTS: finds maximum mapped value
 static double findMax(const map<int, double> &v){
     double max = v.begin()->second;
-    for(auto i : v){
+    for(const auto &i : v){
         if(i.second > max){
             max = i.second;
         }
