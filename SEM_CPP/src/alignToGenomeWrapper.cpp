@@ -110,16 +110,16 @@ static void align_SNPs(Dataset &data, int length,
             cerr << position << nucleotideStack[j] << " to_align: " << cache_to_align.size() << endl;
             // cerr << '\t' << " amount already aligned: " << new_kmer.size() - cache_to_align.size() << endl;
             // cerr << '\t' << " new_kmer.size() " << new_kmer.size() << endl;
-            if(position == 0 && nucleotideStack[j] == 'A'){
-                cerr << "cache_to_align:\n";
-                for(auto val : cache_to_align){
-                    cerr << '#' << val << "#\n";
-                }
-                cerr << "aligned:\n";
-                for(auto val : data.signal_cache[ { position, nucleotideStack[j] } ] ){
-                    cerr << '#' << val << "#\n";
-                }
-                cerr << endl;
+//            if(position == 0 && nucleotideStack[j] == 'A'){
+//                cerr << "cache_to_align:\n";
+//                for(auto val : cache_to_align){
+//                    cerr << '#' << val << "#\n";
+//                }
+//                cerr << "aligned:\n";
+//                for(auto val : data.signal_cache[ { position, nucleotideStack[j] } ] ){
+//                    cerr << '#' << val << "#\n";
+//                }
+//                cerr << endl;
                 // ofstream out("A_pos1.txt");
                 // out << "cache_to_align:\n";
                 // for(auto val : cache_to_align){
@@ -130,7 +130,7 @@ static void align_SNPs(Dataset &data, int length,
                 //     cerr << val << "\n";
                 // }
 
-            }
+//            }
 //            cout << "exit " << __LINE__ << endl;
 //            exit(1);
             #endif
