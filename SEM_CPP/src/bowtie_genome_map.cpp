@@ -21,7 +21,7 @@ void bowtie_genome_map(int length, const string& genome, const string& file,
     //                        genome.c_str(), "-f", file.c_str(), "temp.dat" };
 
 //    string cmd = "./bin/bowtie --threads 10 --quiet -a -v 0 ./data/hg19 -f " + file;
-    string cmd = "./bin/bowtie --threads 5 --quiet -a -v 0 ./data/hg19 -f " + file 
+    string cmd = "./bin/bowtie --threads 10 --quiet -a -v 0 ./data/hg19 -f " + file 
        + " | awk '{print $3\"\\t\"$4\"\\t\"$4+" + std::to_string(length) + "\"\\t\"$5\"\\t\"$2}' | " 
        + "./bin/bedtools intersect -a stdin -b " + dnase_file + " -wa -u | sort | uniq";
 
