@@ -251,7 +251,7 @@ void checkCache(Dataset &data, vector<string> &in_file, vector<string> &to_align
         // sqlite3_stmt *build_statement = NULL;
         char *z_err_msg = NULL;
         //cout << "Creating Table kmer_cache" << flush;
-        msg = "CREATE TABLE kmer_cache (kmer TEXT PRIMARY KEY NOT NULL, alignment BLOB)";
+        msg = "CREATE TABLE kmer_cache (kmer TEXT NOT NULL, alignment BLOB)";
         message = sqlite3_exec(cacheDB, msg.c_str(), NULL, NULL, &z_err_msg);
         if(message != SQLITE_OK){
             cerr << "\tproblem with exec on create TABLE kmer_cache\n";
@@ -260,9 +260,9 @@ void checkCache(Dataset &data, vector<string> &in_file, vector<string> &to_align
         sqlite3_free(z_err_msg);
 
 	//cout << "Creating Unique Index kmerIDX" << flush;
-        msg = "CREATE UNIQUE INDEX kmerIDX ON kmer_cache(kmer)";
+        msg = "CREATE INDEX kmerIDX ON kmer_cache(kmer)";
         message = sqlite3_exec(cacheDB, msg.c_str(), NULL, NULL, &z_err_msg);
-        problemEncountered(message, "create unique index on kmer_cache");
+        problemEncountered(message, "create index on kmer_cache");
         sqlite3_free(z_err_msg);
 
         msg = "CREATE TABLE seen_cache (kmer TEXT PRIMARY KEY NOT NULL, iter INT NOT NULL)";
