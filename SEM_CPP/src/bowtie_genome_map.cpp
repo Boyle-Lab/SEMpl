@@ -8,6 +8,7 @@ using namespace std;
 
 // Takes fasta file and aligns to genome, filters by DNase, and sorts
 //  stores results in final output
+// bowtie can take input as - to be stdin (possible direct pipe from kmer enumeration)
 void bowtie_genome_map(int length, const string& genome, const string& file, 
                        const string& final_output, const string& dnase_file, bool verbose){
 
