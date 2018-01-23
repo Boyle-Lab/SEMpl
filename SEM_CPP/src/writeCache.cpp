@@ -87,8 +87,11 @@ void writeCache(Dataset &data, const string &cache,
 
     }
     else{
+        //We probably should never get to this build step because an initial cache is created earlier.
+	// Are there any instances when this gets hit?
+
         if(data.settings.verbose){
-            cout << "No existing cache!\n";
+            cout << "No existing cache and in WRITE CACHE(ERR)!\n";
         }
     // BLOB? why is it a BLOB? I used "text" not "blob", will need to ask about this
 
@@ -117,11 +120,18 @@ void writeCache(Dataset &data, const string &cache,
         sqlite3_free(z_err_msg);
     }
     sqlite3_stmt *staged_query = nullptr;
-    msg = "INSERT OR IGNORE INTO kmer_cache VALUES(?,?)";
+    msg = "INSERT INTO kmer_cache VALUES(?,?)";
     sqlite3_prepare_v2(cacheDB, msg.c_str(), -1,
                        &staged_query, NULL);
     problemEncountered(message, msg);
 
+    // Remove later per note below
+    msg = "SELECT count(*) FROM kmer_cache WHERE kmer=?";
+    sqlite3_stmt* amount_seen_query = NULL;
+    message = sqlite3_prepare_v2(cacheDB, msg.c_str(),
+                                 static_cast<int>(msg.size()),
+                                 &amount_seen_query, NULL);
+    problemEncountered(message, msg);
 
     string temp = "", val = "";
     #ifdef DEBUG
@@ -132,26 +142,37 @@ void writeCache(Dataset &data, const string &cache,
 
         val = ptr->at(idx);
 
-        
-
         grab_string_4_index(val, temp);
-
 
         #ifdef DEBUG
         debug << "\tkmer: " << "first: #" << temp << "#\tsecond:#" << val << '#' << endl;
         #endif
-        
-        message = sqlite3_bind_text(staged_query, 1, temp.c_str(), -1, SQLITE_TRANSIENT);
-        problemEncountered(message, "bind text 1 for staged_query, writeCache");
-        message = sqlite3_bind_text(staged_query, 2, val.c_str(), -1, SQLITE_TRANSIENT);
-        problemEncountered(message, "bind text 2 for staged_query, writeCache");
-        message = sqlite3_step(staged_query);
-        if(message != SQLITE_DONE){
-            cerr << "Build statement is not done!\n\tEXITING" << endl;
-            exit(1);
+
+        //currently we have kmers that have been seen in the input to this function
+        // so these need to be filtered out here.
+        // This should be edited later to not ever re-query these
+        message = sqlite3_bind_text(amount_seen_query, 1, temp.c_str(),
+                  -1, SQLITE_TRANSIENT);
+        problemEncountered(message, "bind_text for amout_seen_query");
+        const char* text = (char*)sqlite3_column_text(amount_seen_query, 1);
+        if(text) {
+            //something found
+        } else {
+        #ifdef DEBUG
+            debug << "DUP" << endl;
+        #endif
+            message = sqlite3_bind_text(staged_query, 1, temp.c_str(), -1, SQLITE_TRANSIENT);
+            problemEncountered(message, "bind text 1 for staged_query, writeCache");
+            message = sqlite3_bind_text(staged_query, 2, val.c_str(), -1, SQLITE_TRANSIENT);
+            problemEncountered(message, "bind text 2 for staged_query, writeCache");
+            message = sqlite3_step(staged_query);
+            if(message != SQLITE_DONE){
+                cerr << "Build statement is not done!\n\tEXITING" << endl;
+                exit(1);
+            }
+            sqlite3_reset(staged_query);
+            sqlite3_clear_bindings(staged_query);
         }
-        sqlite3_reset(staged_query);
-        sqlite3_clear_bindings(staged_query);
     }
 
     sqlite3_exec(cacheDB, "COMMIT TRANSACTION", NULL, NULL, NULL);
