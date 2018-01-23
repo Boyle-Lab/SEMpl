@@ -13,7 +13,7 @@ using namespace std;
 
 
 
-			// contains all data, contains bigwig filename, region file, scale
+// contains all data, contains bigwig filename, region file, scale
 //REQUIRES: data is valid Dataset, receives bigwig file, 
 //          file containing regions to center, and scale size
 //MODIFIES: data, specifically accumsummary data
@@ -23,7 +23,7 @@ void accumSummary_scale(Dataset &data, const string &hfile,
                         const string &cfile, int scale,
                         Dataset::accumSummary_type::accumSummary_dest dest){
 
-// clear accum data of corresponding type
+    // clear accum data of corresponding type
     switch (dest) {
             case Dataset::accumSummary_type::accumSummary_dest::enumerated:
                 // data.accumSummary_data.enum_accum_max.clear();
@@ -53,14 +53,14 @@ void accumSummary_scale(Dataset &data, const string &hfile,
 	char *fname = new char[hfile.length() + 1];
 	strcpy(fname, hfile.c_str());
 	bigWigFile_t *bwFile = bwOpen(fname, NULL, "r");
-    	
+
     if(bwFile == NULL){
     	cerr << "Failed to open hfile: " << hfile << endl;
     	exit(1);
 	}
 
 	int dist = 500;
-	int total_size = dist * 2 + scale;
+	//int total_size = dist * 2 + scale;
 	float max = 0.0;
 	// int hitcount = 0;
 
@@ -195,7 +195,7 @@ void accumSummary_scale(Dataset &data, const string &hfile,
 	        free(ptr->value);
 	        free(ptr);
 
-		cerr << "Hitcount: " << hitcount << " Total size: " << total_size << "Max: " << max;
+//		cerr << "Hitcount: " << hitcount << " Total size: " << total_size << " Max: " << max;
 
 		// Bug in BigWig reading -- 0s seem to not appear
 		// Setting this only for all NAs for now
