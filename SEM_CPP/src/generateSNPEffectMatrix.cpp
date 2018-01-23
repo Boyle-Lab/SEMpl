@@ -56,8 +56,7 @@ void generateSNPEffectMatrix(Dataset &data) {
     //Step 1: Generate Enumerated k-mers
     cout << "Creating enumerated kmers from PWM file" << endl;
     cout << "\tstep one" << endl;
-    int length = generate_kmers(data);
-    generate_kmers(data);  // data.kmerHash is now filled in!!!!
+    int length = generate_kmers(data); // data.kmerHash is now filled in!!!!
 
     //Step 2: Change one base at each location in k-mers and align to genome
     // ALSO: print output to file
