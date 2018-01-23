@@ -84,41 +84,34 @@ void generateSNPEffectMatrix(Dataset &data) {
 exit(0);
 }
 
+
+// Generates an initial list of kmers based on the provided PWM and threshold
 int generate_kmers(Dataset &data){
     if(data.settings.verbose){
         cout << "Creating enumerated kmers" << endl;
     }
 
-    Enumerate_kmer(data);
-    // data.kmerHash is now filled in!!!
+    Enumerate_kmer(data); // data.kmerHash is now filled in!!!
 
-    // length of kmers
-    // is constant, as the example has constant length
-    // will need to check this if pwm's have dfferent number
-    // of rows
-    #ifdef DEBUG
-        // correct value for the example data
-        // assert(data.PWM_data.matrix_arr[0].size() == 13);
-    #endif
+    // length of kmers is constant for a single run of the program
     return data.PWM_data.matrix_arr[0].size();
 
-  // convert_PWM_format.pl is effectively performed within Enumerate_kmer(args)
-
-  // threshold is stored within data.settings.threshold
-
-  // length = number of lines in example transcription factor(?) file - 2;
+   // threshold is stored within data.settings.threshold
 }
 
+// Calls wrapper program to align kmers and stores this
 void align_to_genome(Dataset &data){
     if(data.settings.verbose){
         cout << "Aligning SNPs in kmers to the genome\n";
 
     }
-        // align all to genome
+
+    // align all to genome
     alignToGenomeWrapper(data, data.settings.iteration, "./data/hg19");
 }
 
-// assumes filterDNaseWrapper_output is filled from previous function
+
+// assumes alignment is filled from previous function
 // and that the output is sorted, and contains only unique string values
 
 // NOTE: iteratively constructs the output from
@@ -128,13 +121,6 @@ void find_signal(Dataset &data, int length){
     if(data.settings.verbose){
         cout << "Finding the average signal" << endl;
     }
-    // this function, in the original algorithm, iterates through files, where those
-    // files correspond to the length of something, then each nucleotide letter
-    // A, C, T, G
-
-    // the original implementation seems to gather input from filterDNaseWrapper,
-    // and print whatever output there is to bedfile. The input from filterDNaseWrapper
-    // is sorted, and unique
 
     // signal is big_wig
     data.accumSummary_data.align_accum_lines.clear();
@@ -142,10 +128,13 @@ void find_signal(Dataset &data, int length){
     vector<string> files;
     string cachefile = "";
 
+//NOTE: We can keep all of this in memory instead of writing the alignments to file
     GetFilesInDirectory(files, data.output_dir + "/ALIGNMENT/");
+
 #ifdef DEBUG
     sort(files.begin(), files.end());
 #endif
+
     char bp = '\0';
     const char *pos = nullptr;
     const char *end = nullptr;
@@ -161,21 +150,20 @@ void find_signal(Dataset &data, int length){
 
     for(const string &file : files){
         if(file.find("bed") == string::npos){
-        //if(file.find("filtered") == string::npos){ // we now skip the filtered step by including it in the alignment
             continue;
         }
         if(data.settings.verbose){
             cout << "\tfile: " << file << endl;
         }
 
+
+        // grabbing bp and position from file name
         size_t val = file.find("_pos");
         if(val == string::npos){
             cerr << "\"_pos\" not found within file\n\tEXITING";
             exit(1);
         }
-
         try{
-            // grabbing bp and position from file name
             bp = file[val - 1];
             pos = file.c_str() + val - 1 + 5;
             end = pos;
@@ -187,17 +175,13 @@ void find_signal(Dataset &data, int length){
             arr[end - pos] = '\0';
             strncpy(arr, file.c_str() + val - 1 + 5, end - pos);
             position = atoi(arr);
-
         }
         catch(...){
             cerr << "pointer errors likely\n\tEXITING" << endl;
             exit(1);
         }
 
-        // cout << "\t" << file << "\n";
-
-        // cin.get();
-
+        // Calculate summary score for all alignments
         try{
             if(data.settings.verbose){
                 cout << "\taccumSummary_scale(args) is running..." << flush;
@@ -213,6 +197,8 @@ void find_signal(Dataset &data, int length){
             exit(1);
         }
         // do not use N/A files
+
+        // Write NEW computed scores to our cache so that we don't need to do previous steps again
         try{
             if(data.settings.verbose){
                 cout << "\twriteCache(args) is running..." << flush;
@@ -254,7 +240,7 @@ void find_signal(Dataset &data, int length){
                 cout << "FINISH (calculated)" << data.accumSummary_data.align_accum_lines.size() << endl;
             }
 
-            //  FILLS data.signal_enumerate_output !!!!!!!!!!!!
+            //  FILLS data.signal_enumerate_output
             if(data.settings.verbose){
                 cout << "\tunique copying..." << flush;
             }
@@ -270,6 +256,7 @@ void find_signal(Dataset &data, int length){
             cerr << "problem with algorithm usage" << endl;
             exit(1);
         }
+
         #ifdef DEBUG
             cerr << "\tsignal_output" << endl;
             // for(auto val : data.signal_output){
@@ -288,6 +275,8 @@ void find_signal(Dataset &data, int length){
 
         #endif
 
+        // Now summarize the scores from all alignments (including those from cache)
+        // into a single maximum, counter, stdev, and sterr
         try{
             if(data.settings.verbose){
                 cout << "\tfinding findMaximumAverageSignal..." << flush;
