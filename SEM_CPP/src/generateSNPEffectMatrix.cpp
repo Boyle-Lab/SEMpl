@@ -6,31 +6,6 @@
 //  --merge_file DNAse-seq file
 //  --big_wig ChIP-seq signal file
 //  --TF_name TF name
-/*
-
-my $savedCmd = join(" ", @ARGV);
-
-#other command line options
-my $PWM;
-my $DNase;
-my $Signal; #in big wig format
-my $TFname;
-my $Threshold;
-my $OutputFolder; #defaults to results/TFname/
-my $Cache;
-
-# Default Options
-my $delSNPList = 1;
-my $delAlignmentBed = 1;
-my $delFilteredBed = 1;
-my $delSignalFile = 0;
-my $writecache = 0;
-my $fastrun = 0;
-my $iteration = -1;
-*/
-// ./generateSNPEffectMatrix.pl -PWM $PWM -merge_file $dnase -big_wig $chip
-//     -TF_name $tf -output $output -threshold $threshold -iteration $iterID
-//     -writecache -readcache $CACHE -verbose";
 
 #include "./src/iterativeSEM.hpp"
 #include <iostream>
@@ -48,22 +23,20 @@ int generate_kmers(Dataset &data);
 void Enumerate_kmer(Dataset &data);
 
 void generateSNPEffectMatrix(Dataset &data) {
-	// default options are built into settings within data
+    // default options are built into settings within data
     // in iterativeSEM.hpp
 
-	if(data.cachefile.empty()){
-		data.cachefile = data.output_dir + "/CACHE.db";
-	}
-
-// main script content
-//---------------------------------------------------------
+    // Set a default cache for scores if none has been provided
+    if(data.cachefile.empty()){
+        data.cachefile = data.output_dir + "/CACHE.db";
+    }
 
     if(data.settings.verbose){
-		cout << "\nGenerating SEM for " << data.TF_name << endl;
-	}
+        cout << "\nGenerating SEM for " << data.TF_name << endl;
+    }
 
     if(data.settings.verbose){
-        cout << "\tMaking directories" << endl;
+        cout << "\tBuilding directories" << endl;
     }
     string cmd = "mkdir -p " + data.output_dir;
     system(cmd.c_str());
@@ -76,44 +49,39 @@ void generateSNPEffectMatrix(Dataset &data) {
     data.signal_cache_enumerate.clear();
 
 
+    //-------------------------------------
+    // Primary compute steps:
+    //-------------------------------------
 
-	//Step 1: Generate Enumerated k-mers
-	cout << "Creating enumerated kmers from PWM file" << endl;
+    //Step 1: Generate Enumerated k-mers
+    cout << "Creating enumerated kmers from PWM file" << endl;
     cout << "\tstep one" << endl;
-
     int length = generate_kmers(data);
-    // generate_kmers(data);
-    // data.kmerHash is now filled in!!!!
+    generate_kmers(data);  // data.kmerHash is now filled in!!!!
 
-	//Step 2: Change one base at each location in k-mers and align to genome
+    //Step 2: Change one base at each location in k-mers and align to genome
     // ALSO: print output to file
-
+//NOTE: We may want to not do this?
     cout << "\tstep two" << endl;
-    //align_to_genome(data);
+    align_to_genome(data);
 
-    //Step 3: Filter using DNase data and finding the signal at each location
-    // ALSO: read in output of filterDNaseWrapper back to memory
-    // writes the *_filtered files
-    cout << "\tstep three" << endl;
-    //filterDNaseWrapper(data);
-
-    //Step 4: Find the signal using chIP-seq data
-    cout << "\tstep four" << endl << flush;
+    //Step 3: Find the signal using ChIP-seq data
+    cout << "\tstep three" << endl << flush;
     find_signal(data, length);
-exit(0);
 
-    //Step 5: Generate baselines
-    cout << "\tstep five" << endl;
+    //Step 4: Generate baselines
+    cout << "\tstep four" << endl;
     create_baselines(data, length);
 
-    //Step 6: Create R plot(s) and a SEM output
-    cout << "\tstep six" << endl;
+    //Step 5: Create R plot(s) and a SEM output
+    cout << "\tstep five" << endl;
     generate_output(data);
 
     if(data.settings.verbose){
         cout << "The SNP Effect Matrix has been completed for " << data.TF_name << endl;
     }
 
+exit(0);
 }
 
 int generate_kmers(Dataset &data){
@@ -193,7 +161,7 @@ void find_signal(Dataset &data, int length){
 
     for(const string &file : files){
         if(file.find("bed") == string::npos){
-        //if(file.find("filtered") == string::npos){
+        //if(file.find("filtered") == string::npos){ // we now skip the filtered step by including it in the alignment
             continue;
         }
         if(data.settings.verbose){
@@ -448,18 +416,18 @@ void create_baselines(Dataset &data, int length){
                           data.DNase_file, data.settings.verbose);
 
         // NEED TO CHECK THAT THIS IS THE RIGHT RELATIVE DIRECTORY
-        cmd = "./bin/bedtools intersect -a " + data.output_dir
-                + "BASELINE/Scrambled_kmer.bed -b "
-                + data.DNase_file + " -wa -u > " + data.output_dir
-                + "BASELINE/Scrambled_kmer_filtered.bed";
-        system(cmd.c_str());
+        //cmd = "./bin/bedtools intersect -a " + data.output_dir
+        //        + "BASELINE/Scrambled_kmer.bed -b "
+        //        + data.DNase_file + " -wa -u > " + data.output_dir
+        //        + "BASELINE/Scrambled_kmer_filtered.bed";
+        //system(cmd.c_str());
 
         if(data.settings.verbose){
             cout << "\tRunning accumSummary_scale(args)..." << flush;
         }
         try{
             accumSummary_scale(data, data.bigwig_file,
-                               data.output_dir + "BASELINE/Scrambled_kmer_filtered.bed",
+                               data.output_dir + "BASELINE/Scrambled_kmer.bed",
                                length,
                                Dataset::accumSummary_type::accumSummary_dest::scrambled);
         }
@@ -511,7 +479,7 @@ void create_baselines(Dataset &data, int length){
                     iter);
         data.signal_scramble_output.resize(end_iter2 - data.signal_scramble_output.begin());
         #ifdef DEBUG
-            ofstream debug1(data.output_dir + "/BASELINE/Scrambled_kmer_filtered.signal");
+            ofstream debug1(data.output_dir + "/BASELINE/Scrambled_kmer.signal");
             for(auto val : data.signal_scramble_output){
                 debug1 << val << endl;
             }
@@ -524,6 +492,7 @@ void create_baselines(Dataset &data, int length){
     //            std::vector<std::string> &out_cache, const std::string &cachefile,
     //            Dataset::accumSummary_type::accumSummary_dest dest)
 
+    // PWM kmer hits from enumerate kmers
     checkCache(data, enumerate_kmers, enumerate_cache_to_align, data.cachefile,
                Dataset::accumSummary_type::accumSummary_dest::enumerated);
 
@@ -532,12 +501,12 @@ void create_baselines(Dataset &data, int length){
                       data.output_dir + "/BASELINE/Enumerated_kmer.fa");
         bowtie_genome_map(length, "../data/hg19",
                           data.output_dir + "/BASELINE/Enumerated_kmer.fa",
-                          data.output_dir + "/BASELINE/Enumerated_kmer_filtered.bed",
+                          data.output_dir + "/BASELINE/Enumerated_kmer.bed",
                           data.DNase_file, data.settings.verbose);
         try{
 
             accumSummary_scale(data, data.bigwig_file,
-                               data.output_dir + "/BASELINE/Enumerated_kmer_filtered.bed",
+                               data.output_dir + "/BASELINE/Enumerated_kmer.bed",
                               length, Dataset::accumSummary_type::accumSummary_dest::enumerated);
         }
         catch(...){
@@ -569,7 +538,7 @@ void create_baselines(Dataset &data, int length){
     data.signal_enumerate_output.resize(end_iter1 - data.signal_enumerate_output.begin());
 
     #ifdef DEBUG
-        ofstream debug(data.output_dir + "/BASELINE/Enumerated_kmer_filtered.signal");
+        ofstream debug(data.output_dir + "/BASELINE/Enumerated_kmer.signal");
         for(auto val : data.signal_enumerate_output){
             debug << val << endl;
         }
@@ -586,7 +555,7 @@ void create_baselines(Dataset &data, int length){
                                         data.Signal_data.scramble_sterr);
     }
     #ifdef DEBUG
-    ofstream enum_out("Enumerated_kmer_filtered.signal");
+    ofstream enum_out("Enumerated_kmer.signal");
     for(auto val : data.signal_enumerate_output){
         enum_out << val << endl;
     }
