@@ -127,7 +127,7 @@ void writeCache(Dataset &data, const string &cache,
 
     // Remove later per note below
     msg = "SELECT count(*) FROM kmer_cache WHERE kmer=?";
-    sqlite3_stmt* amount_seen_query = NULL;
+    sqlite3_stmt *amount_seen_query = nullptr;
     message = sqlite3_prepare_v2(cacheDB, msg.c_str(),
                                  static_cast<int>(msg.size()),
                                  &amount_seen_query, NULL);
@@ -172,6 +172,8 @@ void writeCache(Dataset &data, const string &cache,
             }
             sqlite3_reset(staged_query);
             sqlite3_clear_bindings(staged_query);
+            sqlite3_reset(amount_seen_query);
+            sqlite3_clear_bindings(amount_seen_query);
         }
     }
 
@@ -179,6 +181,9 @@ void writeCache(Dataset &data, const string &cache,
 
     message = sqlite3_finalize(staged_query);
     problemEncountered(message, "finalize staged_query");
+
+    message = sqlite3_finalize(amount_seen_query);
+    problemEncountered(message, "finalize amount_seen_query");
 
     message = sqlite3_close(cacheDB);
     problemEncountered(message, "closing the connection");
