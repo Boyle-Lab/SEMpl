@@ -204,7 +204,7 @@ void accumSummary_scale(Dataset &data, const string &hfile,
 	            max = NAN_VALUE;
 	        }
 	        // if max is maximum possible double value, then it is not applicable
-		cerr << " New max: " << max << endl;
+//		cerr << " New max: " << max << endl;
 
 	        line += '\t' + to_string(max);
 
