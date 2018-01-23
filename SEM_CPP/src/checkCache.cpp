@@ -2,8 +2,6 @@
 // #prints previously cached items to $cachefile and non-cached to $outfile
 // # also filters out kmers based on previous DNase filtering
 
-// DBI library
-
 #include "./src/iterativeSEM.hpp"
 extern "C"{
     #include "./lib/sqlite3/sqlite3.h"
@@ -12,11 +10,11 @@ extern "C"{
 #include <iostream>
 using namespace std;
 
-  // takes in_file, out_file, to_align, cache(location of cache), current iteration,
-  // all of them are file names, and are specific to nucleotide and position
+// takes in_file, out_file, to_align, cache(location of cache), current iteration,
+// all of them are file names, and are specific to nucleotide and position
 
-  // signal_cache in Dataset is the output cache
-  // cache is the input cache
+// signal_cache in Dataset is the output cache
+// cache is the input cache
 
 // EFFECTS: returns true if file already exists in current directory,
 //          false otherwise
@@ -39,7 +37,6 @@ void checkCache(Dataset &data, vector<string> &in_file, vector<string> &to_align
 
     vector<string> signal_cache_data;
 
-
     bool newcache = fileExists(cachefile);
 
     to_align.clear();
@@ -47,6 +44,7 @@ void checkCache(Dataset &data, vector<string> &in_file, vector<string> &to_align
     if(data.settings.verbose){
         cout << "Querying cache for processed kmers..." << flush;
     }
+
     // should this be here?
     // ANS: I don't think so, this is already processed data
     switch (dest) {
@@ -77,6 +75,7 @@ void checkCache(Dataset &data, vector<string> &in_file, vector<string> &to_align
 
     string msg = "";
 
+    // maybe flip this? why do we duplicate this - or why is this not run the first time?
     if(newcache){
         if(data.settings.verbose){
             cout << "Cache does exist\n" << flush;
