@@ -5,8 +5,6 @@ using namespace std;
 
 static void align_SNPs(Dataset &data, int length, const vector<char> &nucleotideStack);
 
-// default genome is "hg19"
-// INFILE FROM ORIGINAL ALGORITHM IS ENUMERATED_KMER
 void alignToGenomeWrapper(Dataset &data, int iteration, const string genome) {
 
     const vector<char> nucleotideStack{'A', 'C', 'G', 'T'};
@@ -18,8 +16,8 @@ void alignToGenomeWrapper(Dataset &data, int iteration, const string genome) {
         cout << "\tAligning..." << length << endl << flush;
     }
 
-  // step 2: iterate through all the positions and nucleotides,
-  //            creating SNP files and aligning to genome
+    // step 2: iterate through all the positions and nucleotides,
+    //            creating SNP files and aligning to genome
     align_SNPs(data, length, nucleotideStack);
 
     if(data.settings.verbose){
@@ -27,30 +25,28 @@ void alignToGenomeWrapper(Dataset &data, int iteration, const string genome) {
     }
 }
 
-// INFILE FROM ORIGINAL ALGORITHM IS ENUMERATED_KMER
+// Align all pseudo-SNP kmers to genome and filter with DNase peaks
+//  in one combined function.
+//  output is sorted and unique
 static void align_SNPs(Dataset &data, int length,
-                       const vector<char> &nucleotideStack){
-    string name = "";
+                       const vector<char> &nucleotideStack) {
 
+    string name = "";
     const string CWD =  "./" + data.output_dir + "ALIGNMENT/";
     const string genome = "./data/hg19";
+    string fa_file = "";
+    string bowtie_output = "./";
+    vector<string> new_kmer;
+    bool non_zero_file_size = false;
+    vector<string> cache_to_align;
 
+    // Build ALIGNMENT directory if it doesn't exist
     if(system( string("mkdir -p " + CWD).c_str() ) != 0){
         cerr << "problem running mkdir -p " << CWD << endl;
         exit(1);
     }
 
-
-    string fa_file = "";
-
-    string bowtie_output = "./";
-
-    vector<string> new_kmer;
-
-    bool non_zero_file_size = false;
-
-    vector<string> cache_to_align;
-
+    // Iterate through each position and generate all possible nucleotide changes
     for(int position  = 0; position < length; ++position){
         for(int j = 0; j < static_cast<int>(nucleotideStack.size()); ++j){
 
@@ -59,21 +55,6 @@ static void align_SNPs(Dataset &data, int length,
 
             name = nucleotideStack[j] + string("_pos") + to_string(position);
 
-                                      // nucleotide
-/*
-            #ifdef DEBUG
-            if(position == 1 && 'A' == nucleotideStack[j]){
-                ofstream out("A_pos1.txt");
-                out << "cache_to_align:\n";
-                for(auto val : cache_to_align){
-                    out << val << "\n";
-                }
-                out << "aligned:\n";
-                for(auto val : data.signal_cache[ { position, nucleotideStack[j] } ] ){
-                    cerr << val << "\n";
-                }
-            }
-            #endif */
             try{
                 // creates new_kmer vector from copying over data.kmerHash
                 // and changing a single nucleotide
@@ -84,16 +65,9 @@ static void align_SNPs(Dataset &data, int length,
                 cerr << "exception thrown from changeBase" << endl;
                 exit(1);
             }
-                        // CHECK THAT THIS IS CORRECT RELATIVE LOCATION
-            #ifdef DEBUG
-            // if(position == 4){
-            //     cerr << "new_kmer:\n";
-            //     for(auto val : new_kmer){
-            //         cerr << '#' << val << "#\n";
-            //     }
-            // }
-            #endif
 
+            // Filter our kmers by existing kmers in the cache so that we don't
+            //   need to re-process them.
             try{
                 checkCache(data, new_kmer, cache_to_align, data.cachefile,
                         Dataset::accumSummary_type::accumSummary_dest::alignment,
@@ -135,8 +109,9 @@ static void align_SNPs(Dataset &data, int length,
 //            exit(1);
             #endif
             // pass in a sequence column, which is from output of checkCache
-            // cachefile in Dataset is $cache from original algorithm!!!
 
+
+            // align these files to the genome through bowtie_genome_map function
             fa_file = CWD + name + ".fa";
             bowtie_output = CWD + name + ".bed";
 
