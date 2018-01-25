@@ -127,7 +127,7 @@ void writeCache(Dataset &data, const string &cache,
 
     // Remove later per note below
     msg = "SELECT count(*) FROM kmer_cache WHERE kmer=?";
-    sqlite3_stmt *amount_seen_query = nullptr;
+    sqlite3_stmt *amount_seen_query = NULL;
     message = sqlite3_prepare_v2(cacheDB, msg.c_str(),
                                  static_cast<int>(msg.size()),
                                  &amount_seen_query, NULL);
@@ -154,13 +154,24 @@ void writeCache(Dataset &data, const string &cache,
         message = sqlite3_bind_text(amount_seen_query, 1, temp.c_str(),
                   -1, SQLITE_TRANSIENT);
         problemEncountered(message, "bind_text for amout_seen_query");
-        const char* text = (char*)sqlite3_column_text(amount_seen_query, 1);
-        if(text) {
-            //something found
-        } else {
+        message = sqlite3_step(amount_seen_query);
+
         #ifdef DEBUG
-            debug << "DUP" << endl;
+        if(sqlite3_column_type(amount_seen_query, 0) != SQLITE_INTEGER){
+            cerr << "incorrect column_type on amount_seen_query\n\tEXITING"
+                 << endl;
+            exit(1);
+         }
+         #endif
+
+        message = sqlite3_column_int(amount_seen_query, 0);
+
+        if(message > 0) {
+            //something found
+        #ifdef DEBUG
+            cerr << "DUP: " << message << endl;
         #endif
+        } else {
             message = sqlite3_bind_text(staged_query, 1, temp.c_str(), -1, SQLITE_TRANSIENT);
             problemEncountered(message, "bind text 1 for staged_query, writeCache");
             message = sqlite3_bind_text(staged_query, 2, val.c_str(), -1, SQLITE_TRANSIENT);
@@ -172,9 +183,10 @@ void writeCache(Dataset &data, const string &cache,
             }
             sqlite3_reset(staged_query);
             sqlite3_clear_bindings(staged_query);
-            sqlite3_reset(amount_seen_query);
-            sqlite3_clear_bindings(amount_seen_query);
         }
+
+        sqlite3_reset(amount_seen_query);
+        sqlite3_clear_bindings(amount_seen_query);
     }
 
     sqlite3_exec(cacheDB, "COMMIT TRANSACTION", NULL, NULL, NULL);
