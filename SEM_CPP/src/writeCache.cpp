@@ -126,7 +126,7 @@ void writeCache(Dataset &data, const string &cache,
     problemEncountered(message, msg);
 
     // Remove later per note below
-    msg = "SELECT count(*) FROM kmer_cache WHERE kmer=?";
+    msg = "SELECT count(*) FROM kmer_cache WHERE kmer=? AND alignment=?";
     sqlite3_stmt *amount_seen_query = NULL;
     message = sqlite3_prepare_v2(cacheDB, msg.c_str(),
                                  static_cast<int>(msg.size()),
@@ -152,6 +152,10 @@ void writeCache(Dataset &data, const string &cache,
         // so these need to be filtered out here.
         // This should be edited later to not ever re-query these
         message = sqlite3_bind_text(amount_seen_query, 1, temp.c_str(),
+                  -1, SQLITE_TRANSIENT);
+        problemEncountered(message, "bind_text for amout_seen_query");
+
+        message = sqlite3_bind_text(amount_seen_query, 2, val.c_str(),
                   -1, SQLITE_TRANSIENT);
         problemEncountered(message, "bind_text for amout_seen_query");
         message = sqlite3_step(amount_seen_query);
