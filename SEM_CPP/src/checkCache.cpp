@@ -140,6 +140,7 @@ void checkCache(Dataset &data, vector<string> &in_file, vector<string> &to_align
                 // cerr << "\tfound: #" << kmer << '#' << endl
                 //      << "\tcorresponding align: #" << text << '#' << endl;
                 #endif
+//!! This only reads one line!!
                 signal_cache_data.emplace_back(text);
 
                 text = NULL;
@@ -150,6 +151,8 @@ void checkCache(Dataset &data, vector<string> &in_file, vector<string> &to_align
                 #ifdef DEBUG
                 // cerr << "not found: " << kmer << endl;
                 #endif
+
+                //NOTE: I think that we don't need to do this query since we are INSERT OR IGNORE for the insert
                 message = sqlite3_bind_text(amount_seen_query, 1, kmer.c_str(),
                           -1, SQLITE_TRANSIENT);
                 problemEncountered(message, "bind_text for amount_seen_query");
