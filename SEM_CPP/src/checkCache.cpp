@@ -133,7 +133,7 @@ void checkCache(Dataset &data, vector<string> &in_file, vector<string> &to_align
             // UPDATE: GOOGLE THIS
 
 //          grabs the alignment of current kmers
-            const char* text = (char*)sqlite3_column_text(cache_signal_data_query, 1);
+            char* text = (char*)sqlite3_column_text(cache_signal_data_query, 1);
 
             if(text){
                 #ifdef DEBUG
@@ -141,10 +141,13 @@ void checkCache(Dataset &data, vector<string> &in_file, vector<string> &to_align
                 //      << "\tcorresponding align: #" << text << '#' << endl;
                 #endif
 //!! This only reads one line!!
-                signal_cache_data.emplace_back(text);
+                do {
+                    signal_cache_data.emplace_back(text);
+                    text = NULL;
 
-                text = NULL;
-
+                    message = sqlite3_step(cache_signal_data_query);
+                    text = (char*)sqlite3_column_text(cache_signal_data_query, 1);
+                } while (message == SQLITE_ROW);
             }
             else{
                 // not found
