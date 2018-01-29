@@ -83,8 +83,8 @@ void accumSummary_scale(Dataset &data, const string &hfile,
     int upstart = 0, upend = 0;
 
     #ifdef DEBUG
-        string signal = cfile + ".signal";
-        ofstream sFile(signal);
+        //string signal = cfile + ".signal";
+        //ofstream sFile(signal);
     #endif
 
     while( getline(input, line) ){
@@ -119,19 +119,19 @@ void accumSummary_scale(Dataset &data, const string &hfile,
         end = stoi(temp[2]);
         direction = temp[4];
         upstart = start - dist;
-        upend = end + dist;
+        upend = end + dist - 1;
 
         chrom = new char[seqid.length() + 1];
         strcpy(chrom, seqid.c_str());
 
 #ifdef DEBUG
-        cerr << "Upstart: " << upstart << " Upend: " << upend << " Chr: " << chrom << endl;
+        //cerr << "Upstart: " << upstart << " Upend: " << upend << " Chr: " << chrom << endl;
 #endif
 
        	bwOverlappingIntervals_t *ptr = bwGetValues(bwFile, chrom, 
                                         static_cast<uint32_t>(upstart),
                                         static_cast<uint32_t>(upend),
-                                        0);
+                                        1);
         if(!ptr){
             cerr << "problem with bwGetValues!!!" << endl 
                  << "\tEXITING" << endl;
@@ -168,19 +168,17 @@ void accumSummary_scale(Dataset &data, const string &hfile,
 
 //	cerr << "Hitcount: " << hitcount << " Total size: " << total_size << " Max: " << max;
 
-	// Bug in BigWig reading -- 0s seem to not appear
-	// Setting this only for all NAs for now
+        // Bug in BigWig reading -- 0s seem to not appear
+        // Setting this only for all NAs for now
 //        if( hitcount < 1){
         if(max == 0) {
             max = NAN_VALUE;
         }
-        // if max is maximum possible double value, then it is not applicable
-//	cerr << " New max: " << max << endl;
 
         line += '\t' + to_string(max);
 
 #ifdef DEBUG
-        sFile << line << endl;
+        //sFile << line << endl;
 #endif
 
         switch (dest) {
