@@ -48,134 +48,123 @@ void accumSummary_scale(Dataset &data, const string &hfile,
     }
 
 
-	// open file using library, below code is necessary
-	// because of C++ type system regarding const
-	char *fname = new char[hfile.length() + 1];
-	strcpy(fname, hfile.c_str());
-	bigWigFile_t *bwFile = bwOpen(fname, NULL, "r");
+    // open file using library, below code is necessary
+    // because of C++ type system regarding const
+    char *fname = new char[hfile.length() + 1];
+    strcpy(fname, hfile.c_str());
+    bigWigFile_t *bwFile = bwOpen(fname, NULL, "r");
 
     if(bwFile == NULL){
     	cerr << "Failed to open hfile: " << hfile << endl;
     	exit(1);
-	}
+    }
 
-	int dist = 500;
-	//int total_size = dist * 2 + scale;
-	float max = 0.0;
-	// int hitcount = 0;
-
-    // FOR FIXING OUT OF RANGE ERROR WHEN RUNNING ACCUMSUMMARY_SCALE(ARGS)
-    // ON SCRAMBLED DATA
-    // ++total_size;
-    // FIX DONE
+    int dist = 500;
+    float max = 0.0;
+    // int hitcount = 0;
 
 
-	//////////////////////////////////
-	// Read each peak location and add signal values
-	/////////////////////////////////
+    //////////////////////////////////
+    // Read each peak location and add signal values
+    /////////////////////////////////
 
-	ifstream input(cfile);
-	if(!input){
-		cout << "Failure to open cfile in accumSummary_scale.cpp" << endl;
-		exit(1);
-	}
+    ifstream input(cfile);
+    if(!input){
+        cout << "Failure to open cfile in accumSummary_scale.cpp" << endl;
+        exit(1);
+    }
 
-	const string splitBy = "\t";
-	char *chrom = nullptr;
-	string line = "", seqid = "", direction = "";
+    const string splitBy = "\t";
+    char *chrom = nullptr;
+    string line = "", seqid = "", direction = "";
 
-	vector<string> temp;
-    // vector<float> signal_array(total_size, 0.0);
-    // vector<bool> signal_array_is_nan(total_size, false);
+    vector<string> temp;
 
-	int start = 0, end = 0;
-     // counter = 0;
+    int start = 0, end = 0;
+    // counter = 0;
     int upstart = 0, upend = 0;
-	// pointer to hold double values from bigwig library function;
-	// double *values = nullptr;
+    // pointer to hold double values from bigwig library function;
+    // double *values = nullptr;
 
+    #ifdef DEBUG
+        string signal = cfile + ".signal";
+        ofstream sFile(signal);
+    #endif
 
-	while( getline(input, line) ){
+    while( getline(input, line) ){
+        // initialize variables
+        max = 0.0;
+        temp.clear();
+        chrom = nullptr;
+        split_string(line, splitBy, temp);
+        seqid = temp[0];
+       	upstart = 0, upend = 0;
 
-	        max = 0.0;
-		// initialize variables
-        	temp.clear();
-		chrom = nullptr;
-		split_string(line, splitBy, temp);
-		seqid = temp[0];
-       		upstart = 0, upend = 0;
-
-		// if lines begins with chr
-		if(temp[0][0] == 'c'){
-			if(temp[0][1] == 'h')
-				if(temp[0][2] == 'r'){
-					seqid = temp[0];
+        // if lines begins with chr
+        if(temp[0][0] == 'c'){
+            if(temp[0][1] == 'h'){
+                if(temp[0][2] == 'r'){
+                    seqid = temp[0];
 #ifdef DEBUG
                     // cout << "temp[0] begins with chr: " << temp[0] << '\n';
 #endif
                 }
-		}
+            }
+        }
+        // if line doesn't begin with chr
+        else{
+            seqid = "chr" + temp[0];
+        }
+        start = stoi(temp[1]) - 1;
 
-		// if line doesn't begin with chr
-		else{
-			seqid = "chr" + temp[0];
-		}
-		start = stoi(temp[1]) - 1;
 #ifdef DEBUG
-        	// cerr << "temp[1]: #" << temp[1] << "# stoi: #" << start + 1 << '#' << endl;
+        // cerr << "temp[1]: #" << temp[1] << "# stoi: #" << start + 1 << '#' << endl;
 #endif
-		end = stoi(temp[2]);
-		direction = temp[4];
+        end = stoi(temp[2]);
+        direction = temp[4];
+        upstart = start - dist;
+        upend = end + dist;
 
-		upstart = start - dist;
-		upend = end + dist;
+        chrom = new char[seqid.length() + 1];
+        strcpy(chrom, seqid.c_str());
 
-		chrom = new char[seqid.length() + 1];
-		strcpy(chrom, seqid.c_str());
+#ifdef DEBUG
+        cerr << "Upstart: " << upstart << " Upend: " << upend << " Chr: " << chrom << endl;
+#endif
 
-		//cerr << "Upstart: " << upstart << " Upend: " << upend << " Chr: " << chrom << endl;
-
-        	bwOverlappingIntervals_t *ptr = bwGetValues(bwFile, chrom, 
+       	bwOverlappingIntervals_t *ptr = bwGetValues(bwFile, chrom, 
                                         static_cast<uint32_t>(upstart),
                                         static_cast<uint32_t>(upend),
                                         0);
-        	if(!ptr){
-        	    cerr << "problem with bwGetValues!!!" << endl 
-        	         << "\tEXITING" << endl;
-        	    exit(1);
-        	}
+        if(!ptr){
+            cerr << "problem with bwGetValues!!!" << endl 
+                 << "\tEXITING" << endl;
+            exit(1);
+        }
 
-	        // cout << "\t for chrom: " << seqid << endl;
-	        // cout << "\tdeleted chrom" << endl;
-		delete [] chrom;
+        // cout << "\t for chrom: " << seqid << endl;
+        // cout << "\tdeleted chrom" << endl;
+        delete [] chrom;
 
+        int hitcount = 0;
 
-	        int hitcount = 0;
-
-	        try{
-	            // '+' is found
-	             //cout << "\tline 179" << endl << flush;
-	    		if(direction.find('+') != string::npos){
-	    			for(int k = 0; k < (int)(ptr->l); ++k){
-//	    			for(int k = 0; k < total_size; ++k){
-//					cerr << k << ": " << ptr->value[k] << " ";
-		                    if(!isnan( ptr->value[k] )){
-		                        ptr->value[k] = roundf(ptr->value[k] * 10000.0) / 10000.0;
-		                        // output[k] = signal_array[k];
-		//			cout << ptr->value[k] << endl << flush;
-		                        if(ptr->value[k] > max){
-		                            max = ptr->value[k];
-		                        }
-		                        ++hitcount;
-		                    }
-		                }
-	               }
-	   	       else{
-    				for(int k = (int)(ptr->l) - 1; k >= 0; --k){
-//    				for(int k = total_size - 1; k >= 0; --k){
+        try{
+            // '+' is found
+    	    if(direction.find('+') != string::npos){
+    	        for(int k = 0; k < (int)(ptr->l); ++k){
+                    if(!isnan( ptr->value[k] )){
+                        ptr->value[k] = roundf(ptr->value[k] * 10000.0) / 10000.0;
+                        if(ptr->value[k] > max){
+                            max = ptr->value[k];
+                        }
+                        ++hitcount;
+                    }
+                }
+            }
+            else{
+                for(int k = (int)(ptr->l) - 1; k >= 0; --k){
                 		    if(!isnan( ptr->value[k] )){
                 		        ptr->value[k] = roundf(ptr->value[k] * 10000.0) / 10000.0;
-                		        // output[k] = signal_array[k];
                 		        if(ptr->value[k] > max){
                 		            max = ptr->value[k];
                 		        }
@@ -183,30 +172,34 @@ void accumSummary_scale(Dataset &data, const string &hfile,
                			     }
                			 }
             		}
-	        }
-	        catch(...){
-	            cerr << "nan exception thrown" << endl;
-	            exit(1);
-	        }
+        }
+        catch(...){
+            cerr << "nan exception thrown" << endl;
+            exit(1);
+        }
 
 
-	        free(ptr->start);
-	        free(ptr->end);
-	        free(ptr->value);
-	        free(ptr);
+        free(ptr->start);
+        free(ptr->end);
+        free(ptr->value);
+        free(ptr);
 
-//		cerr << "Hitcount: " << hitcount << " Total size: " << total_size << " Max: " << max;
+//	cerr << "Hitcount: " << hitcount << " Total size: " << total_size << " Max: " << max;
 
-		// Bug in BigWig reading -- 0s seem to not appear
-		// Setting this only for all NAs for now
-//	        if( (static_cast<float>(hitcount) / static_cast<float>(total_size) ) < 0.90){
-		if(max == 0) {
-	            max = NAN_VALUE;
-	        }
-	        // if max is maximum possible double value, then it is not applicable
-//		cerr << " New max: " << max << endl;
+	// Bug in BigWig reading -- 0s seem to not appear
+	// Setting this only for all NAs for now
+//        if( hitcount < 1){
+        if(max == 0) {
+            max = NAN_VALUE;
+        }
+        // if max is maximum possible double value, then it is not applicable
+//	cerr << " New max: " << max << endl;
 
-	        line += '\t' + to_string(max);
+        line += '\t' + to_string(max);
+
+#ifdef DEBUG
+        sFile << line << endl;
+#endif
 
         switch (dest) {
             case Dataset::accumSummary_type::accumSummary_dest::none:
@@ -231,6 +224,6 @@ void accumSummary_scale(Dataset &data, const string &hfile,
             break;
         }
 	}
-	bwClose(bwFile);
-	delete [] fname;
+        bwClose(bwFile);
+        delete [] fname;
 }
