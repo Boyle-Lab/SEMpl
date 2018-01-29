@@ -16,8 +16,8 @@ using namespace std;
 
 // NOTE: PASS scramble FOR BASELINE
 //              MAYBE
-void findMaximumAverageSignalWrapper(const std::vector<std::string> &alignments, 
-                                     double &mean_out, int &counter_out, 
+void findMaximumAverageSignalWrapper(const std::vector<std::string> &alignments,
+                                     double &mean_out, int &counter_out,
                                      double &stdev_out, double &sterr_out){
 
     mean_out = 0.0;
@@ -26,7 +26,7 @@ void findMaximumAverageSignalWrapper(const std::vector<std::string> &alignments,
     sterr_out = 0.0;
 
     if(alignments.empty()){
-        cerr << "corresponding findMaximumAverageSignalWrapper" 
+        cerr << "corresponding findMaximumAverageSignalWrapper"
              << " data is missing!!!!"
              << endl;
         exit(1);
@@ -34,81 +34,25 @@ void findMaximumAverageSignalWrapper(const std::vector<std::string> &alignments,
 
 
     double sum = 0.0;
-
     string line = "", val = "";
-
-#ifdef DEBUG
-    ofstream debug("fMASW.txt");
-#endif
-
     vector<double> values;
-#ifdef DEBUG
-    debug << "align size " << alignments.size() << endl;
-    // debug << "values size " << values.size() << endl;
-#endif
-
     double max = 0.0;
-    
-    
-        for(size_t i = 0; i < alignments.size(); ++i){
-            //Finds maximums of each line and stores into a vector called
-            // maximums.
-            line = alignments[i];
-    #ifdef DEBUG
-            debug << "line: #" << line << '#' << " i: " << i << endl;
-    #endif
 
-            // removed from last try block
-            val = grab_string_last_index(line);
-    #ifdef DEBUG
-            debug << "val:#" << val << '#' << endl;
-    #endif
-            max = stod(val);
-            // try{
-            //     values.at(i) = stod(val);
-            // }
-            // catch(invalid_argument e){
-            //     cerr << "hee" << e.what() << endl;
-            //     cerr << "val: #" << val << '#' << endl;
-            //     exit(1);
-            // }
-            // catch(out_of_range e){
-            //     cerr << "from .at: " << !(i < values.size() ) << endl;
-            //     cerr << e.what() << endl;
-            //     exit(1);
-            // }
-            // catch(...){
-            //     cerr << "problem iterating findMaximumAverageSignalWrapper" << endl;
-            //     exit(1);
-            // }
-    #ifdef DEBUG
-            debug << "\tval: #" << max << '#' << endl;
-    #endif 
-    
-    #ifdef DEBUG 
-            debug << "here1" << endl;
-    #endif
+    for(size_t i = 0; i < alignments.size(); ++i){
+        //Finds maximums of each line and stores into a vector called
+        // maximums.
+        line = alignments[i];
 
-            if(max != NAN_VALUE){
-                values.push_back(max);
-                #ifdef DEBUG
-                    debug << "here2 val: #" << max << '#' << endl
-                          << '#' << sum << '#' << endl;
-                #endif
-                sum += max;
-                #ifdef DEBUG
-                    debug << "here3" << endl;
-                #endif
-                ++counter_out;
-                #ifdef DEBUG
-                    debug << "here4: #" << counter_out << '#' << endl;
-                #endif
-            }
+        val = grab_string_last_index(line);
+
+        max = stod(val);
+
+        if(max != NAN_VALUE){
+            values.push_back(max);
+            sum += max;
+            ++counter_out;
         }
-    
-    
-            // cout << "value at " << i << ": " << max_ptr->at(i) << endl;
-        
+    }
 
     if(counter_out > 0){
         mean_out = sum / counter_out;
@@ -118,9 +62,10 @@ void findMaximumAverageSignalWrapper(const std::vector<std::string> &alignments,
     for(size_t i = 0; i < values.size(); ++i){
         sqtotal += pow( (mean_out - values[i] ), 2.0);
     }
+
     stdev_out = pow( (sqtotal / (values.size() - 1) ), 0.5);
     sterr_out = stdev_out / pow(counter_out, 0.5);
 
-    debug << "Mean: " << mean_out << " Count: " << counter_out << " Stdev: " << stdev_out << " Sterr: " << sterr_out << endl;
+//    debug << "Mean: " << mean_out << " Count: " << counter_out << " Stdev: " << stdev_out << " Sterr: " << sterr_out << endl;
 
 }
