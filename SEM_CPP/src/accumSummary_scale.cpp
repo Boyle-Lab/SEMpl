@@ -149,29 +149,15 @@ void accumSummary_scale(Dataset &data, const string &hfile,
         int hitcount = 0;
 
         try{
-            // '+' is found
-    	    if(direction.find('+') != string::npos){
-    	        for(int k = 0; k < (int)(ptr->l); ++k){
-                    if(!isnan( ptr->value[k] )){
-                        ptr->value[k] = roundf(ptr->value[k] * 10000.0) / 10000.0;
-                        if(ptr->value[k] > max){
-                            max = ptr->value[k];
-                        }
-                        ++hitcount;
+            for(int k = 0; k < (int)(ptr->l); ++k){
+                if(!isnan( ptr->value[k] )){
+                    ptr->value[k] = roundf(ptr->value[k] * 10000.0) / 10000.0;
+                    if(ptr->value[k] > max){
+                        max = ptr->value[k];
                     }
+                    ++hitcount;
                 }
             }
-            else{
-                for(int k = (int)(ptr->l) - 1; k >= 0; --k){
-                		    if(!isnan( ptr->value[k] )){
-                		        ptr->value[k] = roundf(ptr->value[k] * 10000.0) / 10000.0;
-                		        if(ptr->value[k] > max){
-                		            max = ptr->value[k];
-                		        }
-                		        ++hitcount;
-               			     }
-               			 }
-            		}
         }
         catch(...){
             cerr << "nan exception thrown" << endl;
