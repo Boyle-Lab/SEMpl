@@ -14,7 +14,7 @@ using namespace std;
 
 
 // contains all data, contains bigwig filename, region file, scale
-//REQUIRES: data is valid Dataset, receives bigwig file, 
+//REQUIRES: data is valid Dataset, receives bigwig file,
 //          file containing regions to center, and scale size
 //MODIFIES: data, specifically accumsummary data
 //EFFECTS: fills appropriate accumSummary_data vectors
@@ -33,7 +33,7 @@ void accumSummary_scale(Dataset &data, const string &hfile,
                 // data.accumSummary_data.scramble_accum_max.clear();
                 data.accumSummary_data.scramble_accum_lines.clear();
             break;
-            case Dataset::accumSummary_type::accumSummary_dest::alignment: 
+            case Dataset::accumSummary_type::accumSummary_dest::alignment:
                 // data.accumSummary_data.align_accum_max.clear();
                 data.accumSummary_data.align_accum_lines.clear();
             break;
@@ -61,7 +61,6 @@ void accumSummary_scale(Dataset &data, const string &hfile,
 
     int dist = 500;
     float max = 0.0;
-    // int hitcount = 0;
 
 
     //////////////////////////////////
@@ -81,10 +80,7 @@ void accumSummary_scale(Dataset &data, const string &hfile,
     vector<string> temp;
 
     int start = 0, end = 0;
-    // counter = 0;
     int upstart = 0, upend = 0;
-    // pointer to hold double values from bigwig library function;
-    // double *values = nullptr;
 
     #ifdef DEBUG
         string signal = cfile + ".signal";
@@ -200,7 +196,7 @@ void accumSummary_scale(Dataset &data, const string &hfile,
                 data.accumSummary_data.scramble_accum_lines.push_back(line);
                 // data.accumSummary_data.scramble_accum_max.push_back(max);
             break;
-            case Dataset::accumSummary_type::accumSummary_dest::alignment:          
+            case Dataset::accumSummary_type::accumSummary_dest::alignment:
                 data.accumSummary_data.align_accum_lines.push_back(line);
                 // data.accumSummary_data.align_accum_max.push_back(max);
             break;
