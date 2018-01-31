@@ -83,7 +83,6 @@ void generateSNPEffectMatrix(Dataset &data) {
         cout << "The SNP Effect Matrix has been completed for " << data.TF_name << endl;
     }
 
-exit(0);
 }
 
 
@@ -260,17 +259,17 @@ void find_signal(Dataset &data, int length){
         }
 
         #ifdef DEBUG
-            cerr << "\tsignal_output" << endl;
+            //cerr << "\tsignal_output" << endl;
             // for(auto val : data.signal_output){
             //     cerr << "\tval: #" << val << '#' << endl;
             // }
-            cerr << "\tone" << endl;
+            //cerr << "\tone" << endl;
             ofstream one("one.txt");
             for(auto val : data.signal_cache[ {position, bp} ] ){
                 one << val << endl;
             }
             ofstream two("two.txt");
-            cerr << "\ttwo" << endl;
+            //cerr << "\ttwo" << endl;
             for(auto val : data.accumSummary_data.align_accum_lines){
                 two << val << endl;
             }
@@ -486,6 +485,10 @@ void create_baselines(Dataset &data, int length){
     // PWM kmer hits from enumerate kmers
     checkCache(data, enumerate_kmers, enumerate_cache_to_align, data.cachefile,
                Dataset::accumSummary_type::accumSummary_dest::enumerated);
+
+//    if(data.settings.verbose){
+//        cout << "Aligned (cache): " << data.signal_cache[ {position, bp} ].size() << endl;
+//    }
 
     if(!enumerate_cache_to_align.empty()){
         seq_col_to_fa(enumerate_cache_to_align,
