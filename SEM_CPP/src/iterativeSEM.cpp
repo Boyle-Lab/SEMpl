@@ -32,7 +32,7 @@ int main(int argc, char **argv){
 
 	Dataset data;
 
-	int total_iterations = 0;
+	int total_iterations = 250;
 
 	time_t timer;
 	time(&timer);
@@ -145,6 +145,10 @@ int main(int argc, char **argv){
         data.settings.threshold = 0.0;
     }
 
+    //track data.output_dir for iterations
+    data.base_dir = data.output_dir;
+    data.output_dir = data.base_dir << "/" << "it0/";
+
     cout << "--- Iteration 0 ---\n";
 
     data.settings.iteration = 0;
@@ -172,6 +176,7 @@ int main(int argc, char **argv){
 
     // get first p-value
     data.settings.threshold = get_threshold(data, pvals.front());
+
     pvals.erase(pvals.begin());
     if (data.settings.threshold < 0){
         data.settings.threshold = 0;
@@ -188,14 +193,16 @@ int main(int argc, char **argv){
     string line = "";
 //    int iterID = 0;
 
+
     map <string, double> kmers;
     // kmers_2 is new k-mers or data.kmerHash
     // kmers is old k-mer or previous data.kmerHash
     data.settings.fastrun = false;
+    ofstream outFile(data.base_dir + "/kmer_similarity.out");
+
     for (int iteration = 1; iteration < total_iterations; ++iteration){
 
         // output the results from comparing kmers
-        ofstream outFile(data.output_dir + "/kmer_similarity.out");
         if(iteration > 1 && converge < 10){
             // compare new and old kmers
             total_1 = same = diff = total_diff = 0;
@@ -233,10 +240,11 @@ int main(int argc, char **argv){
         if(converge < 10){
             outFile << iteration << "\t" << converge << "\t" << same << "\t" << diff << "\n";
             cout << "---Iteration " << iteration << "---"<< '\n';
-            ostringstream newOutput;
-            newOutput << data.output_dir << "/" << "it" << iteration << "/";
+
+            data.output_dir = data.base_dir << "/" << "it" << iteration << "/";
+
             if (converge == 9){
-		        data.settings.fastrun = true;
+                data.settings.fastrun = true;
                 // the folder containing the final iteration data
                 final_run = newOutput.str();
             }
@@ -279,7 +287,8 @@ int main(int argc, char **argv){
         }
     }
 
-	return 0;
+    outFile.close();
+    return 0;
 }
 
 // Requires: .pwm file uses '\t' to separate fields
