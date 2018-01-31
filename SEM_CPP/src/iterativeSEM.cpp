@@ -172,6 +172,9 @@ int main(int argc, char **argv){
         exit(1);
     }
 
+    string newPwm = data.output_dir + "/" + data.TF_name + ".pwm";
+    read_pwm(data, newPwm);
+
     pvals.erase(pvals.begin());
 
     // get first p-value
@@ -193,6 +196,8 @@ int main(int argc, char **argv){
     string line = "";
 //    int iterID = 0;
 
+
+//Note: combine above and this in a do{}while statement
 
     map <string, double> kmers;
     // kmers_2 is new k-mers or data.kmerHash
@@ -258,7 +263,9 @@ int main(int argc, char **argv){
 
             pVal = pvals.front();
             pvals.erase(pvals.begin());
-            // newPwm = data.output_dir+ "/" + tf + ".pwm";
+            newPwm = data.output_dir + "/" + data.TF_name + ".pwm";
+            read_pwm(data, newPwm);
+
             data.settings.threshold = get_threshold(data, pVal);
             if(data.settings.threshold < 0){
                 data.settings.threshold = 0;
