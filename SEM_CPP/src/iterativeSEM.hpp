@@ -135,6 +135,7 @@ struct Dataset {
 	std::string PWM_file = "";
 	std::string bigwig_file = "";
 	std::string DNase_file = "";
+	std::string base_dir = "";
 	std::string output_dir = "";
 	std::string cachefile = "";
 
