@@ -1,7 +1,6 @@
 
 #include "iterativeSEM.hpp"
 #include <iostream>
-#include <ctime>
 #include <sstream>
 #include <cassert>
 #include <vector>
@@ -14,8 +13,6 @@
 
 using namespace std;
 
-// parses pwm, places appropriate data in map
-void static parse_pwm(const string &pwm, map<char, vector<double> > &map);
 
 //REQUIRES: requires data is a valid Dataset with pwm filled in
 //MODIFIES: modifies data, specifically pwm
@@ -53,10 +50,9 @@ void generatePWMfromSEM(const Dataset & data,
 
     ifstream INF(input);
 
-    if(INF){
-        cerr << "INF is not good!!!!!\n\tEXITING\n";
-        exit(1);
-    }
+#ifdef DEBUG
+    assert(INF);
+#endif
 
     string line = "";
     vector<string> fields_str;
@@ -64,8 +60,11 @@ void generatePWMfromSEM(const Dataset & data,
 
     double minimumScore = 1000.0;
 
-    map<char, vector<double> > pwm;
-    parse_pwm(data.PWM_file, pwm);
+    //map<char, vector<double> > pwm;
+    //parse_pwm(data.PWM_file, pwm); // we already have this in memory
+
+    //remove first line from file
+    getline(INF, line, '\n');
 
     while(getline(INF, line, '\n')){
 
@@ -133,7 +132,8 @@ void generatePWMfromSEM(const Dataset & data,
     // formatting
     OUTF << "DE\t" + data.TF_name + '\n';
 
-    int rowsum = 0;
+    double rowsum = 0.0;
+    double rowsum_pwm = 0.0;
     #ifdef DEBUG
         assert(A.size() == C.size());
         assert(A.size() == G.size());
@@ -141,22 +141,25 @@ void generatePWMfromSEM(const Dataset & data,
     #endif
     for(size_t i = 0; i < A.size(); ++i){
         rowsum = A[i] + C[i] + G[i] + T[i];
+        rowsum_pwm = data.PWM_data.matrix_arr[0][i] + data.PWM_data.matrix_arr[1][i] + data.PWM_data.matrix_arr[2][i] + data.PWM_data.matrix_arr[3][i];
 
-        OUTF << i + '\t';
+
+//	OUTF << "A: " << A[i] << " MatA " << data.PWM_data.matrix_arr[0][i] << " rowsump: " << rowsum_pwm << " rowsum: " << rowsum << endl;
+        OUTF << i << '\t';
         OUTF << static_cast<int>( (static_cast<double>(A[i]) * alpha)
-                                    + (static_cast<double>(pwm['A'][i] * rowsum * (1 - alpha) ))
+                                    + (static_cast<double>(data.PWM_data.matrix_arr[0][i]) / rowsum_pwm * rowsum * (1 - alpha) )
                                     + .5 );
         OUTF << '\t';
         OUTF << static_cast<int>( (static_cast<double>(C[i]) * alpha)
-                                    + (static_cast<double>(pwm['C'][i] * rowsum * (1 - alpha) ))
+                                    + (static_cast<double>(data.PWM_data.matrix_arr[1][i]) / rowsum_pwm * rowsum * (1 - alpha) )
                                     + .5 );
         OUTF << '\t';
         OUTF << static_cast<int>( (static_cast<double>(G[i]) * alpha)
-                                    + (static_cast<double>(pwm['G'][i] * rowsum * (1 - alpha) ))
+                                    + (static_cast<double>(data.PWM_data.matrix_arr[2][i]) / rowsum_pwm * rowsum * (1 - alpha) )
                                     + .5 );
         OUTF << '\t';
         OUTF << static_cast<int>( (static_cast<double>(T[i]) * alpha)
-                                    + (static_cast<double>(pwm['T'][i] * rowsum * (1 - alpha) ))
+                                    + (static_cast<double>(data.PWM_data.matrix_arr[3][i]) / rowsum_pwm * rowsum * (1 - alpha) )
                                     + .5 );
         OUTF << "\tX\n";
     }
@@ -165,52 +168,5 @@ void generatePWMfromSEM(const Dataset & data,
     OUTF.close();
 
 
-}
-
-// REQUIRES: PWM within pwm file is formatted according to example
-static void parse_pwm(const string &pwm, map<char, vector<double> > &motif){
-    // clear motif for sanity
-    motif.clear();
-    // pwm is the filename containing a position weight matrix
-    ifstream IN_HANDLE(pwm);
-
-    if(!IN_HANDLE){
-        cerr << "IN_HANDLE is not good!!!!\n\tEXITING\n";
-        exit(1);
-    }
-
-    string line = "";
-    vector<string> fields;
-    vector<int> fields_int;
-    // while getline works successfully
-    while(getline(IN_HANDLE, line, '\n')){
-        // getline removes the newline character
-        // if neither of those strings are present in the current line
-        if( ( line.find("DE") == string::npos )
-         && ( line.find("XX") == string::npos ) ){
-            split_string(line, "\t", fields);
-
-            for(size_t i = 0; i < fields.size(); ++i){
-                fields_int.push_back(stoi(fields[i]));
-            }
-
-            int rowsum = fields_int[1] + fields_int[2]
-                       + fields_int[3] + fields_int[4];
-            // fill motif, which is a map from char to vector,
-            // stores integers corresponding to a char
-            motif['A'].push_back(static_cast<double>(fields_int[1]) /
-                                 static_cast<double>(rowsum) );
-            motif['C'].push_back(static_cast<double>(fields_int[2]) /
-                                 static_cast<double>(rowsum) );
-            motif['G'].push_back(static_cast<double>(fields_int[3]) /
-                                 static_cast<double>(rowsum) );
-            motif['T'].push_back(static_cast<double>(fields_int[4]) /
-                                 static_cast<double>(rowsum) );
-
-            // clear for next line of pwm
-            fields.clear();
-            fields_int.clear();
-        }
-    }
 }
 
