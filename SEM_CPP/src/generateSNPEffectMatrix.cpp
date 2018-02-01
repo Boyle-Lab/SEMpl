@@ -80,7 +80,7 @@ void generateSNPEffectMatrix(Dataset &data) {
     cout << "\tstep five" << endl;
     generate_output(data);
 
-    closeCache(data, data.cacheDB);
+    closeCache(data, data.cachefile, data.cacheDB);
 
     if(data.settings.verbose){
         cout << "The SNP Effect Matrix has been completed for " << data.TF_name << endl;
@@ -406,7 +406,7 @@ void create_baselines(Dataset &data, int length){
         bowtie_genome_map(length, "../data/hg19",
                           data.output_dir + "/BASELINE/Scrambled_kmer.fa",
                           data.output_dir + "/BASELINE/Scrambled_kmer.bed",
-                          data.DNase_file, data.settings.verbose);
+                          data.DNase_file, data.settings.threads, data.settings.verbose);
 
         // NEED TO CHECK THAT THIS IS THE RIGHT RELATIVE DIRECTORY
         //cmd = "./bin/bedtools intersect -a " + data.output_dir
@@ -500,7 +500,7 @@ void create_baselines(Dataset &data, int length){
         bowtie_genome_map(length, "../data/hg19",
                           data.output_dir + "/BASELINE/Enumerated_kmer.fa",
                           data.output_dir + "/BASELINE/Enumerated_kmer.bed",
-                          data.DNase_file, data.settings.verbose);
+                          data.DNase_file, data.settings.threads, data.settings.verbose);
         try{
 
             accumSummary_scale(data, data.bigwig_file,

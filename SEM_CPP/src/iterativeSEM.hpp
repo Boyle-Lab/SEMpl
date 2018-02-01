@@ -80,13 +80,14 @@ struct Dataset {
 	      // std::vector<double> enum_accum_max;
 	  };
 
-    // contains default settings
-	  struct SettingsForSNPEffectMatrix{
-	    	bool delSNPList = true, delAlignmentBed = true, delFilteredBed = true;
-		    bool delSignalFile = false, writecache = false, fastrun = false,
-             verbose = false;
-        int iteration = -1;
-		    double threshold = -1.0;
+        // contains default settings
+        struct SettingsForSNPEffectMatrix{
+            bool delSNPList = true, delAlignmentBed = true, delFilteredBed = true;
+	    bool delSignalFile = false, writecache = false, fastrun = false,
+            verbose = false;
+            int iteration = -1;
+            int threads = 1;
+	    double threshold = -1.0;
         // negative threshold value indicates not defined
 	  };
 
@@ -172,7 +173,7 @@ void alignToGenomeWrapper(Dataset &data, int iteration,
                             std::string genome);
 void bowtie_genome_map(int length, const std::string& genome,
                         const std::string& file, const std::string& final_output,
-                        const std::string& dnase_file, bool verbose);
+                        const std::string& dnase_file, const int threads, bool verbose);
 void changeBase(const Dataset &data, int position, const char nucleotide,
                 std::vector<std::string> &new_kmer_vec,
                 const std::string &genome);
@@ -197,12 +198,12 @@ double get_threshold(Dataset &data, double pval);
 void pwm_to_tfm(Dataset &data);
 void quality_control(const Dataset &data);
 void scramble_kmer(Dataset &data);
-bool seq_col_to_fa(const std::vector<std::string> &column,
+int seq_col_to_fa(const std::vector<std::string> &column,
                     const std::string &file);
 void writeCache(Dataset &data, sqlite3 *cacheDB,
                 Dataset::accumSummary_type::accumSummary_dest dest);
 void connectCache(Dataset &data, const std::string &cachefile, sqlite3 *cacheDB);
-void closeCache(Dataset &data, sqlite3 *cacheDB);
+void closeCache(Dataset &data, const std::string &cachefile, sqlite3 *cacheDB);
 
 std::string read_pwm(Dataset &data, std::string file);
 

@@ -151,6 +151,8 @@ int main(int argc, char **argv){
     cout << "--- Iteration 0 ---\n";
 
     data.settings.iteration = 0;
+    data.settings.threads = 40;
+
     try{
 #ifdef DEBUG
         cout << "\tgenerating SNPEffectMatrix\n" << flush;
@@ -201,7 +203,7 @@ int main(int argc, char **argv){
     map <string, double> kmers;
     // kmers_2 is new k-mers or data.kmerHash
     // kmers is old k-mer or previous data.kmerHash
-    data.settings.fastrun = false;
+    data.settings.fastrun = true;
     ofstream outFile(data.base_dir + "/kmer_similarity.out");
 
     for (int iteration = 1; iteration < total_iterations; ++iteration){

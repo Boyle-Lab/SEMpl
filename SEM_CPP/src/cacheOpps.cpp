@@ -29,10 +29,29 @@ void connectCache(Dataset &data, const string &cachefile, sqlite3 *cacheDB) {
     int message = 0;
     string msg = "";
 
-    message = sqlite3_open_v2(cachefile.c_str(), &cacheDB,
+    sqlite3 *cacheOnDisk;
+    sqlite3_backup *cacheBackup;
+
+    message = sqlite3_open_v2(":memory:", &cacheDB,
                               SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE,
                               NULL);
     problemEncountered(message, "open");
+
+    message = sqlite3_open_v2(cachefile.c_str(), &cacheOnDisk,
+                              SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE,
+                              NULL);
+    if(message == SQLITE_OK) {
+        cacheBackup = sqlite3_backup_init(cacheDB, "main", cacheOnDisk, "main");
+        if(cacheBackup) {
+            (void)sqlite3_backup_step(cacheBackup, -1);
+            (void)sqlite3_backup_finish(cacheBackup);
+        }
+        message = sqlite3_errcode(cacheDB);
+        problemEncountered(message, "backup");
+    }
+    message = sqlite3_close_v2(cacheOnDisk);
+    problemEncountered(message, "Closing cache on disk");
+
 
     // Keep journal in memory (may want to load entire DB into memory)
     sqlite3_exec(cacheDB, "PRAGMA journal_mode = MEMORY", NULL, NULL, NULL);
@@ -78,8 +97,27 @@ void connectCache(Dataset &data, const string &cachefile, sqlite3 *cacheDB) {
 }
 
 // Closes the connection to the cacheDB
-void closeCache(Dataset &data, sqlite3 *cacheDB) {
-    int message = sqlite3_close_v2(cacheDB);
+void closeCache(Dataset &data, const string &cachefile, sqlite3 *cacheDB) {
+
+    sqlite3 *cacheOnDisk;
+    sqlite3_backup *cacheBackup;
+    int message;
+
+    message = sqlite3_open_v2(cachefile.c_str(), &cacheOnDisk,
+                              SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE,
+                              NULL);
+    if(message == SQLITE_OK) {
+        cacheBackup = sqlite3_backup_init(cacheOnDisk, "main", cacheDB, "main");
+        if(cacheBackup) {
+            (void)sqlite3_backup_step(cacheBackup, -1);
+            (void)sqlite3_backup_finish(cacheBackup);
+        }
+        message = sqlite3_errcode(cacheOnDisk);
+        problemEncountered(message, "backup");
+    }
+    message = sqlite3_close_v2(cacheOnDisk);
+    problemEncountered(message, "closing the connection");
+    message = sqlite3_close_v2(cacheDB);
     problemEncountered(message, "closing the connection");
 }
 
