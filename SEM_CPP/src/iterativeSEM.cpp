@@ -79,7 +79,7 @@ int main(int argc, char **argv){
 #endif
                 break;
             case 'o':
-                data.output_dir = optarg;
+                data.base_dir = optarg;
 #ifdef DEBUG
                 cout << "\t output: " << optarg << '\n';
 #endif
@@ -114,7 +114,7 @@ int main(int argc, char **argv){
 		exit(1);
 	}
     // must have output directory
-	if(data.output_dir.empty()){
+	if(data.base_dir.empty()){
 		cout << "No output file given" << endl;
 		exit(1);
 	}
@@ -125,7 +125,7 @@ int main(int argc, char **argv){
 
     // if no database given, assume default location
 	if(data.cachefile.empty())  {
-        data.cachefile = data.output_dir + "/CACHE.db";
+        data.cachefile = data.base_dir + "/CACHE.db";
     }
 
     vector<double> pvals;
@@ -146,8 +146,7 @@ int main(int argc, char **argv){
     }
 
     //track data.output_dir for iterations
-    data.base_dir = data.output_dir;
-    data.output_dir = data.base_dir << "/" << "it0/";
+    data.output_dir = data.base_dir + "it0/";
 
     cout << "--- Iteration 0 ---\n";
 
@@ -243,15 +242,15 @@ int main(int argc, char **argv){
         }
 
         if(converge < 10){
-            outFile << iteration << "\t" << converge << "\t" << same << "\t" << diff << "\n";
+            outFile << iteration << "\t" << converge << "\t" << same << "\t" << diff << "\n" << flush;
             cout << "---Iteration " << iteration << "---"<< '\n';
 
-            data.output_dir = data.base_dir << "/" << "it" << iteration << "/";
+            data.output_dir = data.base_dir + "/" + "it" + std::to_string(iteration) + "/";
 
             if (converge == 9){
                 data.settings.fastrun = true;
                 // the folder containing the final iteration data
-                final_run = newOutput.str();
+                final_run = data.output_dir;
             }
             generateSNPEffectMatrix(data);
             // kmerHash should be filled in after the above line, within data!!!!
