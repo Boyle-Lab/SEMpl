@@ -76,7 +76,9 @@ void writeCache(Dataset &data, const string &cache,
     sqlite3 *cacheDB;
     int message = 0;
     string msg;
-    message = sqlite3_open(cache.c_str(), &cacheDB);
+    message = sqlite3_open_v2(cache.c_str(), &cacheDB,
+                              SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE,
+                              NULL);
     problemEncountered(message, "open");
 
     //utilize sqlite transactions to speed this all up
@@ -201,7 +203,7 @@ void writeCache(Dataset &data, const string &cache,
     message = sqlite3_finalize(amount_seen_query);
     problemEncountered(message, "finalize amount_seen_query");
 
-    message = sqlite3_close(cacheDB);
+    message = sqlite3_close_v2(cacheDB);
     problemEncountered(message, "closing the connection");
 }
 
