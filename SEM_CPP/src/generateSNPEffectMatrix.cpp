@@ -28,7 +28,7 @@ void generateSNPEffectMatrix(Dataset &data) {
 
     // Set a default cache for scores if none has been provided
     if(data.cachefile.empty()){
-        data.cachefile = data.output_dir + "/CACHE.db";
+        data.cachefile = data.base_dir + "/CACHE.db";
     }
 
     if(data.settings.verbose){
@@ -264,15 +264,15 @@ void find_signal(Dataset &data, int length){
             //     cerr << "\tval: #" << val << '#' << endl;
             // }
             //cerr << "\tone" << endl;
-            ofstream one("one.txt");
-            for(auto val : data.signal_cache[ {position, bp} ] ){
-                one << val << endl;
-            }
-            ofstream two("two.txt");
+            //ofstream one("one.txt");
+            //for(auto val : data.signal_cache[ {position, bp} ] ){
+            //    one << val << endl;
+            //}
+            //ofstream two("two.txt");
             //cerr << "\ttwo" << endl;
-            for(auto val : data.accumSummary_data.align_accum_lines){
-                two << val << endl;
-            }
+            //for(auto val : data.accumSummary_data.align_accum_lines){
+            //    two << val << endl;
+            //}
 
         #endif
 
@@ -473,6 +473,7 @@ void create_baselines(Dataset &data, int length){
             for(auto val : data.signal_scramble_output){
                 debug1 << val << endl;
             }
+            debug1.close();
         #endif
 
     } // !data.settings.fastrun
@@ -536,6 +537,7 @@ void create_baselines(Dataset &data, int length){
         for(auto val : data.signal_enumerate_output){
             debug << val << endl;
         }
+        debug.close();
     #endif
 
 
@@ -553,6 +555,7 @@ void create_baselines(Dataset &data, int length){
     for(auto val : data.signal_enumerate_output){
         enum_out << val << endl;
     }
+    enum_out.close();
     #endif
 
 
