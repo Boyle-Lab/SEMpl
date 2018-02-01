@@ -119,6 +119,11 @@ static void align_SNPs(Dataset &data, int length,
             if(non_zero_file_size){
                 bowtie_genome_map(length, "./data/hg19", fa_file, bowtie_output,
                                   data.DNase_file, data.settings.verbose);
+            } else {
+                //create the empty file - we use the files to creat the map later on
+                // there is probably a better way to do this
+                ofstream OUT(bowtie_output);
+                OUT.close();
             }
             #ifdef DEBUG
 
