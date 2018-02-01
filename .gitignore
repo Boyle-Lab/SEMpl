@@ -18,3 +18,4 @@ perf.data*
 *.out
 *debug*
 *.dat
+SEM_CPP/lib/TFM-Pvalue/TFMpvalue-*
