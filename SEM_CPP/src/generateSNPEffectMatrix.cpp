@@ -553,14 +553,6 @@ void create_baselines(Dataset &data, int length){
                                         data.Signal_data.scramble_stdev,
                                         data.Signal_data.scramble_sterr);
     }
-    #ifdef DEBUG
-    ofstream enum_out("Enumerated_kmer.signal");
-    for(auto val : data.signal_enumerate_output){
-        enum_out << val << endl;
-    }
-    enum_out.close();
-    #endif
-
 
     if(data.settings.verbose) cout << "enum" << flush;
     findMaximumAverageSignalWrapper(data.signal_enumerate_output,
