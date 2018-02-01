@@ -114,6 +114,8 @@ void Enumerate_kmer(Dataset &data){
     for(auto val : data.kmerHash){
         OUT << val.first << '\t' << val.second << endl;
     }
+    OUT.close();
+
     data.size_of_kmerHash = data.kmerHash.size();
     // cout << "exit " << __LINE__ << endl;
     // exit(1);
