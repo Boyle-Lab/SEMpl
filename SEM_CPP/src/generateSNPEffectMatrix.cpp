@@ -48,6 +48,7 @@ void generateSNPEffectMatrix(Dataset &data) {
     data.signal_cache_scramble.clear();
     data.signal_cache_enumerate.clear();
 
+    connectCache(data, data.cachefile, data.cacheDB);
 
     //-------------------------------------
     // Primary compute steps:
@@ -78,6 +79,8 @@ void generateSNPEffectMatrix(Dataset &data) {
     //Step 5: Create R plot(s) and a SEM output
     cout << "\tstep five" << endl;
     generate_output(data);
+
+    closeCache(data, data.cacheDB);
 
     if(data.settings.verbose){
         cout << "The SNP Effect Matrix has been completed for " << data.TF_name << endl;
@@ -204,7 +207,7 @@ void find_signal(Dataset &data, int length){
             if(data.settings.verbose){
                 cout << "\twriteCache(args) is running..." << flush;
             }
-            writeCache(data, data.cachefile,
+            writeCache(data, data.cacheDB,
                        Dataset::accumSummary_type::accumSummary_dest::alignment);
             if(data.settings.verbose){
                 cout << "FINISH" << endl;
@@ -396,7 +399,7 @@ void create_baselines(Dataset &data, int length){
         }
         // scramble_kmers IS NOW SCRAMBLED!!!!
 
-        checkCache(data, scramble_kmers, scramble_cache_to_align, data.cachefile,
+        checkCache(data, scramble_kmers, scramble_cache_to_align, data.cacheDB,
                     Dataset::accumSummary_type::accumSummary_dest::scrambled);
         seq_col_to_fa(scramble_cache_to_align,
                       data.output_dir + "/BASELINE/Scrambled_kmer.fa");
@@ -434,7 +437,7 @@ void create_baselines(Dataset &data, int length){
                 cout << "\twriting to cache..." << flush;
             }
             try{
-                writeCache(data, data.cachefile,
+                writeCache(data, data.cacheDB,
                            Dataset::accumSummary_type::accumSummary_dest::scrambled);
             }
             catch(...){
@@ -484,7 +487,7 @@ void create_baselines(Dataset &data, int length){
     //            Dataset::accumSummary_type::accumSummary_dest dest)
 
     // PWM kmer hits from enumerate kmers
-    checkCache(data, enumerate_kmers, enumerate_cache_to_align, data.cachefile,
+    checkCache(data, enumerate_kmers, enumerate_cache_to_align, data.cacheDB,
                Dataset::accumSummary_type::accumSummary_dest::enumerated);
 
 //    if(data.settings.verbose){
@@ -509,7 +512,7 @@ void create_baselines(Dataset &data, int length){
             exit(1);
         }
         if(data.settings.writecache){
-            writeCache(data, data.cachefile,
+            writeCache(data, data.cacheDB,
                        Dataset::accumSummary_type::accumSummary_dest::enumerated);
         }
     }

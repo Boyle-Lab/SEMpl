@@ -69,7 +69,7 @@ static void align_SNPs(Dataset &data, int length,
             // Filter our kmers by existing kmers in the cache so that we don't
             //   need to re-process them.
             try{
-                checkCache(data, new_kmer, cache_to_align, data.cachefile,
+                checkCache(data, new_kmer, cache_to_align, data.cacheDB,
                         Dataset::accumSummary_type::accumSummary_dest::alignment,
                         position, nucleotideStack[j]);
                 // new_kmer and cache to align would be swapped if there is no cache

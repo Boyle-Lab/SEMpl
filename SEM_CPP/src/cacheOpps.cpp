@@ -23,10 +23,12 @@ static void checkDone(const int message, const string &s);
 
 
 // This builds a new cache if it does not exist and connects to the cache
-void connectCache(Dataset &data, const string &cachefile, sqlite3 &cacheDB) {
+void connectCache(Dataset &data, const string &cachefile, sqlite3 *cacheDB) {
 
     bool newcache = fileExists(cachefile);
     int message = 0;
+    string msg = "";
+
     message = sqlite3_open_v2(cachefile.c_str(), &cacheDB,
                               SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE,
                               NULL);
@@ -71,11 +73,13 @@ void connectCache(Dataset &data, const string &cachefile, sqlite3 &cacheDB) {
         sqlite3_free(z_err_msg);
     }
 
+    data.cacheDB = cacheDB;
+
 }
 
 // Closes the connection to the cacheDB
-void closeCache(Dataset &data, const string &cachefile, sqlite3 &cacheDB) {
-    message = sqlite3_close_v2(cacheDB);
+void closeCache(Dataset &data, sqlite3 *cacheDB) {
+    int message = sqlite3_close_v2(cacheDB);
     problemEncountered(message, "closing the connection");
 }
 
@@ -88,7 +92,7 @@ void closeCache(Dataset &data, const string &cachefile, sqlite3 &cacheDB) {
 // IMPORTANT: to_align is the kmers that need to be aligned to genome
 //            signal_cache_whatever are the alignments!!!
 void checkCache(Dataset &data, vector<string> &in_file, vector<string> &to_align,
-                sqlite3 &cacheDB, Dataset::accumSummary_type::accumSummary_dest dest,
+                sqlite3 *cacheDB, Dataset::accumSummary_type::accumSummary_dest dest,
                 int position, char bp){
 
     vector<string> signal_cache_data;
@@ -99,6 +103,7 @@ void checkCache(Dataset &data, vector<string> &in_file, vector<string> &to_align
     }
 
     string msg = "";
+    int message;
 
     // Prepare SQL queries
 //   msg = "SELECT count(*) FROM seen_cache WHERE kmer=? AND iter!=?";
@@ -191,10 +196,10 @@ void checkCache(Dataset &data, vector<string> &in_file, vector<string> &to_align
                 sqlite3_clear_bindings(insert_into_seen_cache_query);
             }
 
-            sqlite3_reset(amount_seen_query);
-            sqlite3_clear_bindings(amount_seen_query);
         }
 
+            sqlite3_reset(amount_seen_query);
+            sqlite3_clear_bindings(amount_seen_query);
         sqlite3_reset(cache_signal_data_query);
         sqlite3_clear_bindings(cache_signal_data_query);
     }
@@ -237,9 +242,11 @@ void checkCache(Dataset &data, vector<string> &in_file, vector<string> &to_align
 
 // REQUIRES: accumSummary_scale is filled with the correct data
 // EFFECTS: writes output of accumSummary_scale to cache, based upon dest
-void writeCache(Dataset &data, sqlite3 &cacheDB,
+void writeCache(Dataset &data, sqlite3 *cacheDB,
                 Dataset::accumSummary_type::accumSummary_dest dest){
 
+    int message = 0;
+    string msg = "";
 
     // points to an output vector from running accumSummary_scale(args)
     const vector<string> *ptr = nullptr;
