@@ -81,7 +81,8 @@ void checkCache(Dataset &data, vector<string> &in_file, vector<string> &to_align
             cout << "Cache does exist\n" << flush;
         }
 
-        msg = "SELECT count(*) FROM seen_cache WHERE kmer=? AND iter!=?";
+//        msg = "SELECT count(*) FROM seen_cache WHERE kmer=? AND iter!=?";
+        msg = "SELECT count(*) FROM seen_cache WHERE kmer=?";
         sqlite3_stmt* amount_seen_query = NULL;
         message = sqlite3_prepare_v2(cacheDB, msg.c_str(), 
                                      static_cast<int>(msg.size()), 
@@ -160,8 +161,8 @@ void checkCache(Dataset &data, vector<string> &in_file, vector<string> &to_align
                           -1, SQLITE_TRANSIENT);
                 problemEncountered(message, "bind_text for amount_seen_query");
                 // int sqlite3_bind_int(sqlite3_stmt*, int, int);
-                message = sqlite3_bind_int(amount_seen_query, 2, data.settings.iteration);
-                problemEncountered(message, "bind_int for amount_seen_query");
+//                message = sqlite3_bind_int(amount_seen_query, 2, data.settings.iteration);
+//                problemEncountered(message, "bind_int for amount_seen_query");
 
                 // num_col = sqlite3_column_count(amount_seen_query);
                 // if(num_col < 1){
@@ -223,6 +224,10 @@ void checkCache(Dataset &data, vector<string> &in_file, vector<string> &to_align
 	//probably should finalize all of these - this is a memory leak otherwise
         message = sqlite3_finalize(insert_into_seen_cache_query);
         problemEncountered(message, "finalize insert_into_seen_cache_query");
+
+        message = sqlite3_close_v2(cacheDB);
+        problemEncountered(message, "closing the connection");
+
 
         // store computations found in cache
         switch (dest) {
@@ -317,14 +322,14 @@ void checkCache(Dataset &data, vector<string> &in_file, vector<string> &to_align
 	//cout << "Finalizing insert_into_seen_cache_query" << endl;
         message = sqlite3_finalize(insert_into_seen_cache_query);
         problemEncountered(message, "finalize insert_into_seen_cache_query");
+        message = sqlite3_close_v2(cacheDB);
+        problemEncountered(message, "closing the connection");
+
 
         // to_align = in_file;
         swap(to_align, in_file);
 
     }
-
-    message = sqlite3_close_v2(cacheDB);
-    problemEncountered(message, "closing the connection");
 
     if(data.settings.verbose){
         cout << "FINISH" << endl;
