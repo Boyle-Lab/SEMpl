@@ -333,7 +333,7 @@ void writeCache(Dataset &data, sqlite3 *cacheDB,
 
     string temp = "", val = "";
     #ifdef DEBUG
-    ofstream debug("written.txt");
+    //ofstream debug("written.txt");
     #endif
 
     for(size_t idx = 0; idx < ptr->size(); ++idx){
@@ -343,7 +343,7 @@ void writeCache(Dataset &data, sqlite3 *cacheDB,
         grab_string_4_index(val, temp);
 
         #ifdef DEBUG
-        debug << "\tkmer: " << "first: #" << temp << "#\tsecond:#" << val << '#' << endl;
+        //debug << "\tkmer: " << "first: #" << temp << "#\tsecond:#" << val << '#' << endl;
         #endif
 
         //currently we have kmers that have been seen in the input to this function
