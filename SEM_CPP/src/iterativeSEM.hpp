@@ -177,7 +177,7 @@ void changeBase(const Dataset &data, int position, const char nucleotide,
                 std::vector<std::string> &new_kmer_vec,
                 const std::string &genome);
 void checkCache(Dataset &data, std::vector<std::string> &in_file,
-                std::vector<std::string> &out_cache, const std::string &cachefile,
+                std::vector<std::string> &out_cache, sqlite3 &cacheDB,
                 Dataset::accumSummary_type::accumSummary_dest dest,
                 int position = -1, char bp = 'Q');
 void combineBedFiles(Dataset &data);
@@ -199,8 +199,10 @@ void quality_control(const Dataset &data);
 void scramble_kmer(Dataset &data);
 bool seq_col_to_fa(const std::vector<std::string> &column,
                     const std::string &file);
-void writeCache(Dataset &data, const std::string &cache,
+void writeCache(Dataset &data, sqlite3 &cacheDB,
                 Dataset::accumSummary_type::accumSummary_dest dest);
+void connectCache(Dataset &data, const string &cachefile, sqlite3 &cacheDB);
+void closeCache(Dataset &data, sqlite3 &cacheDB);
 
 std::string read_pwm(Dataset &data, std::string file);
 
