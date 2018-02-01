@@ -243,7 +243,7 @@ int main(int argc, char **argv){
 
         }
 
-        if(converge < 10){
+        if(converge < 10 && iteration < total_iterations){
             outFile << iteration << "\t" << converge << "\t" << same << "\t" << diff << "\n" << flush;
             cout << "---Iteration " << iteration << "---"<< '\n';
 
@@ -278,7 +278,7 @@ int main(int argc, char **argv){
 
             //link last iteration
             ostringstream newOutput;
-            newOutput << data.output_dir << "/final/";
+            newOutput << data.base_dir << "/final/";
             string cmd = "ln -s " + final_run + " " + data.output_dir + " " + newOutput.str();
             if(system(cmd.c_str()) != 0){
                 cerr << "problem running " << cmd << endl;
