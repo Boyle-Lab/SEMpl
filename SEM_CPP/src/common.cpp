@@ -3,7 +3,7 @@ using namespace std;
 
 // getlength accesses first(?) element of kmerHash and returns the key length
 int getLength(const Dataset &data){
-    // cout << data.kmerHash.size() << endl;
+    //cout << data.kmerHash.size() << flush;
     if(data.kmerHash.empty()){
         std::cerr << "data.kmerHash is empty!!!!\n\tEXITING" << std::endl;
         exit(1);
@@ -265,10 +265,11 @@ std::stringstream exec(const char* cmd) {
     std::array<char, 128> buffer;
     std::stringstream result;
     std::shared_ptr<FILE> pipe(popen(cmd, "r"), pclose);
-    if (!pipe) throw std::runtime_error("popen() failed!");
+    if (!pipe) throw std::runtime_error(strerror(errno));
     while (!feof(pipe.get())) {
         if (fgets(buffer.data(), 128, pipe.get()) != nullptr)
             result << buffer.data();
     }
+    pipe.reset();
     return result;
 }
