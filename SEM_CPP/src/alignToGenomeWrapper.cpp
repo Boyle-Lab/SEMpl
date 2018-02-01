@@ -37,7 +37,7 @@ static void align_SNPs(Dataset &data, int length,
     string fa_file = "";
     string bowtie_output = "./";
     vector<string> new_kmer;
-    bool non_zero_file_size = false;
+    int non_zero_file_size;
     vector<string> cache_to_align;
 
     // Build ALIGNMENT directory if it doesn't exist
@@ -116,9 +116,12 @@ static void align_SNPs(Dataset &data, int length,
             bowtie_output = CWD + name + ".bed";
 
             non_zero_file_size = seq_col_to_fa(cache_to_align, fa_file);
-            if(non_zero_file_size){
+            if(non_zero_file_size > 500){
                 bowtie_genome_map(length, "./data/hg19", fa_file, bowtie_output,
-                                  data.DNase_file, data.settings.verbose);
+                                  data.DNase_file, data.settings.threads, data.settings.verbose);
+            } else if (non_zero_file_size > 0) {
+                bowtie_genome_map(length, "./data/hg19", fa_file, bowtie_output,
+                                  data.DNase_file, 1, data.settings.verbose);
             } else {
                 //create the empty file - we use the files to creat the map later on
                 // there is probably a better way to do this
