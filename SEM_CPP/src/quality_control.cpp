@@ -76,6 +76,8 @@ double ttest(const Dataset &data){
     ofstream OUT(data.output_dir + "/runTtest.R");
     ofstream OUT1(data.output_dir + "Enumerated_kmer_filtered.signal");
     ofstream OUT2(data.output_dir + "Scrambled_kmer_filtered.signal");
+
+    //These need to be written as NA and not -256 or the R needs to read -256 as NA
     for(auto val : data.signal_scramble_output){
         OUT2 << val << '\n';
     }
@@ -90,6 +92,11 @@ double ttest(const Dataset &data){
         << "pval <- -log10(res$p.value)\n\n"
         << "cat(pval, sep=\"\\n\")\n";
 
+
+    OUT.close();
+    OUT1.close();
+    OUT2.close();
+
     string cmd = "R --vanilla --no-save --slave < " 
                  + data.output_dir 
                  + "/runTtest.R > " + data.output_dir + "/ttest.txt";
@@ -97,14 +104,14 @@ double ttest(const Dataset &data){
     // FILE * strm = popen(cmd.c_str(), "r");
     if(system(cmd.c_str() ) ){
         cerr << "problem running " << cmd << endl;
-        exit(1);
+//        exit(1);
     }
     double p_val = -1.0;
 
     // int message = fscanf(strm, " %lf", &p_val);
     if(p_val == -1.0){
         cerr << "Failure to read p_val!!!!!!\n\tEXITING";
-        exit(1);
+//        exit(1);
     }
     // if(message != 1){
     //     cerr << "incorrect message from fscanf(args)!!!!!\n\tEXITING";
