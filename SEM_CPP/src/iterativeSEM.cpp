@@ -203,7 +203,7 @@ int main(int argc, char **argv){
     map <string, double> kmers;
     // kmers_2 is new k-mers or data.kmerHash
     // kmers is old k-mer or previous data.kmerHash
-    data.settings.fastrun = true;
+    data.settings.fastrun = false;
     ofstream outFile(data.base_dir + "/kmer_similarity.out");
 
     for (int iteration = 1; iteration < total_iterations; ++iteration){
@@ -279,7 +279,7 @@ int main(int argc, char **argv){
             //link last iteration
             ostringstream newOutput;
             newOutput << data.base_dir << "/final/";
-            string cmd = "ln -s " + final_run + " " + data.output_dir + " " + newOutput.str();
+            string cmd = "ln -s " + final_run + " " + newOutput.str();
             if(system(cmd.c_str()) != 0){
                 cerr << "problem running " << cmd << endl;
                 exit(1);
