@@ -144,8 +144,8 @@ void checkCache(Dataset &data, vector<string> &in_file, vector<string> &to_align
     int message;
 
     // Prepare SQL queries
-//   msg = "SELECT count(*) FROM seen_cache WHERE kmer=? AND iter!=?";
-    msg = "SELECT count(*) FROM seen_cache WHERE kmer=?";
+    msg = "SELECT count(*) FROM seen_cache WHERE kmer=? AND iter!=?";
+//    msg = "SELECT count(*) FROM seen_cache WHERE kmer=?";
     sqlite3_stmt* amount_seen_query = NULL;
     message = sqlite3_prepare_v2(cacheDB, msg.c_str(),
                                  static_cast<int>(msg.size()),
@@ -191,9 +191,12 @@ void checkCache(Dataset &data, vector<string> &in_file, vector<string> &to_align
             // not found
 
             //NOTE: I think that we don't need to do this query since we are INSERT OR IGNORE for the insert
+            // But only if we get rid of iterations
             message = sqlite3_bind_text(amount_seen_query, 1, kmer.c_str(),
                       -1, SQLITE_TRANSIENT);
             problemEncountered(message, "bind_text for amount_seen_query");
+            message = sqlite3_bind_int(amount_seen_query, 2, data.settings.iteration);
+            problemEncountered(message, "bind_int for amount_seen_query");
             message = sqlite3_step(amount_seen_query);
             isRowReady(message);
 
