@@ -3,8 +3,8 @@
 #include <iostream>
 using namespace std;
 
-static void align_SNPs(Dataset &data, string CWD, vector<string> &new_kmer, int length, int position, char bp);
-void find_signal(Dataset &data, int length, int position, char bp);
+static void align_SNPs(Dataset &data, string name, vector<string> &new_kmer, int length, int position, char bp);
+void find_signal(Dataset &data, string name, int length, int position, char bp);
 
 void alignToGenomeWrapper(Dataset &data, int iteration, const string genome) {
 
@@ -20,6 +20,7 @@ void alignToGenomeWrapper(Dataset &data, int iteration, const string genome) {
 
     // Build ALIGNMENT directory if it doesn't exist
     const string CWD =  "./" + data.output_dir + "ALIGNMENT/";
+    string name = "";
     if(system( string("mkdir -p " + CWD).c_str() ) != 0){
         cerr << "problem running mkdir -p " << CWD << endl;
         exit(1);
@@ -39,6 +40,7 @@ void alignToGenomeWrapper(Dataset &data, int iteration, const string genome) {
     for(int position  = 0; position < length; ++position){
         for(int j = 0; j < static_cast<int>(nucleotideStack.size()); ++j){
             new_kmer.clear();
+            name = CWD + bp + string("_pos") + to_string(position);
 
             try{
                 // creates new_kmer vector from copying over data.kmerHash
@@ -52,11 +54,11 @@ void alignToGenomeWrapper(Dataset &data, int iteration, const string genome) {
             }
 
             // Align to the genome
-            align_SNPs(data, CWD, new_kmer, length, position, nucleotideStack[j]);
+            align_SNPs(data, name, new_kmer, length, position, nucleotideStack[j]);
 
             // Get signal for all alignments
             //  and Write alignments to cache to prevent duplicate processing
-            find_signal(data, length, position, nucleotideStack[j]);
+            find_signal(data, name, length, position, nucleotideStack[j]);
         }
     }
 
@@ -68,10 +70,9 @@ void alignToGenomeWrapper(Dataset &data, int iteration, const string genome) {
 // Align all pseudo-SNP kmers to genome and filter with DNase peaks
 //  in one combined function.
 //  output is sorted and unique
-static void align_SNPs(Dataset &data, string CWD, vector<string> &new_kmer,
+static void align_SNPs(Dataset &data, string name, vector<string> &new_kmer,
                        int length, int position, char bp) {
 
-    string name = "";
     const string genome = "./data/hg19";
     string fa_file = "";
     string bowtie_output = "./";
@@ -79,8 +80,6 @@ static void align_SNPs(Dataset &data, string CWD, vector<string> &new_kmer,
     vector<string> cache_to_align;
 
     cache_to_align.clear();
-
-    name = bp + string("_pos") + to_string(position);
 
     // Filter our kmers by existing kmers in the cache so that we don't
     //   need to re-process them.
@@ -101,8 +100,8 @@ static void align_SNPs(Dataset &data, string CWD, vector<string> &new_kmer,
     #endif
 
     // align these files to the genome through bowtie_genome_map function
-    fa_file = CWD + name + ".fa";
-    bowtie_output = CWD + name + ".bed";
+    fa_file = name + ".fa";
+    bowtie_output = name + ".bed";
 
     non_zero_file_size = seq_col_to_fa(cache_to_align, fa_file);
     if(non_zero_file_size > 500){
@@ -127,12 +126,12 @@ static void align_SNPs(Dataset &data, string CWD, vector<string> &new_kmer,
 // NOTE: iteratively constructs the output from
 //       findMaximumAverageSignalWrapper(args),
 //       as opposed to aggregately, as done in the original algorithm
-void find_signal(Dataset &data, int length, int position, char bp){
+void find_signal(Dataset &data, string name, int length, int position, char bp){
     if(data.settings.verbose){
         cout << "Finding the average signal" << endl;
     }
 
-    string file;
+    string file = name + ".bed";
 
     // Calculate summary score for all alignments
     try{
