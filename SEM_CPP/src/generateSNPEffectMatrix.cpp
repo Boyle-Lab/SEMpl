@@ -25,11 +25,6 @@ void generateSNPEffectMatrix(Dataset &data) {
     // default options are built into settings within data
     // in iterativeSEM.hpp
 
-    // Set a default cache for scores if none has been provided
-    if(data.cachefile.empty()){
-        data.cachefile = data.base_dir + "/CACHE.db";
-    }
-
     if(data.settings.verbose){
         cout << "\nGenerating SEM for " << data.TF_name << endl;
     }
@@ -46,8 +41,6 @@ void generateSNPEffectMatrix(Dataset &data) {
     data.signal_cache.clear();
     data.signal_cache_scramble.clear();
     data.signal_cache_enumerate.clear();
-
-    connectCache(data, data.cachefile, data.cacheDB);
 
     //-------------------------------------
     // Primary compute steps:
@@ -74,8 +67,6 @@ void generateSNPEffectMatrix(Dataset &data) {
     //Step 5: Create R plot(s) and a SEM output
     cout << "\tstep five" << endl;
     generate_output(data);
-
-    closeCache(data, data.cachefile, data.cacheDB);
 
     if(data.settings.verbose){
         cout << "The SNP Effect Matrix has been completed for " << data.TF_name << endl;

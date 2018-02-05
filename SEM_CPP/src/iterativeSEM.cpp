@@ -145,6 +145,9 @@ int main(int argc, char **argv){
         data.settings.threshold = 0.0;
     }
 
+
+    connectCache(data, data.cachefile, data.cacheDB);
+
     //track data.output_dir for iterations
     data.output_dir = data.base_dir + "it0/";
 
@@ -295,6 +298,7 @@ int main(int argc, char **argv){
         }
     }
 
+    closeCache(data, data.cachefile, data.cacheDB);
     outFile.close();
     return 0;
 }
