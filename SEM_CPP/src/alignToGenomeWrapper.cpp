@@ -40,7 +40,7 @@ void alignToGenomeWrapper(Dataset &data, int iteration, const string genome) {
     for(int position  = 0; position < length; ++position){
         for(int j = 0; j < static_cast<int>(nucleotideStack.size()); ++j){
             new_kmer.clear();
-            name = CWD + bp + string("_pos") + to_string(position);
+            name = CWD + nucleotideStack[j] + string("_pos") + to_string(position);
 
             try{
                 // creates new_kmer vector from copying over data.kmerHash
