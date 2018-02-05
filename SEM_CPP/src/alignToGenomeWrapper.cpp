@@ -3,11 +3,12 @@
 #include <iostream>
 using namespace std;
 
-static void align_SNPs(Dataset &data, int length, const vector<char> &nucleotideStack);
+static void align_SNPs(Dataset &data, string CWD, vector<string> &new_kmer, int length, int position, char bp);
 
 void alignToGenomeWrapper(Dataset &data, int iteration, const string genome) {
 
     const vector<char> nucleotideStack{'A', 'C', 'G', 'T'};
+    vector<string> new_kmer;
 
     // step 1: get the length of kmer
     cout << data.kmerHash.size() << endl;
@@ -30,6 +31,8 @@ void alignToGenomeWrapper(Dataset &data, int iteration, const string genome) {
     // Iterate through each position and generate all possible nucleotide changes
     for(int position  = 0; position < length; ++position){
         for(int j = 0; j < static_cast<int>(nucleotideStack.size()); ++j){
+            new_kmer.clear();
+
             try{
                 // creates new_kmer vector from copying over data.kmerHash
                 // and changing a single nucleotide
@@ -41,7 +44,7 @@ void alignToGenomeWrapper(Dataset &data, int iteration, const string genome) {
                 exit(1);
             }
 
-            align_SNPs(data, CWD, length, position, nucleotideStack[j]);
+            align_SNPs(data, CWD, new_kmer, length, position, nucleotideStack[j]);
         }
     }
 
@@ -53,21 +56,19 @@ void alignToGenomeWrapper(Dataset &data, int iteration, const string genome) {
 // Align all pseudo-SNP kmers to genome and filter with DNase peaks
 //  in one combined function.
 //  output is sorted and unique
-static void align_SNPs(Dataset &data, string CWD, int length,
-                       int position, char bp) {
+static void align_SNPs(Dataset &data, string CWD, vector<string> &new_kmer,
+                       int length, int position, char bp) {
 
     string name = "";
     const string genome = "./data/hg19";
     string fa_file = "";
     string bowtie_output = "./";
-    vector<string> new_kmer;
     int non_zero_file_size;
     vector<string> cache_to_align;
 
     cache_to_align.clear();
-    new_kmer.clear();
 
-    name = string(bp) + string("_pos") + to_string(position);
+    name = bp + string("_pos") + to_string(position);
 
     // Filter our kmers by existing kmers in the cache so that we don't
     //   need to re-process them.
@@ -84,7 +85,7 @@ static void align_SNPs(Dataset &data, string CWD, int length,
     }
 
     #ifdef DEBUG
-    cerr << position << nucleotideStack[j] << " to_align: " << cache_to_align.size() << endl;
+    cerr << position << bp << " to_align: " << cache_to_align.size() << endl;
     #endif
 
     // align these files to the genome through bowtie_genome_map function
