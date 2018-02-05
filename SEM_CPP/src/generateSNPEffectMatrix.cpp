@@ -15,7 +15,7 @@
 #include "./src/common.hpp"
 using namespace std;
 
-void find_signal(Dataset &data, int length);
+//void find_signal(Dataset &data, int length);
 void create_baselines(Dataset &data, int length);
 void align_to_genome(Dataset &data);
 void generate_output(Dataset &data);
@@ -70,7 +70,7 @@ void generateSNPEffectMatrix(Dataset &data) {
 
     //Step 3: Find the signal using ChIP-seq data
     cout << "\tstep three" << endl << flush;
-    find_signal(data, length);
+    //find_signal(data, length);
 
     //Step 4: Generate baselines
     cout << "\tstep four" << endl;
@@ -114,7 +114,7 @@ void align_to_genome(Dataset &data){
     alignToGenomeWrapper(data, data.settings.iteration, "./data/hg19");
 }
 
-
+/*
 // assumes alignment is filled from previous function
 // and that the output is sorted, and contains only unique string values
 
@@ -152,6 +152,7 @@ void find_signal(Dataset &data, int length){
     char* arr = nullptr;
     int position = 0;
 
+// for each file
     for(const string &file : files){
         if(file.find("bed") == string::npos){
             continue;
@@ -217,6 +218,7 @@ void find_signal(Dataset &data, int length){
             cerr << "problem with writeCache\n\tEXITING" << endl;
             exit(1);
         }
+// do we need past here?
 
         // SHOULD THERE BE AN ERROR CHECK IF signal_cache_enumerate IS EMPTY????
         try{
@@ -354,6 +356,7 @@ void find_signal(Dataset &data, int length){
     }
 
 }
+*/
 
 void create_baselines(Dataset &data, int length){
     if (data.settings.verbose){
