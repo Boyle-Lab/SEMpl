@@ -56,7 +56,7 @@ void alignToGenomeWrapper(Dataset &data, int iteration, const string genome) {
 
             // Get signal for all alignments
             //  and Write alignments to cache to prevent duplicate processing
-            find_signal(data, length, poition, nucleotideStack[j]);
+            find_signal(data, length, position, nucleotideStack[j]);
         }
     }
 
