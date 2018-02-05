@@ -151,7 +151,7 @@ int main(int argc, char **argv){
     cout << "--- Iteration 0 ---\n";
 
     data.settings.iteration = 0;
-    data.settings.threads = 40;
+    data.settings.threads = 1;
 
     try{
 #ifdef DEBUG
@@ -252,7 +252,7 @@ int main(int argc, char **argv){
             if (converge == 9){
                 data.settings.fastrun = true;
                 // the folder containing the final iteration data
-                final_run = data.output_dir;
+                final_run = "it" + std::to_string(iteration);
             }
             generateSNPEffectMatrix(data);
             // kmerHash should be filled in after the above line, within data!!!!
@@ -278,11 +278,11 @@ int main(int argc, char **argv){
 
             //link last iteration
             ostringstream newOutput;
-            newOutput << data.base_dir << "/final/";
+            newOutput << data.base_dir << "/final";
             string cmd = "ln -s " + final_run + " " + newOutput.str();
             if(system(cmd.c_str()) != 0){
                 cerr << "problem running " << cmd << endl;
-                exit(1);
+//                exit(1);
             }
             double diff_t;
             time_t endTime;
