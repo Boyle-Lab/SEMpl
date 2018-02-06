@@ -3,7 +3,7 @@ CXX=g++
 C++FLAGS=-Wall -Werror -pedantic --std=c++11 -I. -pthread
 
 #DEBUG_OR_OPTIMIZE = -O3 -DDEBUG
-DEBUG_OR_OPTIMIZE = -g3 -DDEBUG
+DEBUG_OR_OPTIMIZE = -g2 -DDEBUG
 
 DISABLE_WARNINGS = -Wno-variadic-macros -Wno-unused-local-typedefs -Wno-enum-compare -Wno-unused-result
 
@@ -44,7 +44,8 @@ all: $(EXECUTABLE)
 
 # ./iterativeSEM -PWM examples/MA0114.1.pwm -merge_file examples/wgEncodeOpenChromDnaseHepg2Pk.narrowPeak.gz			-big_wig examples/wgEncodeHaibTfbsHepg2Hnf4asc8987V0416101RawRep1.bigWig -TF_name HNF4A -output results/HNF4A/ -readcache results/HNF4A/HNF4A.cache.db -verbose
 profile: $(EXECUTABLE)
-	nohup ./iterativeSEM -PWM examples/MA0114.1.pwm 			-merge_file examples/wgEncodeOpenChromDnaseHepg2Pk.narrowPeak.gz 			-big_wig examples/wgEncodeHaibTfbsHepg2Hnf4asc8987V0416101RawRep1.bigWig    			-TF_name HNF4A -output results/HNF4A/ -readcache results/HNF4A/HNF4A.cache.db -verbose > 1test.out 2> 1err.out &
+	perf record --call-graph dwarf -e cycles:u nohup ./iterativeSEM -PWM examples/MA0114.1.pwm  -merge_file examples/wgEncodeOpenChromDnaseHepg2Pk.narrowPeak.gz  -big_wig examples/wgEncodeHaibTfbsHepg2Hnf4asc8987V0416101RawRep1.bigWig   -TF_name HNF4A -output results/HNF4A/ -readcache results/HNF4A/HNF4A.cache.db -verbose > 1test.out 2> 1err.out &
+
 test: $(EXECUTABLE)
 	export LD_LIBRARY_PATH="/lib/x86_64-linux-gnu:/home/cmorteru/SEM_CPP/SEM_CPP/lib"
 	nohup ./iterativeSEM -PWM examples/MA0114.1.pwm \
@@ -52,6 +53,14 @@ test: $(EXECUTABLE)
 			-big_wig examples/wgEncodeHaibTfbsHepg2Hnf4asc8987V0416101RawRep1.bigWig \
 			-TF_name HNF4A -output results/HNF4A/ \
 			-readcache results/HNF4A/HNF4A.cache.db -verbose > 1test.out 2> 1err.out &
+
+test_out: $(EXECUTABLE)
+	export LD_LIBRARY_PATH="/lib/x86_64-linux-gnu:/home/cmorteru/SEM_CPP/SEM_CPP/lib"
+	./iterativeSEM -PWM examples/MA0114.1.pwm \
+			-merge_file examples/wgEncodeOpenChromDnaseHepg2Pk.narrowPeak.gz \
+			-big_wig examples/wgEncodeHaibTfbsHepg2Hnf4asc8987V0416101RawRep1.bigWig \
+			-TF_name HNF4A -output results/HNF4A/ \
+			-readcache results/HNF4A/HNF4A.cache.db -verbose 
 
 libexport:
 	@cd lib/libBigWig-master && make && mv libBigWig.so ../
