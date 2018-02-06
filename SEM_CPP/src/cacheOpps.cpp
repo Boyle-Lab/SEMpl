@@ -144,8 +144,7 @@ void checkCache(Dataset &data, vector<string> &in_file, vector<string> &to_align
     int message;
 
     // Prepare SQL queries
-    msg = "SELECT count(*) FROM seen_cache WHERE kmer=? AND iter!=?";
-//    msg = "SELECT count(*) FROM seen_cache WHERE kmer=?";
+    msg = "SELECT count(*) FROM seen_cache WHERE kmer=?";
     sqlite3_stmt* amount_seen_query = NULL;
     message = sqlite3_prepare_v2(cacheDB, msg.c_str(),
                                  static_cast<int>(msg.size()),
@@ -166,8 +165,8 @@ void checkCache(Dataset &data, vector<string> &in_file, vector<string> &to_align
                                  &insert_into_seen_cache_query, NULL);
     problemEncountered(message, msg);
 
-  	//utilize sqlite transactions to speed this all up
-	  sqlite3_exec(cacheDB, "BEGIN TRANSACTION", NULL, NULL, NULL);
+    //utilize sqlite transactions to speed this all up
+    sqlite3_exec(cacheDB, "BEGIN TRANSACTION", NULL, NULL, NULL);
 
     for(const string &kmer : in_file){
         message = sqlite3_bind_text(cache_signal_data_query, 1, kmer.c_str(),
@@ -189,14 +188,9 @@ void checkCache(Dataset &data, vector<string> &in_file, vector<string> &to_align
         }
         else{
             // not found
-
-            //NOTE: I think that we don't need to do this query since we are INSERT OR IGNORE for the insert
-            // But only if we get rid of iterations
             message = sqlite3_bind_text(amount_seen_query, 1, kmer.c_str(),
                       -1, SQLITE_TRANSIENT);
             problemEncountered(message, "bind_text for amount_seen_query");
-            message = sqlite3_bind_int(amount_seen_query, 2, data.settings.iteration);
-            problemEncountered(message, "bind_int for amount_seen_query");
             message = sqlite3_step(amount_seen_query);
             isRowReady(message);
 
@@ -247,7 +241,6 @@ void checkCache(Dataset &data, vector<string> &in_file, vector<string> &to_align
 
     sqlite3_exec(cacheDB, "COMMIT TRANSACTION", NULL, NULL, NULL);
 
-	  //probably should finalize all of these - this is a memory leak otherwise
     message = sqlite3_finalize(insert_into_seen_cache_query);
     problemEncountered(message, "finalize insert_into_seen_cache_query");
     message = sqlite3_finalize(amount_seen_query);
