@@ -10,11 +10,12 @@ int seq_col_to_fa(const vector<string> &column, const string &file){
     // and adding them onto the program with speed and time in mind
 
     // writes to a file sucessfully
-    ofstream OUTF(file);
 
     if(column.empty()) {
         return 0;
     }
+
+    ofstream OUTF(file);
 
     int counter = 0;
     for(auto val : column){
@@ -23,8 +24,6 @@ int seq_col_to_fa(const vector<string> &column, const string &file){
     }
 
     OUTF.close();
-
-    // how to proceed?
 
     return counter;
 }
