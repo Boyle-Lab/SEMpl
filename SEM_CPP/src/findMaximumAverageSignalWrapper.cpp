@@ -66,6 +66,6 @@ void findMaximumAverageSignalWrapper(const std::vector<std::string> &alignments,
     stdev_out = pow( (sqtotal / (values.size() - 1) ), 0.5);
     sterr_out = stdev_out / pow(counter_out, 0.5);
 
-//    debug << "Mean: " << mean_out << " Count: " << counter_out << " Stdev: " << stdev_out << " Sterr: " << sterr_out << endl;
+    cout << "Mean: " << mean_out << " Count: " << counter_out << " Stdev: " << stdev_out << " Sterr: " << sterr_out << endl;
 
 }
