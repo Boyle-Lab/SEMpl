@@ -330,7 +330,6 @@ void writeCache(Dataset &data, sqlite3 *cacheDB,
     #ifdef DEBUG
     //ofstream debug("written.txt");
     #endif
-
     for(size_t idx = 0; idx < ptr->size(); ++idx){
 
         val = ptr->at(idx);
