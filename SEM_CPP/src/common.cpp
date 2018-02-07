@@ -256,8 +256,8 @@ void grab_string_3_index(string s, string &out){
 }
 
 bool fileExists(const string &filename){
-  struct stat buffer;
-  return (stat (filename.c_str(), &buffer) == 0);
+    std::ifstream infile(fileName);
+    return infile.good();
 }
 
 //From https://stackoverflow.com/questions/478898/how-to-execute-a-command-and-get-output-of-command-within-c-using-posix
