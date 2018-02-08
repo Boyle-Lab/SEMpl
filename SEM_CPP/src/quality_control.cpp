@@ -31,8 +31,8 @@ void quality_control(const Dataset &data){
     quality_output << "Total k-mer count: " << total_kmers <<"\n";
 
     //Step 2: T-test on signal to background
-    double p_val = ttest(data);
-    quality_output << "Signal to background T-test: " << p_val << '\n';
+//    double p_val = ttest(data);
+//    quality_output << "Signal to background T-test: " << p_val << '\n';
 
 }
 
@@ -89,3 +89,4 @@ double ttest(const Dataset &data){
 
     return p_val;
 }
+
