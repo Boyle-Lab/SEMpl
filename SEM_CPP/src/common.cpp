@@ -256,7 +256,7 @@ void grab_string_3_index(string s, string &out){
 }
 
 bool fileExists(const string &filename){
-    std::ifstream infile(fileName);
+    std::ifstream infile(filename);
     return infile.good();
 }
 
