@@ -34,13 +34,14 @@ void alignToGenomeWrapper(Dataset &data, int iteration, const string genome) {
     data.sig_deets_counter.clear();
     data.sig_deets_stdev.clear();
     data.sig_deets_sterr.clear();
-    data.accumSummary_data.align_accum_lines.clear();
 
     // Iterate through each position and generate all possible nucleotide changes
     for(int position  = 0; position < length; ++position){
         for(int j = 0; j < static_cast<int>(nucleotideStack.size()); ++j){
+
             new_kmer.clear();
             name = CWD + nucleotideStack[j] + string("_pos") + to_string(position);
+            data.accumSummary_data.align_accum_lines.clear();
 
             try{
                 // creates new_kmer vector from copying over data.kmerHash
@@ -80,7 +81,7 @@ static void align_SNPs(Dataset &data, string name, vector<string> &new_kmer,
     vector<string> cache_to_align;
 
     cache_to_align.clear();
-
+//report here
     // Filter our kmers by existing kmers in the cache so that we don't
     //   need to re-process them.
     try{
@@ -96,7 +97,7 @@ static void align_SNPs(Dataset &data, string name, vector<string> &new_kmer,
     }
 
     #ifdef DEBUG
-    cerr << position << bp << " to_align: " << cache_to_align.size() << endl;
+    cerr << position << bp << " to_align: " << cache_to_align.size() << "/" << new_kmer.size() << endl;
     #endif
 
     // align these files to the genome through bowtie_genome_map function
@@ -114,8 +115,8 @@ static void align_SNPs(Dataset &data, string name, vector<string> &new_kmer,
         //create the empty file - we use the files to creat the map later on
         // there is probably a better way to do this
         // i thin kthat we can get rid of this now (2/5)
-        ofstream OUT(bowtie_output);
-        OUT.close();
+//        ofstream OUT(bowtie_output);
+//        OUT.close();
     }
 
 }
@@ -132,39 +133,42 @@ void find_signal(Dataset &data, string name, int length, int position, char bp){
     }
 
     string file = name + ".bed";
+    data.accumSummary_data.align_accum_lines.clear();
 
-    // Calculate summary score for all alignments
-    try{
-        if(data.settings.verbose){
-            cout << "\taccumSummary_scale(args) is running..." << flush;
+    // if file doesn't exist, we don't need to process anything for signal
+    if(fileExists(file)) { //make sure file exists
+        // Calculate summary score for all alignments
+        try{
+            if(data.settings.verbose){
+                cout << "\taccumSummary_scale(args) is running..." << flush;
+            }
+            accumSummary_scale(data, data.bigwig_file, file, length,
+                               Dataset::accumSummary_type::accumSummary_dest::alignment);
+            if(data.settings.verbose){
+                cout << "FINISH" << endl;
+            }
         }
-        accumSummary_scale(data, data.bigwig_file, file, length,
-                           Dataset::accumSummary_type::accumSummary_dest::alignment);
-        if(data.settings.verbose){
-            cout << "FINISH" << endl;
+        catch(...){
+            cerr << "Problem with accumSummary_scale\n\tEXITING" << endl;
+            exit(1);
         }
-    }
-    catch(...){
-        cerr << "Problem with accumSummary_scale\n\tEXITING" << endl;
-        exit(1);
-    }
 
-    // Write NEW computed scores to our cache so that we don't need to do previous steps again
-    try{
-        if(data.settings.verbose){
-            cout << "\twriteCache(args) is running..." << flush;
+        // Write NEW computed scores to our cache so that we don't need to do previous steps again
+        try{
+            if(data.settings.verbose){
+                cout << "\twriteCache(args) is running..." << flush;
+            }
+            writeCache(data, data.cacheDB,
+                       Dataset::accumSummary_type::accumSummary_dest::alignment);
+            if(data.settings.verbose){
+                cout << "FINISH" << endl;
+            }
         }
-        writeCache(data, data.cacheDB,
-                   Dataset::accumSummary_type::accumSummary_dest::alignment);
-        if(data.settings.verbose){
-            cout << "FINISH" << endl;
+        catch(...){
+            cerr << "problem with writeCache\n\tEXITING" << endl;
+            exit(1);
         }
     }
-    catch(...){
-        cerr << "problem with writeCache\n\tEXITING" << endl;
-        exit(1);
-    }
-// do we need past here?
 
     // SHOULD THERE BE AN ERROR CHECK IF signal_cache_enumerate IS EMPTY????
     try{
@@ -176,6 +180,8 @@ void find_signal(Dataset &data, string name, int length, int position, char bp){
         if(data.settings.verbose){
             cout << "FINISH" << endl;
         }
+
+cout << "cache: " << data.signal_cache[ {position, bp} ].size() << " align: " << data.accumSummary_data.align_accum_lines.size() << endl;
         data.signal_output.resize(data.signal_cache[ {position, bp} ].size()
                                 + data.accumSummary_data.align_accum_lines.size());
         // returns iterator to one past the location of the last copy
@@ -211,6 +217,7 @@ void find_signal(Dataset &data, string name, int length, int position, char bp){
 
     // Now summarize the scores from all alignments (including those from cache)
     // into a single maximum, counter, stdev, and sterr
+//NOTE: this will have an error if there were no kmers for the SNP - need to check for that
     try{
         if(data.settings.verbose){
             cout << "\tfinding findMaximumAverageSignal..." << flush;
@@ -279,3 +286,4 @@ void find_signal(Dataset &data, string name, int length, int position, char bp){
     }
 
 }
+

@@ -26,16 +26,13 @@ void quality_control(const Dataset &data){
     output_stream << data.output_dir << "/Quality_control.txt";
     quality_output.open(output_stream.str());
 
-    
-
     //Step 1: Total kmer check
     int total_kmers = count_kmer(data);
     quality_output << "Total k-mer count: " << total_kmers <<"\n";
 
     //Step 2: T-test on signal to background
-    double p_val = ttest(data);
-    quality_output << "Signal to background T-test: " << p_val << '\n';
-
+//    double p_val = ttest(data);
+//    quality_output << "Signal to background T-test: " << p_val << '\n';
 
 }
 
@@ -55,53 +52,29 @@ int count_kmer(const Dataset &data){
 
 }
 
-// THIS MIGHT BE DEPRECATED BELOW
-/*
-int findMaximumPerRow(Dataset &data, 
-                      Dataset::accumSummary_type::accumSummary_dest dest){
-
-    //Uses output from accum_Summary to do calculations
-    //to ensure no large dead regions
-
-        
-
-}
-*/
-
+// This doesn't work - can we keep this in c++?
 double ttest(const Dataset &data){
 
     //Interacts with R to perform a T-test
 
     // writes the three files necessary to do the t-test
     ofstream OUT(data.output_dir + "/runTtest.R");
-    ofstream OUT1(data.output_dir + "Enumerated_kmer_filtered.signal");
-    ofstream OUT2(data.output_dir + "Scrambled_kmer_filtered.signal");
 
-    //These need to be written as NA and not -256 or the R needs to read -256 as NA
-    for(auto val : data.signal_scramble_output){
-        OUT2 << val << '\n';
-    }
-    for(auto val : data.signal_enumerate_output){
-        OUT1 << val << '\n';
-    }
     OUT << "signal <- read.table(\"" << data.output_dir 
-        << "Enumerated_kmer_filtered.signal\")" << '\n'
+        << "/BASELINE/Enumerated_kmer.signal\")" << '\n'
         << "baseline <- read.table(\"" <<  data.output_dir 
-        << "Scrambled_kmer_filtered.signal\")" << "\n\n"
+        << "/BASELINE/Scrambled_kmer.signal\")" << "\n\n"
         << "res <- t.test(signal$V6, baseline$V6)\n"
         << "pval <- -log10(res$p.value)\n\n"
         << "cat(pval, sep=\"\\n\")\n";
 
 
     OUT.close();
-    OUT1.close();
-    OUT2.close();
 
     string cmd = "R --vanilla --no-save --slave < " 
                  + data.output_dir 
                  + "/runTtest.R > " + data.output_dir + "/ttest.txt";
 
-    // FILE * strm = popen(cmd.c_str(), "r");
     if(system(cmd.c_str() ) ){
         cerr << "problem running " << cmd << endl;
 //        exit(1);
@@ -113,9 +86,7 @@ double ttest(const Dataset &data){
         cerr << "Failure to read p_val!!!!!!\n\tEXITING";
 //        exit(1);
     }
-    // if(message != 1){
-    //     cerr << "incorrect message from fscanf(args)!!!!!\n\tEXITING";
-    //     exit(1);
-    // }
+
     return p_val;
 }
+

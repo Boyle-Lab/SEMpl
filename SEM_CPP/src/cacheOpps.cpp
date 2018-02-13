@@ -37,29 +37,25 @@ void connectCache(Dataset &data, const string &cachefile, sqlite3 *cacheDB) {
                               NULL);
     problemEncountered(message, "open");
 
-    message = sqlite3_open_v2(cachefile.c_str(), &cacheOnDisk,
-                              SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE,
-                              NULL);
-    if(message == SQLITE_OK) {
-        cacheBackup = sqlite3_backup_init(cacheDB, "main", cacheOnDisk, "main");
-        if(cacheBackup) {
-            (void)sqlite3_backup_step(cacheBackup, -1);
-            (void)sqlite3_backup_finish(cacheBackup);
-        }
-        message = sqlite3_errcode(cacheDB);
-        problemEncountered(message, "backup");
-    }
-    message = sqlite3_close_v2(cacheOnDisk);
-    problemEncountered(message, "Closing cache on disk");
-
-
-    // Keep journal in memory (may want to load entire DB into memory)
-    sqlite3_exec(cacheDB, "PRAGMA journal_mode = MEMORY", NULL, NULL, NULL);
-
     if(newcache) {
         if(data.settings.verbose){
             cout << "Existing cache used.\n" << flush;
         }
+        message = sqlite3_open_v2(cachefile.c_str(), &cacheOnDisk,
+                                  SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE,
+                                  NULL);
+        if(message == SQLITE_OK) {
+            cacheBackup = sqlite3_backup_init(cacheDB, "main", cacheOnDisk, "main");
+            if(cacheBackup) {
+                (void)sqlite3_backup_step(cacheBackup, -1);
+                (void)sqlite3_backup_finish(cacheBackup);
+            }
+            message = sqlite3_errcode(cacheDB);
+            problemEncountered(message, "backup");
+        }
+        message = sqlite3_close_v2(cacheOnDisk);
+        problemEncountered(message, "Closing cache on disk");
+
     } else {
         if(data.settings.verbose){
             cout << "No existing cache, creating new cache for use.\n" << flush;
@@ -92,8 +88,11 @@ void connectCache(Dataset &data, const string &cachefile, sqlite3 *cacheDB) {
         sqlite3_free(z_err_msg);
     }
 
-    data.cacheDB = cacheDB;
 
+    // Keep journal in memory (may want to load entire DB into memory)
+    sqlite3_exec(cacheDB, "PRAGMA journal_mode = MEMORY", NULL, NULL, NULL);
+
+    data.cacheDB = cacheDB;
 }
 
 // Closes the connection to the cacheDB
@@ -181,7 +180,6 @@ void checkCache(Dataset &data, vector<string> &in_file, vector<string> &to_align
             do {
                 signal_cache_data.emplace_back(text);
                 text = NULL;
-
                 message = sqlite3_step(cache_signal_data_query);
                 text = (char*)sqlite3_column_text(cache_signal_data_query, 1);
             } while (message == SQLITE_ROW);
@@ -331,7 +329,6 @@ void writeCache(Dataset &data, sqlite3 *cacheDB,
     #ifdef DEBUG
     //ofstream debug("written.txt");
     #endif
-
     for(size_t idx = 0; idx < ptr->size(); ++idx){
 
         val = ptr->at(idx);

@@ -1,4 +1,5 @@
 #include "src/iterativeSEM.hpp"
+#include "src/common.hpp"
 #ifdef DEBUG
     #include <iostream>
 #endif
@@ -10,7 +11,10 @@ void changeBase(const Dataset &data, int position, const char nucleotide, vector
   // performs operations on Enumerated_kmer, or kmerHash
   // remove \r from line, not needed here, as stored in memory
     new_kmer_vec.clear();
-    new_kmer_vec.reserve(data.kmerHash.size());
+    new_kmer_vec.resize(data.kmerHash.size());
+
+    vector<string> new_kmer_unsort;
+    new_kmer_unsort.reserve(data.kmerHash.size());
 
     string new_kmer = "";
 
@@ -21,6 +25,12 @@ void changeBase(const Dataset &data, int position, const char nucleotide, vector
         }
         new_kmer = pair.first;
         new_kmer[position] = nucleotide;
-        new_kmer_vec.push_back(new_kmer);
+        new_kmer_unsort.push_back(new_kmer);
     }
+
+    //Make these unique
+    sort(new_kmer_unsort.begin(), new_kmer_unsort.end());
+    auto iter2 = unique_copy(new_kmer_unsort.begin(), new_kmer_unsort.end(), new_kmer_vec.begin());
+    new_kmer_vec.resize(iter2 - new_kmer_vec.begin());
+
 }
