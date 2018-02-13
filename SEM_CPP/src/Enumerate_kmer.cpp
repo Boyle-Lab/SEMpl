@@ -86,10 +86,6 @@ void Enumerate_kmer(Dataset &data){
         #endif
     }
 
-    if(cutoff == 0.0){
-        cerr << "cutoff value unchanged within Enumerate_kmer.cpp\n\tEXITING" << endl;
-        exit(1);
-    }
     try{
         create_kmer(data, pwmHash, nucleotideStack, bestCase, data.kmerHash, cutoff);
     }
