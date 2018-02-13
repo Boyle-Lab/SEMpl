@@ -180,7 +180,6 @@ void checkCache(Dataset &data, vector<string> &in_file, vector<string> &to_align
             do {
                 signal_cache_data.emplace_back(text);
                 text = NULL;
-
                 message = sqlite3_step(cache_signal_data_query);
                 text = (char*)sqlite3_column_text(cache_signal_data_query, 1);
             } while (message == SQLITE_ROW);
