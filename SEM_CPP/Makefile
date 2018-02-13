@@ -2,8 +2,8 @@ CXX=g++
 
 C++FLAGS=-Wall -Werror -pedantic --std=c++11 -I. -pthread
 
-#DEBUG_OR_OPTIMIZE = -O3 -DDEBUG
-DEBUG_OR_OPTIMIZE = -g2 -DDEBUG
+DEBUG_OR_OPTIMIZE = -O3 -DDEBUG
+#DEBUG_OR_OPTIMIZE = -g3 -DDEBUG
 
 DISABLE_WARNINGS = -Wno-variadic-macros -Wno-unused-local-typedefs -Wno-enum-compare -Wno-unused-result
 
