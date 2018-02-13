@@ -41,8 +41,8 @@ double two_samples_t_test_unequal_sd(
         unsigned Sn1,   // Sn1 = Sample Size 1.
         double Sm2,   // Sm2 = Sample Mean 2.
         double Sd2,   // Sd2 = Sample Standard Deviation 2.
-        unsigned Sn2,   // Sn2 = Sample Size 2.
-        double alpha)   // alpha = Significance Level.
+        unsigned Sn2)   // Sn2 = Sample Size 2.
+        // double alpha)   // alpha = Significance Level.
 {
    // A Students t test applied to two sets of data.
    // We are testing the null hypothesis that the two

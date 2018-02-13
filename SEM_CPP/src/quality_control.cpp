@@ -1,8 +1,10 @@
 #include "iterativeSEM.hpp"
 #include "common.hpp"
+#include "t-test.hpp"
 #include <fstream>
 #include <sstream>
 #include <cstdio>
+#include <cmath>
 
 
 /*
@@ -52,41 +54,72 @@ int count_kmer(const Dataset &data){
 
 }
 
+double ttest_internal(const std::vector<double> &one, const std::vector<double> &two){
+    
+    double p_val = 0.0;
+    double signal_mean = 0.0, baseline_mean = 0.0;
+    double signal_stdev = 0.0, baseline_stdev = 0.0;
+    unsigned signal_size = 0, baseline_size = 0.0;
+
+    signal_size = one.size();
+    baseline_size = two.size();
+
+    for(const auto& value : one){
+        signal_mean += value;
+    }
+    signal_mean /= signal_size;
+    for(const auto& value : two){
+        baseline_mean += value;
+    }
+    baseline_mean /= baseline_size;
+
+    double temp = 0.0;
+    for(const auto& value : one){
+        temp += (value - signal_mean) * (value - signal_mean);
+    }
+    temp /= signal_size - 1;
+    signal_stdev = pow(temp, 0.5);
+
+
+    temp = 0.0;
+    for(const auto& value : two){
+        temp += (value - baseline_mean) * (value - baseline_mean);
+    }
+    temp /= baseline_size - 1;
+    baseline_stdev = pow(temp, 0.5);
+
+    
+    p_val = two_samples_t_test_unequal_sd(  signal_mean,   // Sm1 = Sample Mean 1.
+                                            signal_stdev,   // Sd1 = Sample Standard Deviation 1.
+                                            signal_size,   // Sn1 = Sample Size 1.
+                                            baseline_mean,   // Sm2 = Sample Mean 2.
+                                            baseline_stdev,   // Sd2 = Sample Standard Deviation 2.
+                                            baseline_size);   // Sn2 = Sample Size 2.
+    return p_val;
+}
+
 // This doesn't work - can we keep this in c++?
+// Yes, I added the t-test.hpp file
 double ttest(const Dataset &data){
 
     //Interacts with R to perform a T-test
 
-    // writes the three files necessary to do the t-test
-    ofstream OUT(data.output_dir + "/runTtest.R");
-
-    OUT << "signal <- read.table(\"" << data.output_dir 
-        << "/BASELINE/Enumerated_kmer.signal\")" << '\n'
-        << "baseline <- read.table(\"" <<  data.output_dir 
-        << "/BASELINE/Scrambled_kmer.signal\")" << "\n\n"
-        << "res <- t.test(signal$V6, baseline$V6)\n"
-        << "pval <- -log10(res$p.value)\n\n"
-        << "cat(pval, sep=\"\\n\")\n";
-
-
-    OUT.close();
-
-    string cmd = "R --vanilla --no-save --slave < " 
-                 + data.output_dir 
-                 + "/runTtest.R > " + data.output_dir + "/ttest.txt";
-
-    if(system(cmd.c_str() ) ){
-        cerr << "problem running " << cmd << endl;
-//        exit(1);
+    // Perform's t-test between signal (enumerated kmers)
+    // and baseline (scrambled kmers)
+   
+    // performs type conversion to double
+    std::vector<double> grab_score_vec_one, grab_score_vec_two;
+    std::string s = "";
+    for(const auto& value : data.signal_scramble_output){
+       s = grab_string_last_index(value);
+       grab_score_vec_two.push_back(stod(s));
     }
-    double p_val = -1.0;
-
-    // int message = fscanf(strm, " %lf", &p_val);
-    if(p_val == -1.0){
-        cerr << "Failure to read p_val!!!!!!\n\tEXITING";
-//        exit(1);
+    for(const auto& value : data.signal_enumerate_output){
+       s = grab_string_last_index(value);
+       grab_score_vec_one.push_back(stod(s));
     }
 
-    return p_val;
+    return ttest_internal(grab_score_vec_one, grab_score_vec_two);
 }
+
 
