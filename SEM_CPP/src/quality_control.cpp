@@ -97,8 +97,6 @@ double ttest_internal(const std::vector<double> &one, const std::vector<double> 
     return p_val;
 }
 
-// This doesn't work - can we keep this in c++?
-// Yes, I added the t-test.hpp file
 double ttest(const Dataset &data){
 
     //Interacts with R to perform a T-test
