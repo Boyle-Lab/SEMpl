@@ -130,10 +130,10 @@ int main(int argc, char **argv){
 
     vector<double> pvals;
     pvals.reserve(total_iterations + 1);
-    pvals.push_back(pow(4, -5)); // 4^-5
+    pvals.push_back(pow(4, -5));
 
     for(int iteration =  1; iteration <= total_iterations; ++iteration){
-        pvals.push_back(pow(4, -6));
+        pvals.push_back(pow(4, -5.5));
     }
 
     double pVal = pvals.front();
