@@ -60,5 +60,7 @@ void bowtie_genome_map(int length, const string& genome, const string& file,
     }
 
     OUT.close();
+
+    IN.str(std::string());
 }
 
