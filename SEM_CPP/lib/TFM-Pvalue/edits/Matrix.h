@@ -13,6 +13,7 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <memory>
 #include <cmath>
 #include <fstream>
 #include <cstdlib>
@@ -131,8 +132,8 @@ public:
   
   // computes the complete score distribution between score min and max
   void showDistrib (qlonglong min, qlonglong max) {
-    map<qlonglong , double> *nbocc = calcDistribWithMapMinMax(min,max); 
-    map<qlonglong , double>::iterator iter;
+    std::map<qlonglong , std::shared_ptr<double>> *nbocc = calcDistribWithMapMinMax(min,max); 
+    std::map<qlonglong , std::shared_ptr<double>>::iterator iter;
     
     if (OPTIONS['h']) {
       //cout << "Scores and p-values between " << min << " and " << max << endl;
@@ -140,10 +141,10 @@ public:
     
     // computes p values and stores them in nbocc[length] 
     double sum = 0;
-    map<qlonglong , double>::reverse_iterator riter = nbocc[length-1].rbegin();
+    std::map<qlonglong , std::shared_ptr<double>>::reverse_iterator riter = nbocc[length-1].rbegin();
     while (riter != nbocc[length-1].rend()) {
-      sum += riter->second;
-      nbocc[length][riter->first] = sum;
+      sum += *(riter->second);
+      nbocc[length][riter->first] = std::make_shared<double>(sum);
       riter++;      
     }
     
@@ -168,7 +169,7 @@ public:
     * Computes the distribution of scores between score min and max as the DP algrithm proceeds 
     * but instead of using a table we use a map to avoid computations for scores that cannot be reached
     */
-  map<qlonglong , double> *calcDistribWithMapMinMax (qlonglong min, qlonglong max); 
+  std::map<qlonglong , std::shared_ptr<double>> *calcDistribWithMapMinMax (qlonglong min, qlonglong max); 
     
   
   /**

@@ -8,6 +8,8 @@
  */
 
 #include "Matrix.h"
+#include <map>
+#include <memory>
 
 //#define PRINTVERBOSE 
 //#define SHOWCERR
@@ -211,7 +213,7 @@ void Matrix::computesIntegerMatrix (double granularity, bool sortColumns) {
 * Computes the pvalue associated with the threshold score requestedScore.
  */
 void Matrix::lookForPvalue (qlonglong requestedScore, qlonglong min, qlonglong max, double *pmin, double *pmax) {
-  
+/*  
   map<qlonglong, double> *nbocc = calcDistribWithMapMinMax(min,max); 
   map<qlonglong, double>::iterator iter;
   
@@ -247,7 +249,7 @@ void Matrix::lookForPvalue (qlonglong requestedScore, qlonglong min, qlonglong m
   *pmin = iter->second;
   
   delete[] nbocc;
-  
+  */
 }
 
 
@@ -257,21 +259,23 @@ void Matrix::lookForPvalue (qlonglong requestedScore, qlonglong min, qlonglong m
  */
 qlonglong Matrix::lookForScore (qlonglong min, qlonglong max, double requestedPvalue, double *rpv, double *rppv) {
   
-  map<qlonglong, double> *nbocc = calcDistribWithMapMinMax(min,max); 
-  map<qlonglong, double>::iterator iter;
+  std::map<qlonglong, std::shared_ptr<double>> *nbocc = calcDistribWithMapMinMax(min,max); 
+  std::map<qlonglong, std::shared_ptr<double>>::iterator iter;
 #ifdef SHOWCERR
   //cerr << "  Looks for score between " << min << " and " << max << endl;
 #endif
+cerr << "after calc" << endl;
+cin.get();
   // computes p values and stores them in nbocc[length] 
   double sum = 0.0;
-  map<qlonglong, double>::reverse_iterator riter = nbocc[length-1].rbegin();
+  std::map<qlonglong, std::shared_ptr<double>>::reverse_iterator riter = nbocc[length-1].rbegin();
   qlonglong alpha = riter->first+1;
   qlonglong alpha_E = alpha;
-  nbocc[length][alpha] = 0.0;
+  nbocc[length][alpha] = std::make_shared<double>(0.0);
   while (riter != nbocc[length-1].rend()) {
-    sum += riter->second;
+    sum += *(riter->second);
     //cout << "Pv(S) " << riter->first << " " << sum << " " << requestedPvalue << endl;
-    nbocc[length][riter->first] = sum;
+    nbocc[length][riter->first] = std::make_shared<double>(sum);
     if (sum >= requestedPvalue) { 
       break;
     }
@@ -289,10 +293,10 @@ qlonglong Matrix::lookForScore (qlonglong min, qlonglong max, double requestedPv
     } else {
       alpha = riter->first;
       riter++;
-      sum += riter->second;
+      sum += *(riter->second);
       alpha_E = riter->first;
     }
-    nbocc[length][alpha_E] = sum;  
+    nbocc[length][alpha_E] = std::make_shared<double>(sum);  
     //cout << "Pv(S) " << riter->first << " " << sum << endl;   
   }
 #ifdef VERBOSE
@@ -315,11 +319,18 @@ qlonglong Matrix::lookForScore (qlonglong min, qlonglong max, double requestedPv
 #endif
   
   if (alpha - alpha_E > errorMax) alpha_E = alpha;
+  cout << *nbocc[length][alpha] << " " << *nbocc[length][alpha_E] << flush;
+  *rpv = *nbocc[length][alpha];
+  *rppv = *nbocc[length][alpha_E];   
+
   
-  *rpv = nbocc[length][alpha];
-  *rppv = nbocc[length][alpha_E];   
-  
-  delete[] nbocc;
+  // computes q values for scores greater or equal than min
+  for (int pos = 0; pos <= length; pos++) {
+	nbocc[pos].erase(nbocc[pos].begin(), nbocc[pos].end());
+    cerr << "        map size for " << pos << " " << nbocc[pos].size() << endl;
+  }
+
+  delete [] nbocc;
   return alpha;
   
 }
@@ -327,20 +338,20 @@ qlonglong Matrix::lookForScore (qlonglong min, qlonglong max, double requestedPv
 
 // computes the distribution of scores between score min and max as the DP algrithm proceeds 
 // but instead of using a table we use a map to avoid computations for scores that cannot be reached
-map<qlonglong, double> *Matrix::calcDistribWithMapMinMax (qlonglong min, qlonglong max) { 
+std::map<qlonglong, std::shared_ptr<double>> *Matrix::calcDistribWithMapMinMax (qlonglong min, qlonglong max) { 
   
   // maps for each step of the computation
   // nbocc[length] stores the pvalue
   // nbocc[pos] for pos < length stores the qvalue
-  map<qlonglong, double> *nbocc = new map<qlonglong, double> [length+1];
-  map<qlonglong, double>::iterator iter;
+  std::map<qlonglong, std::shared_ptr<double>> *nbocc = new std::map<qlonglong, std::shared_ptr<double>> [length+1];
+  std::map<qlonglong, std::shared_ptr<double>>::iterator iter;
   
   qlonglong *maxs = new qlonglong[length+1]; // @ pos i maximum score reachable with the suffix matrix from i to length-1
   
 #ifdef VERBOSE    
   //cerr << "  Calc distrib between " << min << " and " << max << endl;
 #endif
-  
+
   maxs[length] = 0;
   for (int i = length-1; i >= 0; i--) {
     maxs[i] = maxs[i+1] + maxScoreColumn[i];
@@ -349,12 +360,18 @@ map<qlonglong, double> *Matrix::calcDistribWithMapMinMax (qlonglong min, qlonglo
   // initializes the map at position 0
   for (int k = 0; k < 4; k++) {
     if (matInt[k][0]+maxs[1] >= min) {
-      nbocc[0][matInt[k][0]] += background[k];
+      if(nbocc[0][matInt[k][0]] != nullptr) {
+        nbocc[0][matInt[k][0]] = std::make_shared<double>(*nbocc[0][matInt[k][0]] + background[k]);
+      } else {
+        nbocc[0][matInt[k][0]] = std::make_shared<double>(background[k]);
+      }
     }
   }
+cerr << "!" << endl;
+cin.get();
   
   // computes q values for scores greater or equal than min
-  nbocc[length-1][max+1] = 0.0;
+  nbocc[length-1][max+1] = std::make_shared<double>(0.0);
   for (int pos = 1; pos < length; pos++) {
     iter = nbocc[pos-1].begin();
     while (iter != nbocc[pos-1].end()) {
@@ -364,18 +381,30 @@ map<qlonglong, double> *Matrix::calcDistribWithMapMinMax (qlonglong min, qlonglo
           // the score min can be reached
           if (sc > max) {
             // the score will be greater than max for all suffixes
-            nbocc[length-1][max+1] += nbocc[pos-1][iter->first] * background[k]; //pow(4,length-pos-1) ;
+            if(nbocc[length-1][max+1] != nullptr) {
+              nbocc[length-1][max+1] = std::make_shared<double>(*nbocc[length-1][max+1] + *nbocc[pos-1][iter->first] * background[k]); //pow(4,length-pos-1) ;
+            } else {
+              nbocc[length-1][max+1].reset(new double);
+              *nbocc[length-1][max+1] = *nbocc[pos-1][iter->first] * background[k]; //pow(4,length-pos-1) ;
+            }
             totalOp++;
           } else {              
-            nbocc[pos][sc] += nbocc[pos-1][iter->first] * background[k];
+            if(nbocc[pos][sc] != nullptr) {
+              nbocc[pos][sc] = std::make_shared<double>(*nbocc[pos][sc] + *nbocc[pos-1][iter->first] * background[k]);
+            } else {
+              nbocc[pos][sc].reset(new double);
+              *nbocc[pos][sc] = *nbocc[pos-1][iter->first] * background[k];
+            }
             totalOp++;
           }
         } 
       }
       iter++;      
     }      
-    //cerr << "        map size for " << pos << " " << nbocc[pos].size() << endl;
+    cerr << "        map size for " << pos << " " << nbocc[pos].size() << endl;
   }
+cerr << "!" << endl;
+cin.get();
   
   
   delete[] maxs;

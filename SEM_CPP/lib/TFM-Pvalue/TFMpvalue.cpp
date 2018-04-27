@@ -7,37 +7,7 @@
  *
  */
 
-#include <iostream>
-#include <vector>
-#include <fstream>
-#include <cmath>
-#include <string>
-#include <map>
-#include <getopt.h>
-#include <cstdlib>
-#include <stdio.h>
-
-#include "Matrix.h"
-#include "ArgumentException.h"
-
-using namespace std;
-
-//#define VERBOSE
-//#define PRINTVERBOSE
-
-#define PV2SC 0
-#define SC2PV 1
-#define ENUMSC 2
-#define DISTRIB 3
-#define FASTPVALUE 4
-#define LAZY 5
-
-#define TOLOGRATIO 1
-#define TOINTEGER 1
-
-#ifdef VERBOSE
-#define MEMORYCOUNT
-#endif
+#include "TFMpvalue.h"
 
 map<char,int> OPTIONS;
 static string REQUIRED[6] = { "a:t:c:g:m:p:", "a:t:c:g:m:s:" , "a:c:t:g:m:", "a:c:t:g:m:s:S:G:", "a:c:t:g:m:s:G:", "a:c:t:g:m:p:G:" };
@@ -48,7 +18,7 @@ void stop () {
   getline(cin,str);
 }
 
-void enumScoreFloatPvalue (Matrix *m, int pos, double score, map<double,int> *t, long long *nbocc, long long pval) {
+void enumScoreFloatPvalue (Matrix *m, int pos, double score, map<double,int> *t, qlonglong *nbocc, qlonglong pval) {
   
   if (*nbocc < pval) {
     if (pos == m->length) {
@@ -73,7 +43,7 @@ void enumScoreFloat (Matrix *m, int pos, double score, map<double,int> *t) {
   }
 }
 
-void enumScore (Matrix *m, int pos, long long score, map<long long,int>*t) {
+void enumScore (Matrix *m, int pos, qlonglong score, map<qlonglong,int>*t) {
   
   if (pos == m->length) {
     (*t)[score] += 1;
@@ -89,12 +59,12 @@ void enumScore (Matrix *m, int pos, long long score, map<long long,int>*t) {
  * LAZY DISTRIBUTION
  */
 
-double _beckstette (Matrix m, map<long long, double> **nbOcc, map<long long, double> **pbuf, int pos, long long score, long long d);
+double _beckstette (Matrix m, map<qlonglong, double> **nbOcc, map<qlonglong, double> **pbuf, int pos, qlonglong score, qlonglong d);
 
-double _beckstettePbuf (Matrix m, map<long long, double> **nbOcc, map<long long, double> **pbuf, int pos, long long score, long long d) {
+double _beckstettePbuf (Matrix m, map<qlonglong, double> **nbOcc, map<qlonglong, double> **pbuf, int pos, qlonglong score, qlonglong d) {
   //cout << "d=" << d << " Pbuf_" << pos << " (" << score << ") = ";
   if (pos == -1) { return 0; }
-  map<long long,double>::iterator iterPbuf;
+  map<qlonglong,double>::iterator iterPbuf;
   iterPbuf = (*pbuf)[pos].find(score);
   double nb;
   if (iterPbuf == ((*pbuf)[pos]).end()) {
@@ -105,7 +75,7 @@ double _beckstettePbuf (Matrix m, map<long long, double> **nbOcc, map<long long,
   // compute Pbuf[pos][score]
   for (int k = 0; k < 4; k++) {
     if (m.matInt[k][pos] < m.maxScoreColumn[pos] - d) {
-      long long s = score - m.matInt[k][pos];
+      qlonglong s = score - m.matInt[k][pos];
       //cout << "(" << k << "," << pos << ")" << "->" << matInt[k][pos] << " ";
       if (s <= m.bestScore[pos-1] && s >= 0) {
         nb += _beckstette(m,nbOcc,pbuf,pos-1,s,d) * m.background[k];
@@ -116,23 +86,23 @@ double _beckstettePbuf (Matrix m, map<long long, double> **nbOcc, map<long long,
   return nb;
 }
 
-double _beckstette (Matrix m, map<long long, double> **nbOcc, map<long long, double> **pbuf, int pos, long long score, long long d) {
+double _beckstette (Matrix m, map<qlonglong, double> **nbOcc, map<qlonglong, double> **pbuf, int pos, qlonglong score, qlonglong d) {
   //cout << "Q_" << pos << " (" << score << ")" << endl;
   if (score < 0 || pos == -1) {
     if (score == 0) return 1;
     else return 0;
   }
-  map<long long ,double>::iterator iterNbOcc;
+  map<qlonglong ,double>::iterator iterNbOcc;
   iterNbOcc = (*nbOcc)[pos].find(score);
   if (iterNbOcc == ((*nbOcc)[pos]).end()) {
     // first compute pbuf
     double nb = _beckstettePbuf(m,nbOcc,pbuf,pos,score,d);
-    //      long long nb = (*pbuf)[pos][score];
+    //      qlonglong nb = (*pbuf)[pos][score];
     //cout << nb << endl;
     // then compute NbOcc
     for (int k = 0; k < 4; k++) {
       if (m.matInt[k][pos] >= m.maxScoreColumn[pos] - d) {
-        long long s = score - m.matInt[k][pos];
+        qlonglong s = score - m.matInt[k][pos];
         if (s <= m.bestScore[pos-1] && s >= 0) {
           nb += _beckstette(m,nbOcc,pbuf,pos-1,s,d) * m.background[k];
         }
@@ -146,20 +116,20 @@ double _beckstette (Matrix m, map<long long, double> **nbOcc, map<long long, dou
 void testLazyDistrib (Matrix m, double granularity, double requestedPvalue) {
 
 #ifdef MEMORYCOUNT
-  long long totalSize = 0;
-  long long totalOp = 0;
+  qlonglong totalSize = 0;
+  qlonglong totalOp = 0;
 #endif
 
 
 #ifdef VERBOSE
-  cerr << "### LAZY DISTRIB (pvalue=" << requestedPvalue << ", with granularity=" << granularity << ") ############################################" << endl;
+  //cerr << "### LAZY DISTRIB (pvalue=" << requestedPvalue << ", with granularity=" << granularity << ") ############################################" << endl;
 #endif
 
   m.computesIntegerMatrix(granularity,true);
-  map<long long, double> *nbOcc = new map<long long, double> [m.length+1];
-  map<long long, double> *pbuf = new map<long long, double> [m.length+1];
-  long long score = m.maxScore+ceil(m.errorMax);
-  long long d = 0;
+  map<qlonglong, double> *nbOcc = new map<qlonglong, double> [m.length+1];
+  map<qlonglong, double> *pbuf = new map<qlonglong, double> [m.length+1];
+  qlonglong score = m.maxScore+ceil(m.errorMax);
+  qlonglong d = 0;
   double pv = 0;
   nbOcc[m.length][score] = pv;
   while (pv <= requestedPvalue) {
@@ -182,21 +152,21 @@ void testLazyDistrib (Matrix m, double granularity, double requestedPvalue) {
   */
   
   if (OPTIONS['h']) {
-    cout << "Score          : " << ((score-m.offset)/m.granularity) << endl;
+    /*cout << "Score          : " << ((score-m.offset)/m.granularity) << endl;
     cout << "Pvalue         : " << pv << endl;
     cout << "Granularity    : " << m.granularity << endl;
 #ifdef MEMORYCOUNT
     cout << "Total map size : " << totalSize << endl;
     cout << "Total op       : " << totalOp << endl;
-#endif
+#endif*/
   } else {  
-    cout << ((score-m.offset)/m.granularity) << " ";
+    /*cout << ((score-m.offset)/m.granularity) << " ";
     cout << pv << " ";
     cout << m.granularity << " ";
 #ifdef MEMORYCOUNT
     cout << totalSize << " " << totalOp << " ";
     cout << endl;
-#endif
+#endif*/
   }
 }
 
@@ -208,33 +178,33 @@ void testLazyDistrib (Matrix m, double granularity, double requestedPvalue) {
 void testFastPvalue (Matrix m, double granularity, double score) {
   
 #ifdef VERBOSE
-  cerr << "### FastPvalue (score " << score << ") #########################################" << endl;
+  //cerr << "### FastPvalue (score " << score << ") #########################################" << endl;
 #endif
 
 #ifdef MEMORYCOUNT
-  long long totalSize = 0;
-  long long totalOp = 0;
+  qlonglong totalSize = 0;
+  qlonglong totalOp = 0;
 #endif
 
   m.computesIntegerMatrix(granularity,true);
-  double pvalue = m.fastPvalue(&m,(long long)(score * m.granularity + m.offset));
+  double pvalue = m.fastPvalue(&m,(qlonglong)(score * m.granularity + m.offset));
 
   if (OPTIONS['h']) {
-    cout << "Score          : " << score << endl;
+    /*cout << "Score          : " << score << endl;
     cout << "Pvalue         : " << pvalue << endl;
     cout << "Granularity    : " << m.granularity << endl;
 #ifdef MEMORYCOUNT
     cout << "Total map size : " << totalSize << endl;
     cout << "Total op       : " << totalOp << endl;
-#endif
+#endif*/
   } else {  
-    cout << score << " ";
+    /*cout << score << " ";
     cout << pvalue << " ";
     cout << m.granularity << " ";
 #ifdef MEMORYCOUNT
     cout << totalSize << " " << totalOp << " ";
     cout << endl;
-#endif
+#endif*/
   }
     
 }
@@ -242,23 +212,23 @@ void testFastPvalue (Matrix m, double granularity, double score) {
 void testScoreToPvalue (Matrix m, double initialGranularity, double requestedScore, bool forcedGranularity = false, double maxGranularity = 1e-9) {
   
 #ifdef VERBOSE
-  cerr << "### ScoreToPvalue (score " << requestedScore << ") #########################################" << endl;
+  //cerr << "### ScoreToPvalue (score " << requestedScore << ") #########################################" << endl;
 #endif
   
 #ifdef MEMORYCOUNT
-  long long totalSize = 0;
-  long long totalOp = 0;
+  qlonglong totalSize = 0;
+  qlonglong totalOp = 0;
 #endif
   
-  long long max;
-  long long min;
+  qlonglong max;
+  qlonglong min;
   double ppv;
   double pv;
-  long long score;
+  qlonglong score;
   
   for (double granularity = initialGranularity; granularity >= maxGranularity; granularity /= 10) {
 #ifdef VERBOSE
-    cerr << "Computing rounded matrix with granularity " << granularity << endl;
+    //cerr << "Computing rounded matrix with granularity " << granularity << endl;
 #endif
     m.computesIntegerMatrix(granularity);
     max = requestedScore*m.granularity + m.offset + m.errorMax+1;
@@ -266,12 +236,12 @@ void testScoreToPvalue (Matrix m, double initialGranularity, double requestedSco
     score = requestedScore*m.granularity + m.offset;
     
 #ifdef VERBOSE
-    cerr << "Score range : " << m.scoreRange << endl;
+    /*cerr << "Score range : " << m.scoreRange << endl;
     cerr << "Min         : " << min << endl;
     cerr << "Max         : " << max << endl;
     cerr << "Precision   : " << m.granularity << endl;
     cerr << "Error max   : " << m.errorMax << endl;
-    cerr << "Computing pvalue for requested score " << requestedScore << " " << score << endl;
+    cerr << "Computing pvalue for requested score " << requestedScore << " " << score << endl;*/
 #endif
     
       
@@ -284,9 +254,9 @@ void testScoreToPvalue (Matrix m, double initialGranularity, double requestedSco
     m.lookForPvalue(score,min,max,&ppv,&pv);
     
 #ifdef VERBOSE
-    cerr << "Prev. Pvalue  : " << ppv << endl;
+    /*cerr << "Prev. Pvalue  : " << ppv << endl;
     cerr << "Pvaluex       : " << pv << endl;
-    cerr << "Comp. score   : " << score << endl;
+    cerr << "Comp. score   : " << score << endl;*/
 #endif
 
 #ifdef MEMORYCOUNT
@@ -295,12 +265,12 @@ void testScoreToPvalue (Matrix m, double initialGranularity, double requestedSco
 #endif
     
 #ifdef VERBOSE
-    cerr << "***********************************************" << endl;
+    //cerr << "***********************************************" << endl;
 #endif
     
     if (ppv == pv) {
 #ifdef VERBOSE
-      cerr << "#####  STOP score computed  #####" << endl;
+      //cerr << "#####  STOP score computed  #####" << endl;
 #endif
       if (!forcedGranularity) {
         break;
@@ -310,21 +280,21 @@ void testScoreToPvalue (Matrix m, double initialGranularity, double requestedSco
   }
   
   if (OPTIONS['h']) {
-    cout << "Score          : " << ((score-m.offset)/m.granularity) << endl;
+    /*cout << "Score          : " << ((score-m.offset)/m.granularity) << endl;
     cout << "Pvalue         : " << pv << endl;
     cout << "Granularity    : " << m.granularity << endl;
 #ifdef MEMORYCOUNT
     cout << "Total map size : " << totalSize << endl;
     cout << "Total op       : " << totalOp << endl;
-#endif
+#endif*/
   } else {  
-    cout << ((score-m.offset)/m.granularity) << " ";
+    /*cout << ((score-m.offset)/m.granularity) << " ";
     cout << pv << " ";
     cout << m.granularity << " ";
 #ifdef MEMORYCOUNT
     cout << totalSize << " " << totalOp << " ";
     cout << endl;
-#endif
+#endif*/
     
   }
   
@@ -332,40 +302,40 @@ void testScoreToPvalue (Matrix m, double initialGranularity, double requestedSco
 }
 
 
-void testPvalueToScore (Matrix m, double initialGranularity, double requestedPvalue, bool forcedGranularity = false, double maxGranularity = 1e-10, bool sortColumns = false, long long decrgr = 10) {
+void testPvalueToScore (Matrix m, double initialGranularity, double requestedPvalue, bool forcedGranularity = false, double maxGranularity = 1e-10, bool sortColumns = false, qlonglong decrgr = 10) {
 
 #ifdef VERBOSE
-  cerr << "### PvalueToScore (pv  " << requestedPvalue << ") #########################################" << endl;
+  //cerr << "### PvalueToScore (pv  " << requestedPvalue << ") #########################################" << endl;
 #endif
   
 #ifdef MEMORYCOUNT
-  long long totalSize;
-  long long totalOp;
+  qlonglong totalSize;
+  qlonglong totalOp;
   totalSize = 0;
   totalOp = 0;
 #endif
   
   m.computesIntegerMatrix(initialGranularity);
-  long long max = m.maxScore+ceil(m.errorMax+0.5);
-  long long min = m.minScore;
+  qlonglong max = m.maxScore+ceil(m.errorMax+0.5);
+  qlonglong min = m.minScore;
   double pv;
-  long long score;
+  qlonglong score;
   
   for (double granularity = initialGranularity; granularity >= maxGranularity; granularity /= decrgr) {
     
 #ifdef VERBOSE    
-    cerr << "Computing rounded matrix with granularity " << granularity << endl;
+    //cerr << "Computing rounded matrix with granularity " << granularity << endl;
 #endif
     
     m.computesIntegerMatrix(granularity);
 
 #ifdef VERBOSE
-    cerr << "Score range : " << m.scoreRange << endl;
+    /*cerr << "Score range : " << m.scoreRange << endl;
     cerr << "Min         : " << min << " " << m.minScore << endl;
     cerr << "Max         : " << max << endl;
     cerr << "Precision   : " << m.granularity << endl;
     cerr << "Error max   : " << m.errorMax << endl;
-    cerr << "Computing score for requested pvalue " << requestedPvalue << endl;
+    cerr << "Computing score for requested pvalue " << requestedPvalue << endl;*/
 #endif
 
     double ppv;    
@@ -378,12 +348,12 @@ void testPvalueToScore (Matrix m, double initialGranularity, double requestedPva
     score = m.lookForScore(min,max,requestedPvalue,&pv,&ppv);
 
 #ifdef VERBOSE
-    cerr << "P-Pvalue      : " << ppv << endl;
+    /*cerr << "P-Pvalue      : " << ppv << endl;
     cerr << "Pvalue        : " << pv << endl;
     cerr << "Rounded score : " << score << endl;
-    cerr << "Real score    : " << ((score-m.offset)/m.granularity) << endl;
+    cerr << "Real score    : " << ((score-m.offset)/m.granularity) << endl;*/
 #ifdef MEMORYCOUNT
-    cerr << "Memory        : " << m.totalMapSize << " " << totalSize << endl;    
+    //cerr << "Memory        : " << m.totalMapSize << " " << totalSize << endl;    
 #endif
 #endif
 
@@ -396,11 +366,11 @@ void testPvalueToScore (Matrix m, double initialGranularity, double requestedPva
     max = (score + ceil(m.errorMax+0.5)) * decrgr;
     
 #ifdef VERBOSE
-    cerr << "***********************************************" << endl;
+    //cerr << "***********************************************" << endl;
 #endif
     if (pv == ppv) {
 #ifdef VERBOSE
-      cerr << "#####  STOP Pvalue computed  #####" << endl;
+      //cerr << "#####  STOP Pvalue computed  #####" << endl;
 #endif
       if (!forcedGranularity) {        
         break;
@@ -410,15 +380,15 @@ void testPvalueToScore (Matrix m, double initialGranularity, double requestedPva
   }
   
   if (OPTIONS['h']) {
-    cout << "Score          : " << ((score-m.offset)/m.granularity) << endl;
+    /*cout << "Score          : " << ((score-m.offset)/m.granularity) << endl;
     cout << "Pvalue         : " << pv << endl;
     cout << "Granularity    : " << m.granularity << endl;
 #ifdef MEMORYCOUNT
     cout << "Total map size : " << totalSize << endl;
     cout << "Total op       : " << totalOp << endl;
-#endif
+#endif*/
   } else {  
-    if (OPTIONS['i']) {
+    /*if (OPTIONS['i']) {
       cout << score << " ";
     }
     cout << ((score-m.offset)/m.granularity) << " ";
@@ -427,7 +397,7 @@ void testPvalueToScore (Matrix m, double initialGranularity, double requestedPva
 #ifdef MEMORYCOUNT
     cout << totalSize << " " << totalOp << " ";
 #endif
-    cout << endl;
+    cout << endl;*/
   }
   
 }  //testPvalueToScore
@@ -438,7 +408,8 @@ void testDistrib(Matrix m, double granularity, double min, double max) {
   m.showDistrib(min*m.granularity+m.offset,max*m.granularity+m.offset);  
 }
 
-void usage (char * const argv[]) {
+
+/*void usage (char * const argv[]) {
   cout << "Usage : " << argv[0] << " -a X -t X -g X -c X -m matrix_filename ";
   switch(PROGRAM) {
     case PV2SC:
@@ -511,11 +482,11 @@ void arguments (int argc, char * const argv[]) {
     if (REQUIRED[PROGRAM][i] != ':' && !opt[REQUIRED[PROGRAM][i]]) throw new ArgumentException("Bad number of args");    
   }
   
-}
+}*/
 
 
 
-int main (int argc, char * const argv[]) {
+/*int main (int argc, char * const argv[]) {
   
   try {
     arguments(argc,argv);
@@ -578,16 +549,16 @@ int main (int argc, char * const argv[]) {
       break;
     case ENUMSC :
     {
-      long long nbsc = 0;
+      qlonglong nbsc = 0;
       if (OPTIONS['G']) {
         m.computesIntegerMatrix(atof(argv[OPTIONS['G']]));
-        map<long long,int> t;
+        map<qlonglong,int> t;
         enumScore(&m,0,0,&t);
         nbsc = t.size();
       } else {
         map<double,int> t;
         //        long int sum = 0;      
-        enumScoreFloat(&m,0,0,&t);
+        enumScoreFloat(&m,0,0,&t);*/
         /*
          map<double,int>::reverse_iterator riter = t.rbegin();
          while (riter->first >= atof(argv[3]) && riter != t.rend()) {
@@ -595,14 +566,14 @@ int main (int argc, char * const argv[]) {
            riter++;
          }
          */
-        nbsc = t.size();
+/*        nbsc = t.size();
       }
       if (OPTIONS['h']) {
         cout << "Number of different scores = " << nbsc << endl;
-        cout << "Number of different words  = " << (long long)(pow(4.0,m.length)) << endl;
+        cout << "Number of different words  = " << (qlonglong)(pow(4.0,m.length)) << endl;
         
       } else {
-        cout << nbsc << " " << (long long)(pow(4.0,m.length)) << endl;
+        cout << nbsc << " " << (qlonglong)(pow(4.0,m.length)) << endl;
       }
     }
       break;
@@ -620,6 +591,6 @@ int main (int argc, char * const argv[]) {
 
 return 0;
 }
-
+*/
 
 
