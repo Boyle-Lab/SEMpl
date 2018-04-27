@@ -2,8 +2,9 @@ CXX=g++
 
 C++FLAGS=-Wall -Werror -pedantic --std=c++11 -I. -pthread
 
+#DEBUG_OR_OPTIMIZE = -g -O0 -DDEBUG
 DEBUG_OR_OPTIMIZE = -O3 -DDEBUG
-#DEBUG_OR_OPTIMIZE = -g3 -DDEBUG
+#DEBUG_OR_OPTIMIZE = -g2 -DDEBUG
 
 DISABLE_WARNINGS = -Wno-variadic-macros -Wno-unused-local-typedefs -Wno-enum-compare -Wno-unused-result
 
@@ -15,12 +16,11 @@ C++OBJ:=$(C++OBJ:.cpp=.o)
 BIGWIGLIB=-lBigWig
 #BIGWIGLIBRARYLOC=-Llib/libBigWig-master
 
-BOWTIELIB=-lbowtie
+#BOWTIELIB=-lbowtie
 #BOWTIELIBRARYLOC=-Llib/bowtie-1.0.0
 
 TFMLIB=-lTFMpvalue
 #TFMLIBRARYLOC=-Llib/TFM-Pvalue
-
 
 LIBLOC=-Llib
 
@@ -45,8 +45,29 @@ all: $(EXECUTABLE)
 # ./iterativeSEM -PWM examples/MA0114.1.pwm -merge_file examples/wgEncodeOpenChromDnaseHepg2Pk.narrowPeak.gz			-big_wig examples/wgEncodeHaibTfbsHepg2Hnf4asc8987V0416101RawRep1.bigWig -TF_name HNF4A -output results/HNF4A/ -readcache results/HNF4A/HNF4A.cache.db -verbose
 
 test: $(EXECUTABLE)
-	export LD_LIBRARY_PATH="/lib/x86_64-linux-gnu:/home/cmorteru/SEM_CPP/SEM_CPP/lib"
-	nohup ./iterativeSEM -PWM examples/MA0114.1.pwm \
+	export LD_LIBRARY_PATH="/lib/x86_64-linux-gnu:$(PWD)/lib"
+	./iterativeSEM -PWM examples/MA0114.1.pwm \
+			-merge_file examples/wgEncodeOpenChromDnaseHepg2Pk.narrowPeak.gz \
+			-big_wig examples/wgEncodeHaibTfbsHepg2Hnf4asc8987V0416101RawRep1.bigWig \
+			-TF_name HNF4A -output results/HNF4A/ \
+			-readcache results/HNF4A/HNF4A.cache.db -verbose > 1test.out 2> 1err.out &
+
+ctcf: $(EXECUTABLE)
+	export LD_LIBRARY_PATH="/lib/x86_64-linux-gnu:$(PWD)/lib"
+	./iterativeSEM -PWM /data/data_repo/PWMs/MA0139.1.pwm \
+			-merge_file /data/data_repo/ENCODE/H1hESC/stem.narrowPeak.gz \
+			-big_wig /data/data_repo/ENCODE/H1hESC/ENCFF000RSD.bigWig \
+			-TF_name CTCF -output results/CTCF_H1hESC/ \
+			-readcache results/CTCF_H1hESC/CTCF.cache.db -verbose > 1test.out 2> 1err.out
+
+
+profile: $(EXECUTABLE)
+	perf record --call-graph dwarf -e cycles:u nohup ./iterativeSEM -PWM examples/MA0114.1.pwm  -merge_file examples/wgEncodeOpenChromDnaseHepg2Pk.narrowPeak.gz  -big_wig examples/wgEncodeHaibTfbsHepg2Hnf4asc8987V0416101RawRep1.bigWig   -TF_name HNF4A -output results/HNF4A/ -readcache results/HNF4A/HNF4A.cache.db -verbose > 1test.out 2> 1err.out &
+
+
+tracetest: $(EXECUTABLE)
+	export LD_LIBRARY_PATH="/lib/x86_64-linux-gnu:/home/apboyle/SEM_project/SEM_CPP/SEM_CPP/lib"
+	strace -f -o /tmp/strace.log -s 200 ./iterativeSEM -PWM examples/MA0114.1.pwm \
 			-merge_file examples/wgEncodeOpenChromDnaseHepg2Pk.narrowPeak.gz \
 			-big_wig examples/wgEncodeHaibTfbsHepg2Hnf4asc8987V0416101RawRep1.bigWig \
 			-TF_name HNF4A -output results/HNF4A/ \
