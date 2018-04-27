@@ -53,7 +53,6 @@ void alignToGenomeWrapper(Dataset &data, int iteration, const string genome) {
                 cerr << "exception thrown from changeBase" << endl;
                 exit(1);
             }
-
             // Align to the genome
             align_SNPs(data, name, new_kmer, length, position, nucleotideStack[j]);
 
@@ -99,6 +98,7 @@ static void align_SNPs(Dataset &data, string name, vector<string> &new_kmer,
     #ifdef DEBUG
     cerr << position << bp << " to_align: " << cache_to_align.size() << "/" << new_kmer.size() << endl;
     #endif
+    new_kmer.clear(); //no longer need new_kmer list
 
     // align these files to the genome through bowtie_genome_map function
     fa_file = name + ".fa";
@@ -285,5 +285,6 @@ cout << "cache: " << data.signal_cache[ {position, bp} ].size() << " align: " <<
         exit(1);
     }
 
+    data.signal_cache.clear();
 }
 
