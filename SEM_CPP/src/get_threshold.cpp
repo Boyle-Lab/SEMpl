@@ -12,11 +12,9 @@ const string TEMPFILE = "examples/temp.txt";
 //EFFECTS: returns score threshold
 
 double get_threshold(Dataset & data, double pval){
-
 	pwm_to_tfm(data);
 	Matrix m;
-
-
+	int column;
 	ofstream temp_out(TEMPFILE);
 
 #ifdef DEBUG
@@ -33,7 +31,7 @@ double get_threshold(Dataset & data, double pval){
 
 
     cout << "row size " << data.TFM_data.letter_array.size() << " col size " << data.TFM_data.letter_array[0].size() << endl << flush;
-    for(int column = 0; column < (int)data.TFM_data.letter_array.size(); ++column){
+    for(column = 0; column < (int)data.TFM_data.letter_array.size(); ++column){
         for(int row = 0; row < static_cast<int>(data.TFM_data.letter_array[0].size()); ++row){
 
 			temp_out << data.TFM_data.letter_array[column][row] << '\t';
@@ -85,7 +83,6 @@ double get_threshold(Dataset & data, double pval){
 
     // cerr << "Computing rounded matrix with granularity " << granularity << endl;
 
-
     m.computesIntegerMatrix(granularity);
 
     // cerr << "Score range : " << m.scoreRange << endl;
@@ -95,19 +92,15 @@ double get_threshold(Dataset & data, double pval){
     // cerr << "Error max   : " << m.errorMax << endl;
     // cerr << "Computing score for requested pvalue " << requestedPvalue << endl;
 
-
     double ppv = 0.0;
-
-
     score = m.lookForScore(min, max, requestedPvalue, &pv, &ppv);
-
 
     // cerr << "P-Pvalue      : " << ppv << endl;
     // cerr << "Pvalue        : " << pv << endl;
     // cerr << "Rounded score : " << score << endl;
     // cerr << "Real score    : " << ((score-m.offset)/m.granularity) << endl;
 
-    // cerr << "Memory        : " << m.totalMapSize << " " << totalSize << endl;
+    // cerr << "Memory        : " << m.totalMapSize << endl;
 
     min = (score - ceil(m.errorMax+0.5)) * decrgr;
     max = (score + ceil(m.errorMax+0.5)) * decrgr;
@@ -147,6 +140,21 @@ double get_threshold(Dataset & data, double pval){
   //   // cout << endl;
   // }
 
-	return ((score - m.offset ) / m.granularity );
+	double ans = ((score - m.offset ) / m.granularity );
+cout << "Result: " << ans << flush;
+  // free the memory allocated, not typical Rcpp way
+  for(int i=0; i<column; i++){
+    delete[] m.mat[i];
+    delete[] m.matInt[i];
+  }
+  delete[] m.matInt;
+  delete[] m.mat;
+  delete[] m.offsets;
+  delete[] m.minScoreColumn;
+  delete[] m.maxScoreColumn;
+  delete[] m.sum;
+  delete[] m.bestScore;
+  delete[] m.worstScore;
 
+	return ans;
 }
