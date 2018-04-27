@@ -12,7 +12,7 @@ using namespace std;
 void bowtie_genome_map(int length, const string& genome, const string& file, 
                        const string& final_output, const string& dnase_file, int threads, bool verbose){
 
-    string cmd = "./bin/bowtie --threads " + std::to_string(threads) + " --quiet -a -v 0 ./data/hg19 -f " + file 
+    string cmd = "./bin/bowtie --threads " + std::to_string(threads) + " --quiet -a -v 0 ./data/hg19 -r " + file 
        + " | awk '{print $3\"\\t\"$4\"\\t\"$4+" + std::to_string(length) + "\"\\t\"$5\"\\t\"$2}' | " 
        + "./bin/bedtools intersect -a stdin -b " + dnase_file + " -wa -u | sort | uniq";
 
