@@ -130,16 +130,17 @@ int main(int argc, char **argv){
 
     vector<double> pvals;
     pvals.reserve(total_iterations + 1);
-    pvals.push_back(0.0009765625);
+    pvals.push_back(pow(4, -5)); // 4^-5
 
     for(int iteration =  1; iteration <= total_iterations; ++iteration){
-        pvals.push_back(0.0004882812);
+        pvals.push_back(pow(4, -6));
     }
 
     double pVal = pvals.front();
     pvals.erase(pvals.begin());
 
     read_pwm(data, data.PWM_file);
+
     data.settings.threshold = get_threshold(data, pVal);
     if (data.settings.threshold < 0.0){
         data.settings.threshold = 0.0;
@@ -154,7 +155,7 @@ int main(int argc, char **argv){
     cout << "--- Iteration 0 ---\n";
 
     data.settings.iteration = 0;
-    data.settings.threads = 1;
+    data.settings.threads = 5;
 
     try{
 #ifdef DEBUG
