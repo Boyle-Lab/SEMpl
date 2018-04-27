@@ -273,3 +273,17 @@ std::stringstream exec(const char* cmd) {
     pipe.reset();
     return result;
 }
+
+uint64_t encode2bit(const char *original) {
+    size_t length = strlen(original);
+
+    assert(length * 2 <= sizeof(uint64_t) * 8);
+
+    uint64_t result = 0;
+
+    for (size_t i = 0; i < length; i++) {
+        result = (result << 2) | ((original[i] >> 1) & 3);
+    }
+
+    return result;
+}

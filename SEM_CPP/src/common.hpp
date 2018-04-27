@@ -7,6 +7,7 @@
 #include <regex>
 #include <dirent.h>
 #include <sys/stat.h>
+#include <stdbool.h>
 
 std::string revCompDNA(std::string DNA);
 
@@ -36,5 +37,7 @@ void grab_string_3_index(std::string s, std::string &out);
 void grab_string_4_index(std::string s, std::string &out);
 
 std::stringstream exec(const char* cmd);
+
+uint64_t encode2bit(const char *original);
 
 #endif /* COMMON_HPP */
