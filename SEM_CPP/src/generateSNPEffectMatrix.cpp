@@ -316,7 +316,7 @@ void generate_output(Dataset &data){
     generateSEM(data);
 
     if(!data.settings.fastrun){
-        generateRplot(data);
+        //generateRplot(data);
         quality_control(data);
     }
 }
