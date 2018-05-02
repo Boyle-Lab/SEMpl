@@ -19,3 +19,5 @@ perf.data*
 *debug*
 *.dat
 SEM_CPP/lib/TFM-Pvalue/TFMpvalue-*
+SEM_CPP/data/*
+SEM_CPP/examples/temp.txt
