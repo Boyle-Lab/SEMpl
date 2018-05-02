@@ -1,4 +1,5 @@
 #include "common.hpp"
+#include <cmath>
 using namespace std;
 
 // getlength accesses first(?) element of kmerHash and returns the key length
@@ -274,16 +275,21 @@ std::stringstream exec(const char* cmd) {
     return result;
 }
 
-uint64_t encode2bit(const char *original) {
+// We can use 2bit data storage to hold PWMs up to 32 bases
+// Compiler bug is possible here with lengths > 16bp if we don't get a 64 bit int
+// Possible fix to add a 1 to the start: set result = 2^(length*2)
+uint_least64_t encode2bit(const char *original) {
     size_t length = strlen(original);
 
-    assert(length * 2 <= sizeof(uint64_t) * 8);
+    assert(length * 2 <= sizeof(uint_least64_t) * 8);
 
-    uint64_t result = 0;
+    uint_least64_t result = 0;
 
     for (size_t i = 0; i < length; i++) {
         result = (result << 2) | ((original[i] >> 1) & 3);
     }
+
+    result += pow(2, length*2);
 
     return result;
 }

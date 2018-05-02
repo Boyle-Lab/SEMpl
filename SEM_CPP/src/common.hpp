@@ -38,6 +38,6 @@ void grab_string_4_index(std::string s, std::string &out);
 
 std::stringstream exec(const char* cmd);
 
-uint64_t encode2bit(const char *original);
+uint_least64_t encode2bit(const char *original);
 
 #endif /* COMMON_HPP */

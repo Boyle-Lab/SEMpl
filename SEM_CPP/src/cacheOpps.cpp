@@ -77,7 +77,7 @@ void connectCache(Dataset &data, const string &cachefile, sqlite3 *cacheDB) {
         problemEncountered(message, "create index on kmer_cache");
         sqlite3_free(z_err_msg);
 
-        msg = "CREATE TABLE seen_cache (kmer INT PRIMARY KEY NOT NULL, iter INT NOT NULL)";
+        msg = "CREATE TABLE seen_cache (kmer INT PRIMARY KEY NOT NULL)";
         message = sqlite3_exec(cacheDB, msg.c_str(), NULL, NULL, &z_err_msg);
         problemEncountered(message, "create table seen_cache");
         sqlite3_free(z_err_msg);
@@ -134,7 +134,7 @@ void checkCache(Dataset &data, vector<string> &in_file, vector<string> &to_align
 
     vector<string> signal_cache_data;
     to_align.clear();
-    int kmer_as_int;
+    uint_least64_t kmer_as_int;
 
     if(data.settings.verbose){
         cout << "Querying cache for processed kmers..." << flush;
@@ -158,7 +158,7 @@ void checkCache(Dataset &data, vector<string> &in_file, vector<string> &to_align
                                  &cache_signal_data_query, NULL);
     problemEncountered(message, msg);
 
-    msg = "INSERT OR IGNORE INTO seen_cache VALUES(?, ?)";
+    msg = "INSERT OR IGNORE INTO seen_cache VALUES(?)";
     sqlite3_stmt* insert_into_seen_cache_query = NULL;
     message = sqlite3_prepare_v2(cacheDB, msg.c_str(),
                                  static_cast<int>(msg.size()),
@@ -189,7 +189,8 @@ void checkCache(Dataset &data, vector<string> &in_file, vector<string> &to_align
         }
         else{
             // not found
-            message = sqlite3_bind_int(amount_seen_query, 1, kmer_as_int);
+//            message = sqlite3_bind_text(amount_seen_query, 1, kmer.c_str(), -1, SQLITE_TRANSIENT);
+            message = sqlite3_bind_int64(amount_seen_query, 1, kmer_as_int);
             problemEncountered(message, "bind_text for amount_seen_query");
             message = sqlite3_step(amount_seen_query);
             isRowReady(message);
@@ -208,18 +209,19 @@ void checkCache(Dataset &data, vector<string> &in_file, vector<string> &to_align
             if(message > 0){
                 // don't print for processing
                 #ifdef DEBUG
-                // cerr << "no print" << endl;
+                //cerr << "no print " << kmer.c_str() << " " << kmer_as_int << endl;
                 #endif
             }
             else{
                 #ifdef DEBUG
                 // cerr << "print" << endl;
                 #endif
-                message = sqlite3_bind_int(insert_into_seen_cache_query, 1, kmer_as_int);
+//                message = sqlite3_bind_text(insert_into_seen_cache_query, 1, kmer.c_str(), -1, SQLITE_TRANSIENT);
+                message = sqlite3_bind_int64(insert_into_seen_cache_query, 1, kmer_as_int);
                 problemEncountered(message, "bind_text for insert_into_seen_cache_query");
                 // int sqlite3_bind_int(sqlite3_stmt*, int, int);
-                message = sqlite3_bind_int(insert_into_seen_cache_query, 2, data.settings.iteration);
-                problemEncountered(message, "bind_int for insert_into_seen_cache_query");
+                //message = sqlite3_bind_int(insert_into_seen_cache_query, 2, data.settings.iteration);
+                //problemEncountered(message, "bind_int for insert_into_seen_cache_query");
 
                 // return by reference
                 to_align.push_back(kmer);
