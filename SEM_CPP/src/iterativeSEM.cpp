@@ -155,7 +155,7 @@ int main(int argc, char **argv){
     cout << "--- Iteration 0 ---\n";
 
     data.settings.iteration = 0;
-    data.settings.threads = 5;
+    data.settings.threads = 20;
 
     try{
 #ifdef DEBUG
