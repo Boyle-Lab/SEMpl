@@ -59,7 +59,7 @@ void accumSummary_scale(Dataset &data, const string &hfile,
     	exit(1);
     }
 
-    int dist = 500;
+    int dist = 50;
     float max = 0.0;
 
 
