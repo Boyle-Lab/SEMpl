@@ -26,11 +26,11 @@ void generateSNPEffectMatrix(Dataset &data) {
     // in iterativeSEM.hpp
 
     if(data.settings.verbose){
-        cout << "\nGenerating SEM for " << data.TF_name << endl;
+        cout << "Generating SEM for " << data.TF_name << endl;
     }
 
     if(data.settings.verbose){
-        cout << "\tBuilding directories" << endl;
+        cout << "Building directories" << endl;
     }
     string cmd = "mkdir -p " + data.output_dir;
     system(cmd.c_str());
@@ -48,7 +48,6 @@ void generateSNPEffectMatrix(Dataset &data) {
 
     //Step 1: Generate Enumerated k-mers
     cout << "Creating enumerated kmers from PWM file" << endl;
-    cout << "\tstep one" << endl;
     int length = generate_kmers(data); // data.kmerHash is now filled in!!!!
 
     //Step 2: Change one base at each location in k-mers and align to genome

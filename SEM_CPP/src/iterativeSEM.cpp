@@ -152,14 +152,14 @@ int main(int argc, char **argv){
     //track data.output_dir for iterations
     data.output_dir = data.base_dir + "it0/";
 
-    cout << "--- Iteration 0 ---\n";
+    cout << "--- Iteration 0 ---" << endl;
 
     data.settings.iteration = 0;
     data.settings.threads = 20;
 
     try{
 #ifdef DEBUG
-        cout << "\tgenerating SNPEffectMatrix\n" << flush;
+        cout << "Generating SNPEffectMatrix" << endl;
 #endif
         generateSNPEffectMatrix(data);
     }
