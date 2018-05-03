@@ -141,7 +141,7 @@ double get_threshold(Dataset & data, double pval){
   // }
 
 	double ans = ((score - m.offset ) / m.granularity );
-cout << "Result: " << ans << flush;
+
   // free the memory allocated, not typical Rcpp way
   for(int i=0; i<column; i++){
     delete[] m.mat[i];
