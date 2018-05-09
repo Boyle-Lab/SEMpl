@@ -20,22 +20,7 @@ void bowtie_genome_map(int length, const string& genome, const string& file,
         cout << "Running command: " << cmd << "\n\tRunning...." << flush;
     }
 
-    bool bad_run = false;
-    pid_t pid;
-    int child_status;
-    do {
-        pid = fork();
-        if(pid == 0) { /* Child */
-            exec(cmd.c_str());
-            exit(0);
-        } else { /* Parent */
-            wait(&child_status);
-            if(child_status != 0) {
-                cerr << "Status: " << child_status << " Need to run the process again!\n" << flush;
-                bad_run = true;
-            }
-        }
-    } while(bad_run);
+    exec(cmd.c_str());
 
     if(verbose){
         cout << "FINISH" << endl;
