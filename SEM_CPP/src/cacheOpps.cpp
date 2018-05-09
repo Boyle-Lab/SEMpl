@@ -366,7 +366,7 @@ void writeCache(Dataset &data, sqlite3 *cacheDB,
         if(message > 0) {
             //something found
         #ifdef DEBUG
-            cerr << "DUP: " << message << endl;
+            cerr << "DUP: " << message << " | " << temp << " " << val << endl;
         #endif
         } else {
             message = sqlite3_bind_text(staged_query, 1, temp.c_str(), -1, SQLITE_TRANSIENT);
