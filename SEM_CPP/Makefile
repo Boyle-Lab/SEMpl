@@ -2,8 +2,8 @@ CXX=g++
 
 C++FLAGS=-Wall -Werror -pedantic --std=c++11 -I. -pthread
 
-DEBUG_OR_OPTIMIZE = -O3 -DDEBUG
-#DEBUG_OR_OPTIMIZE = -g2 -DDEBUG
+#DEBUG_OR_OPTIMIZE = -O3 -DDEBUG
+DEBUG_OR_OPTIMIZE = -ggdb -DDEBUG
 
 DISABLE_WARNINGS = -Wno-variadic-macros -Wno-unused-local-typedefs -Wno-enum-compare -Wno-unused-result
 
@@ -46,7 +46,7 @@ test: $(EXECUTABLE)
 
 ctcf: $(EXECUTABLE)
 	export LD_LIBRARY_PATH="/lib/x86_64-linux-gnu:$(PWD)/lib"
-	./iterativeSEM -PWM /data/data_repo/PWMs/MA0139.1.pwm \
+	./gdbserver localhost:4444 iterativeSEM -PWM /data/data_repo/PWMs/MA0139.1.pwm \
 			-merge_file /data/data_repo/ENCODE/H1hESC/stem.narrowPeak.gz \
 			-big_wig /data/data_repo/ENCODE/H1hESC/ENCFF000RSD.bigWig \
 			-TF_name CTCF -output results/CTCF_H1hESC/ \
@@ -60,7 +60,7 @@ libexport:
 	export LD_LIBRARY_PATH="/lib/x86_64-linux-gnu:/home/cmorteru/SEM_CPP/SEM_CPP/lib"
 
 $(EXECUTABLE): $(C++OBJ) $(SQLITEOBJ)
-		$(CXX) $(C++FLAGS) $(LIBLOC) -o $(EXECUTABLE) $(C++OBJ) $(SQLITEOBJ) $(TFMLIB) $(BIGWIGLIB) -ldl
+		$(CXX) $(C++FLAGS) $(DEBUG_OR_OPTIMIZE) $(LIBLOC) -o $(EXECUTABLE) $(C++OBJ) $(SQLITEOBJ) $(TFMLIB) $(BIGWIGLIB) -ldl
 
 obj/%.o : lib/TFM-Pvalue/%.cpp
 		$(CXX) $(C++FLAGS) -DPROGRAM=0 $(DEBUG_OR_OPTIMIZE) $(DISABLE_WARNINGS) -c $< -o $@
