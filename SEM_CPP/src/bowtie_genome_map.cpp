@@ -14,7 +14,7 @@ using namespace std;
 void bowtie_genome_map(int length, const string& genome, const string& file, 
                        const string& final_output, const string& dnase_file, int threads, bool verbose){
 
-    string cmd = "./map-filer " + std::to_string(length) + " " + genome + " " + file + " " + final_output + " " + dnase_file + " " + std::to_string(threads) + " " + std::to_string(verbose);
+    string cmd = "./map-filter " + std::to_string(length) + " " + genome + " " + file + " " + final_output + " " + dnase_file + " " + std::to_string(threads) + " " + std::to_string(verbose);
 
     if(verbose){
         cout << "Running command: " << cmd << "\n\tRunning...." << flush;

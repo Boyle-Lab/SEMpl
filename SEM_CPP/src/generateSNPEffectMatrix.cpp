@@ -55,6 +55,8 @@ void generateSNPEffectMatrix(Dataset &data) {
 //NOTE: We may want to not write this to a file. Also it might be a speedup if we go straight to signal instead of doing all of
 //  the kmers here first then doing signal because of duplicate lookups.
 //  Check how many times this would be duplicated in our test.
+data.kmerHash.clear();
+cin.get();
 
     cout << "\tstep two" << endl;
     align_to_genome(data);

@@ -39,6 +39,12 @@ void alignToGenomeWrapper(Dataset &data, int iteration, const string genome) {
     for(int position  = 0; position < length; ++position){
         for(int j = 0; j < static_cast<int>(nucleotideStack.size()); ++j){
 
+            #ifdef DEBUG
+                if(data.settings.verbose){
+                    cout << "\tBEGIN pos: " << position << "  bp: " << position << endl;
+                }
+            #endif
+
             new_kmer.clear();
             name = CWD + nucleotideStack[j] + string("_pos") + to_string(position);
             data.accumSummary_data.align_accum_lines.clear();
@@ -243,11 +249,6 @@ cout << "cache: " << data.signal_cache[ {position, bp} ].size() << " align: " <<
 
     // first pair type
 
-#ifdef DEBUG
-    if(data.settings.verbose){
-        cout << "\tpos: " << position << "  bp: " << bp << endl;
-    }
-#endif
     try{
         auto iter = data.sig_deets_maximum.insert( { {position, bp},
                                             data.Signal_data.alignment_maximum} );
@@ -286,5 +287,12 @@ cout << "cache: " << data.signal_cache[ {position, bp} ].size() << " align: " <<
     }
 
     data.signal_cache.clear();
+
+#ifdef DEBUG
+    if(data.settings.verbose){
+        cout << "\tDONE pos: " << position << "  bp: " << bp << endl;
+    }
+#endif
+
 }
 
