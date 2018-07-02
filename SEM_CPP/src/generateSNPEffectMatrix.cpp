@@ -56,7 +56,7 @@ void generateSNPEffectMatrix(Dataset &data) {
 //  the kmers here first then doing signal because of duplicate lookups.
 //  Check how many times this would be duplicated in our test.
 data.kmerHash.clear();
-cin.get();
+//cin.get();
 
     cout << "\tstep two" << endl;
     align_to_genome(data);
