@@ -299,7 +299,7 @@ int main(int argc, char **argv){
         }
     }
 
-    closeCache(data, data.cachefile, data.cacheDB);
+    closeCache(data.cachefile, data.cacheDB);
     outFile.close();
     return 0;
 }
