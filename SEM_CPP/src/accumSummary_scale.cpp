@@ -116,6 +116,10 @@ void accumSummary_scale(Dataset &data, const string &hfile,
 #ifdef DEBUG
         // cerr << "temp[1]: #" << temp[1] << "# stoi: #" << start + 1 << '#' << endl;
 #endif
+	if(scale != end-start) {
+//		cerr << "Incorrect size region!" << endl;
+	}
+
         end = stoi(temp[2]);
         direction = temp[4];
         upstart = start - dist;
