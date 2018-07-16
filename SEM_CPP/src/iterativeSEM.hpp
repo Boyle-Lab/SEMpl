@@ -169,14 +169,12 @@ void accumSummary_scale(Dataset &data, const std::string &hfile,
                         const std::string &cfile, int scale,
                         Dataset::accumSummary_type::accumSummary_dest dest);
 // check accumSummary_scale calls in steps before find_signal
-void alignToGenomeWrapper(Dataset &data, int iteration,
-                            std::string genome);
+void alignToGenomeWrapper(Dataset &data, std::string genome);
 void bowtie_genome_map(int length, const std::string& genome,
                         const std::string& file, const std::string& final_output,
                         const std::string& dnase_file, const int threads, bool verbose);
 void changeBase(const Dataset &data, int position, const char nucleotide,
-                std::vector<std::string> &new_kmer_vec,
-                const std::string &genome);
+                std::vector<std::string> &new_kmer_vec);
 void checkCache(Dataset &data, std::vector<std::string> &in_file,
                 std::vector<std::string> &out_cache, sqlite3 *cacheDB,
                 Dataset::accumSummary_type::accumSummary_dest dest,
@@ -203,7 +201,7 @@ int seq_col_to_fa(const std::vector<std::string> &column,
 void writeCache(Dataset &data, sqlite3 *cacheDB,
                 Dataset::accumSummary_type::accumSummary_dest dest);
 void connectCache(Dataset &data, const std::string &cachefile, sqlite3 *cacheDB);
-void closeCache(Dataset &data, const std::string &cachefile, sqlite3 *cacheDB);
+void closeCache(const std::string &cachefile, sqlite3 *cacheDB);
 
 std::string read_pwm(Dataset &data, std::string file);
 
