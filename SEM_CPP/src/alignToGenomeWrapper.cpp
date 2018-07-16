@@ -3,10 +3,10 @@
 #include <iostream>
 using namespace std;
 
-static void align_SNPs(Dataset &data, string name, vector<string> &new_kmer, int length, int position, char bp);
+static void align_SNPs(Dataset &data, string name, vector<string> &new_kmer, int length, int position, char bp, const string genome);
 void find_signal(Dataset &data, string name, int length, int position, char bp);
 
-void alignToGenomeWrapper(Dataset &data, int iteration, const string genome) {
+void alignToGenomeWrapper(Dataset &data, const string genome) {
 
     const vector<char> nucleotideStack{'A', 'C', 'G', 'T'};
     vector<string> new_kmer;
@@ -41,7 +41,7 @@ void alignToGenomeWrapper(Dataset &data, int iteration, const string genome) {
 
             #ifdef DEBUG
                 if(data.settings.verbose){
-                    cout << "\tBEGIN pos: " << position << "  bp: " << position << endl;
+                    cout << "\tBEGIN pos: " << position << "  bp: " << nucleotideStack[j] << endl;
                 }
             #endif
 
@@ -52,15 +52,14 @@ void alignToGenomeWrapper(Dataset &data, int iteration, const string genome) {
             try{
                 // creates new_kmer vector from copying over data.kmerHash
                 // and changing a single nucleotide
-                changeBase(data, position, nucleotideStack[j], new_kmer,
-                           genome);
+                changeBase(data, position, nucleotideStack[j], new_kmer);
             }
             catch(...){
                 cerr << "exception thrown from changeBase" << endl;
                 exit(1);
             }
             // Align to the genome
-            align_SNPs(data, name, new_kmer, length, position, nucleotideStack[j]);
+            align_SNPs(data, name, new_kmer, length, position, nucleotideStack[j], genome);
 
             // Get signal for all alignments
             //  and Write alignments to cache to prevent duplicate processing
@@ -77,9 +76,8 @@ void alignToGenomeWrapper(Dataset &data, int iteration, const string genome) {
 //  in one combined function.
 //  output is sorted and unique
 static void align_SNPs(Dataset &data, string name, vector<string> &new_kmer,
-                       int length, int position, char bp) {
+                       int length, int position, char bp, const string genome) {
 
-    const string genome = "./data/hg19";
     string fa_file = "";
     string bowtie_output = "./";
     int non_zero_file_size;
@@ -112,10 +110,10 @@ static void align_SNPs(Dataset &data, string name, vector<string> &new_kmer,
 
     non_zero_file_size = seq_col_to_fa(cache_to_align, fa_file);
     if(non_zero_file_size > 500){
-        bowtie_genome_map(length, "./data/hg19", fa_file, bowtie_output,
+        bowtie_genome_map(length, genome, fa_file, bowtie_output,
                           data.DNase_file, data.settings.threads, data.settings.verbose);
     } else if (non_zero_file_size > 0) {
-        bowtie_genome_map(length, "./data/hg19", fa_file, bowtie_output,
+        bowtie_genome_map(length, genome, fa_file, bowtie_output,
                           data.DNase_file, 1, data.settings.verbose);
     } else {
         //create the empty file - we use the files to creat the map later on
