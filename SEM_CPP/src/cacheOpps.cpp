@@ -96,7 +96,7 @@ void connectCache(Dataset &data, const string &cachefile, sqlite3 *cacheDB) {
 }
 
 // Closes the connection to the cacheDB
-void closeCache(Dataset &data, const string &cachefile, sqlite3 *cacheDB) {
+void closeCache(const string &cachefile, sqlite3 *cacheDB) {
 
     sqlite3 *cacheOnDisk;
     sqlite3_backup *cacheBackup;
