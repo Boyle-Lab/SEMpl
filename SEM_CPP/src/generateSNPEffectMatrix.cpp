@@ -55,7 +55,7 @@ void generateSNPEffectMatrix(Dataset &data) {
 //NOTE: We may want to not write this to a file. Also it might be a speedup if we go straight to signal instead of doing all of
 //  the kmers here first then doing signal because of duplicate lookups.
 //  Check how many times this would be duplicated in our test.
-data.kmerHash.clear();
+//data.kmerHash.clear();
 //cin.get();
 
     cout << "\tstep two" << endl;
@@ -98,7 +98,7 @@ void align_to_genome(Dataset &data){
     }
 
     // align all to genome
-    alignToGenomeWrapper(data, data.settings.iteration, "./data/hg19");
+    alignToGenomeWrapper(data, "./data/hg19");
 }
 
 void create_baselines(Dataset &data, int length){
