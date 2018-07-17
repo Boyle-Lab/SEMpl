@@ -178,7 +178,7 @@ void create_baselines(Dataset &data, int length){
             cout << "FINISH" << endl;
         }
 
-        if(data.settings.writecache){
+        if(data.settings.useCache){
             if(data.settings.verbose){
                 cout << "\twriting to cache..." << flush;
             }
@@ -257,7 +257,7 @@ void create_baselines(Dataset &data, int length){
             cerr << "problem with accumSummary_scale on enumerated!!\n\tEXITING" << endl;
             exit(1);
         }
-        if(data.settings.writecache){
+        if(data.settings.useCache){
             writeCache(data, data.cacheDB,
                        Dataset::accumSummary_type::accumSummary_dest::enumerated);
         }

@@ -88,9 +88,13 @@ static void align_SNPs(Dataset &data, string name, vector<string> &new_kmer,
     // Filter our kmers by existing kmers in the cache so that we don't
     //   need to re-process them.
     try{
-        checkCache(data, new_kmer, cache_to_align, data.cacheDB,
+        if(data.settings.useCache) {
+            checkCache(data, new_kmer, cache_to_align, data.cacheDB,
                 Dataset::accumSummary_type::accumSummary_dest::alignment,
                 position, bp);
+        } else {
+            swap(cache_to_align, new_kmer);
+	}
         // new_kmer and cache to align would be swapped if there is no cache
         // rather than assigned, much faster
     }
@@ -159,13 +163,15 @@ void find_signal(Dataset &data, string name, int length, int position, char bp){
 
         // Write NEW computed scores to our cache so that we don't need to do previous steps again
         try{
-            if(data.settings.verbose){
-                cout << "\twriteCache(args) is running..." << flush;
-            }
-            writeCache(data, data.cacheDB,
+            if(data.settings.useCache) {
+                if(data.settings.verbose){
+                    cout << "\twriteCache(args) is running..." << flush;
+                }
+                writeCache(data, data.cacheDB,
                        Dataset::accumSummary_type::accumSummary_dest::alignment);
-            if(data.settings.verbose){
-                cout << "FINISH" << endl;
+                if(data.settings.verbose){
+                    cout << "FINISH" << endl;
+                }
             }
         }
         catch(...){

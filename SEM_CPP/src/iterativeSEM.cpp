@@ -146,7 +146,7 @@ int main(int argc, char **argv){
         data.settings.threshold = 0.0;
     }
 
-
+    data.settings.useCache = false;
     connectCache(data, data.cachefile, data.cacheDB);
 
     //track data.output_dir for iterations
