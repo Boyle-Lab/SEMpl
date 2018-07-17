@@ -5,7 +5,6 @@ using namespace std;
 
 class Matrix;
 
-const string TEMPFILE = "examples/temp.txt";
 
 //REQUIRES: data is a valid Dataset, in that data is not "missing," with PWM_data filled in
 //MODIFIES: data
@@ -15,6 +14,7 @@ double get_threshold(Dataset & data, double pval){
 	pwm_to_tfm(data);
 	Matrix m;
 	int column;
+	const string TEMPFILE = data.base_dir + "temp.txt";
 	ofstream temp_out(TEMPFILE);
 
 #ifdef DEBUG
