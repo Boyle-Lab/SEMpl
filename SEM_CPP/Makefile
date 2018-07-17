@@ -46,7 +46,7 @@ test: $(EXECUTABLE)
 
 ctcf: $(EXECUTABLE)
 	export LD_LIBRARY_PATH="/lib/x86_64-linux-gnu:$(PWD)/lib"
-	./gdbserver localhost:4444 iterativeSEM -PWM /data/data_repo/PWMs/MA0139.1.pwm \
+	./iterativeSEM -PWM /data/data_repo/PWMs/MA0139.1.pwm \
 			-merge_file /data/data_repo/ENCODE/H1hESC/stem.narrowPeak.gz \
 			-big_wig /data/data_repo/ENCODE/H1hESC/ENCFF000RSD.bigWig \
 			-TF_name CTCF -output results/CTCF_H1hESC/ \
