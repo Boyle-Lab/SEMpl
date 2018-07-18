@@ -18,8 +18,9 @@ using namespace std;
 // EFFECTS: returns true if file already exists in current directory,
 //          false otherwise
 static void problemEncountered(const int message, const string &what);
-static void isRowReady(const int message);
-static void checkDone(const int message, const string &s);
+bool checkKmerNew(Dataset &data, string original);
+//static void isRowReady(const int message);
+//static void checkDone(const int message, const string &s);
 
 
 // This builds a new cache if it does not exist and connects to the cache
@@ -28,6 +29,19 @@ void connectCache(Dataset &data, const string &cachefile, sqlite3 *cacheDB) {
     bool newcache = fileExists(cachefile);
     int message = 0;
     string msg = "";
+
+    //initialize vectors for suffix tree
+    int split_size = 6;    //split kmers into 6mers
+    int range_size = encode2bit("GGGGGG")+1;
+    //determine number of splits
+    int splits = (data.settings.length-1) / split_size + 1;
+    data.kmerSeen.resize(splits);
+    for(int i = 0; i < splits; i++) {
+        data.kmerSeen[i].resize(range_size);
+        for(int j = 0; j < range_size; j++) {
+            data.kmerSeen[i][j] = false;
+        }
+    }
 
     sqlite3 *cacheOnDisk;
     sqlite3_backup *cacheBackup;
@@ -134,7 +148,8 @@ void checkCache(Dataset &data, vector<string> &in_file, vector<string> &to_align
 
     vector<string> signal_cache_data;
     to_align.clear();
-    uint_least64_t kmer_as_int;
+//    uint_least64_t kmer_as_int;
+//    long unsigned int kmer_as_int;
 
     if(data.settings.verbose){
         cout << "Querying cache for processed kmers..." << flush;
@@ -143,33 +158,33 @@ void checkCache(Dataset &data, vector<string> &in_file, vector<string> &to_align
     string msg = "";
     int message;
 
-    // Prepare SQL queries
+/*    // Prepare SQL queries
     msg = "SELECT count(*) FROM seen_cache WHERE kmer=?";
     sqlite3_stmt* amount_seen_query = NULL;
     message = sqlite3_prepare_v2(cacheDB, msg.c_str(),
                                  static_cast<int>(msg.size()),
                                  &amount_seen_query, NULL);
     problemEncountered(message, msg);
-
+*/
     msg = "SELECT kmer, alignment FROM kmer_cache WHERE kmer=?";
     sqlite3_stmt* cache_signal_data_query = NULL;
     message = sqlite3_prepare_v2(cacheDB, msg.c_str(),
                                  static_cast<int>(msg.size()),
                                  &cache_signal_data_query, NULL);
     problemEncountered(message, msg);
-
+/*
     msg = "INSERT OR IGNORE INTO seen_cache VALUES(?)";
     sqlite3_stmt* insert_into_seen_cache_query = NULL;
     message = sqlite3_prepare_v2(cacheDB, msg.c_str(),
                                  static_cast<int>(msg.size()),
                                  &insert_into_seen_cache_query, NULL);
     problemEncountered(message, msg);
-
+*/
     //utilize sqlite transactions to speed this all up
     sqlite3_exec(cacheDB, "BEGIN TRANSACTION", NULL, NULL, NULL);
 
     for(const string &kmer : in_file){
-        kmer_as_int = encode2bit(kmer.c_str());
+//        kmer_as_int = encode2bit(kmer.c_str());
 
         message = sqlite3_bind_text(cache_signal_data_query, 1, kmer.c_str(),
                   -1, SQLITE_TRANSIENT);
@@ -190,6 +205,22 @@ void checkCache(Dataset &data, vector<string> &in_file, vector<string> &to_align
         else{
             // not found
 //            message = sqlite3_bind_text(amount_seen_query, 1, kmer.c_str(), -1, SQLITE_TRANSIENT);
+// testing suffix-type tree instead of DB to stop crashing:
+//            if(checkKmerNew(data, kmer)) {
+//                to_align.push_back(kmer);
+//insert
+//            } else {
+                //already seen so ignore this one.
+//            }
+/*            if(data.kmerSeen.find(kmer_as_int) == data.kmerSeen.end()) {
+                //not found
+                to_align.push_back(kmer);
+                data.kmerSeen.insert(make_pair(kmer_as_int, true));
+            } else {
+                //already seen
+            }
+*/
+/*
             message = sqlite3_bind_int64(amount_seen_query, 1, kmer_as_int);
             problemEncountered(message, "bind_text for amount_seen_query");
             message = sqlite3_step(amount_seen_query);
@@ -232,20 +263,21 @@ void checkCache(Dataset &data, vector<string> &in_file, vector<string> &to_align
                 sqlite3_clear_bindings(insert_into_seen_cache_query);
             }
 
+*/
         }
 
-            sqlite3_reset(amount_seen_query);
-            sqlite3_clear_bindings(amount_seen_query);
+//            sqlite3_reset(amount_seen_query);
+//            sqlite3_clear_bindings(amount_seen_query);
         sqlite3_reset(cache_signal_data_query);
         sqlite3_clear_bindings(cache_signal_data_query);
     }
 
     sqlite3_exec(cacheDB, "COMMIT TRANSACTION", NULL, NULL, NULL);
 
-    message = sqlite3_finalize(insert_into_seen_cache_query);
-    problemEncountered(message, "finalize insert_into_seen_cache_query");
-    message = sqlite3_finalize(amount_seen_query);
-    problemEncountered(message, "finalize amount_seen_query");
+//    message = sqlite3_finalize(insert_into_seen_cache_query);
+//    problemEncountered(message, "finalize insert_into_seen_cache_query");
+//    message = sqlite3_finalize(amount_seen_query);
+//    problemEncountered(message, "finalize amount_seen_query");
     message = sqlite3_finalize(cache_signal_data_query);
     problemEncountered(message, "finalize cache_signal_data_query");
 
@@ -405,6 +437,7 @@ static void problemEncountered(const int message, const string &what){
     }
 }
 
+/*
 static void checkDone(const int message, const string &s){
     if(message != SQLITE_DONE){
         cerr << s << " is not done!\n\tEXITING\n";
@@ -418,4 +451,23 @@ static void isRowReady(const int message){
         cerr << "Row isn't ready!!\n\tEXITING" << endl;
         exit(1);
     }
+}
+*/
+
+bool checkKmerNew(Dataset &data, string original) {
+    bool notSeen = false;
+
+    //split kmers into 6mers
+    int split_size = 6;
+
+    //determine number of splits
+    int splits = (data.settings.length-1) / split_size + 1;
+
+    for(int i = 0; i < splits; i++) {
+        if(data.kmerSeen[i][encode2bit(original.substr(i*split_size, split_size).c_str())] == false) {
+            notSeen = true;
+        }
+    }
+
+    return notSeen;
 }
