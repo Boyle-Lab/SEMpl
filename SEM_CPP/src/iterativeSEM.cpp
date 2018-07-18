@@ -146,7 +146,7 @@ int main(int argc, char **argv){
         data.settings.threshold = 0.0;
     }
 
-    data.settings.useCache = false;
+    data.settings.useCache = true;
     connectCache(data, data.cachefile, data.cacheDB);
 
     //track data.output_dir for iterations
@@ -371,6 +371,8 @@ string read_pwm(Dataset &data, string file){
             cout << endl;
         }
 #endif
-    // exit(1);
+
+    data.settings.length = data.PWM_data.matrix_arr[0].size();
+
     return s;
 }
