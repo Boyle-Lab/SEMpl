@@ -142,7 +142,7 @@ struct Dataset {
         // cache for processing
         std::string cachefile = "";
         sqlite3 *cacheDB;
-        std::vector<std::vector<bool>> kmerSeen;
+        std::vector<bool> kmerSeen;
 
         #ifdef DEBUG
             size_t size_of_kmerHash = 0;
