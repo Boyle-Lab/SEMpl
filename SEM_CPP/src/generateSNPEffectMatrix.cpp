@@ -149,7 +149,7 @@ void create_baselines(Dataset &data, int length){
                     Dataset::accumSummary_type::accumSummary_dest::scrambled);
         seq_col_to_fa(scramble_cache_to_align,
                       data.output_dir + "/BASELINE/Scrambled_kmer.fa");
-        bowtie_genome_map(length, "../data/hg19",
+        bowtie_genome_map(length, "./data/hg19",
                           data.output_dir + "/BASELINE/Scrambled_kmer.fa",
                           data.output_dir + "/BASELINE/Scrambled_kmer.bed",
                           data.DNase_file, data.settings.threads, data.settings.verbose);
@@ -243,7 +243,7 @@ void create_baselines(Dataset &data, int length){
     if(!enumerate_cache_to_align.empty()){
         seq_col_to_fa(enumerate_cache_to_align,
                       data.output_dir + "/BASELINE/Enumerated_kmer.fa");
-        bowtie_genome_map(length, "../data/hg19",
+        bowtie_genome_map(length, "./data/hg19",
                           data.output_dir + "/BASELINE/Enumerated_kmer.fa",
                           data.output_dir + "/BASELINE/Enumerated_kmer.bed",
                           data.DNase_file, data.settings.threads, data.settings.verbose);
