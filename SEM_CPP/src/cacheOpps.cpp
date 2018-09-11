@@ -20,6 +20,7 @@ using namespace std;
 static void problemEncountered(const int message, const string &what);
 bool checkKmerNew(Dataset &data, string original);
 void addKmer(Dataset &data, string original);
+void clearKmer(Dataset &data, string original);
 //static void isRowReady(const int message);
 //static void checkDone(const int message, const string &s);
 
@@ -163,33 +164,32 @@ void checkCache(Dataset &data, vector<string> &in_file, vector<string> &to_align
     //utilize sqlite transactions to speed this all up
     sqlite3_exec(cacheDB, "BEGIN TRANSACTION", NULL, NULL, NULL);
 
-    for(const string &kmer : in_file){
-        message = sqlite3_bind_text(cache_signal_data_query, 1, kmer.c_str(),
-                  -1, SQLITE_TRANSIENT);
-        problemEncountered(message, "bind_text for cache_signal_data_query");
-        message = sqlite3_step(cache_signal_data_query);
+    for(const string &kmer : in_file) {
+        if(checkKmerNew(data, kmer)) { // only in here if it isn't mappable
+            // if this isn't a bad kmer, check to see if we have alignment
+            message = sqlite3_bind_text(cache_signal_data_query, 1, kmer.c_str(),
+                      -1, SQLITE_TRANSIENT);
+            problemEncountered(message, "bind_text for cache_signal_data_query");
+            message = sqlite3_step(cache_signal_data_query);
 
-//      grabs the alignment of current kmers
-        char* text = (char*)sqlite3_column_text(cache_signal_data_query, 1);
+            // grabs the alignment of current kmers
+            char* text = (char*)sqlite3_column_text(cache_signal_data_query, 1);
 
-        if(text){  //The kmer was found so keep all alignments for this kmer
-            do {
-                signal_cache_data.emplace_back(text);
-                text = NULL;
-                message = sqlite3_step(cache_signal_data_query);
-                text = (char*)sqlite3_column_text(cache_signal_data_query, 1);
-            } while (message == SQLITE_ROW);
-        }
-        else{
-            // not found
-// testing vector of bools instead of DB to stop crashing:
-// is this faster? try before sql query. This should be O(n)
-            if(checkKmerNew(data, kmer)) {
+            if(text){  //The kmer was found so keep all alignments for this kmer
+                do {
+                    signal_cache_data.emplace_back(text);
+                    text = NULL;
+                    message = sqlite3_step(cache_signal_data_query);
+                    text = (char*)sqlite3_column_text(cache_signal_data_query, 1);
+                } while (message == SQLITE_ROW);
+            }
+            else{
+            // not found so we need to align it for next time
                 to_align.push_back(kmer);
                 addKmer(data, kmer);
-            } else {
-                //already seen so ignore this one.
             }
+        } else {
+            //already seen so ignore this one.
         }
 
         sqlite3_reset(cache_signal_data_query);
@@ -332,6 +332,9 @@ void writeCache(Dataset &data, sqlite3 *cacheDB,
             }
             sqlite3_reset(staged_query);
             sqlite3_clear_bindings(staged_query);
+
+            //clear from kmer cache
+            clearKmer(data, temp);
         }
 
         sqlite3_reset(amount_seen_query);
@@ -384,5 +387,10 @@ bool checkKmerNew(Dataset &data, string original) {
 
 void addKmer(Dataset &data, string original) {
     data.kmerSeen[encode2bit(original.c_str())] = true;
+    return;
+}
+
+void clearKmer(Dataset &data, string original) {
+    data.kmerSeen[encode2bit(original.c_str())] = false;
     return;
 }
