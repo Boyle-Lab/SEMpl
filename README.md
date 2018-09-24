@@ -45,6 +45,11 @@ mv */*.so ../
 cd ..
 ```
 
+Symlink to bowtie index location
+```
+ln -s /data/genomes/hg19/bowtie_index/ data
+```
+
 Build SEMpl
 ```
 make
