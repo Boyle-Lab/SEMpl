@@ -16,8 +16,7 @@ C++ implementation of the SEM algorithm
 3. cd into lib/bowtie-1.0.0 and run "make".
 4. mv all .so files into lib/ (there should be 3 .so files)
 5. mkdir obj in SEM_CPP folder for object files.
-6. mkdir bin in SEM_CPP folder and place expected binaries.
-7. Run "make" without quotes to compile everything.
+6. Run "make" without quotes to compile everything.
 
 # Running
 	./iterativeSEM -PWM examples/MA0114.1.pwm -merge_file examples/wgEncodeOpenChromDnaseHepg2Pk.narrowPeak -big_wig examples/wgEncodeHaibTfbsHepg2Hnf4asc8987V0416101RawRep1.bigWig -TF_name HNF4A -output results/HNF4A
