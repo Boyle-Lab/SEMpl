@@ -1,28 +1,63 @@
 # SEM_CPP
 C++ implementation of the SEM algorithm
 
-# Requirements
-1. libcurl4-dev
+# System Requirements
 
+## Hardware Requirements
+Generation of a SEM requires variable RAM and disk storage based on the size of the initial PWM being considered. For minimal performance, we recommend a computer with the following specs:
 
-# Expectations
-1. bowtie binary in ./bin
-2. bedtools binary in ./bin
-3. argument to "-readcache" is not optional.
+RAM: 64+ GB  
+CPU: 8+ cores, 3.4+ GHz/core
 
-# Compilation
-1. Clone to computer, then cd into lib/libBigWig-master and run "make".
-2. cd into lib/TFM-Pvalue and run "make SEMCPPobj".
-3. cd into lib/bowtie-1.0.0 and run "make".
-4. mv all .so files into lib/ (there should be 3 .so files)
-5. mkdir obj in SEM_CPP folder for object files.
-6. Run "make" without quotes to compile everything.
+The runtime on this minimal system is approximately XX CPU hours. Compile time is approximately 35 seconds.
 
-# Running
-	./iterativeSEM -PWM examples/MA0114.1.pwm -merge_file examples/wgEncodeOpenChromDnaseHepg2Pk.narrowPeak -big_wig examples/wgEncodeHaibTfbsHepg2Hnf4asc8987V0416101RawRep1.bigWig -TF_name HNF4A -output results/HNF4A
+## Software Requirements
+
+The package development version is tested on *Linux* operating systems. The developmental version of the package has been tested on the following systems:
+
+Linux: Ubuntu 18.04  
+Packages: libcurl4-dev
+
+## Demo
+
+We include a small of generation of the SEM for HNF4A in HepG2 cells. Execution time of this demo is approximately XX seconds. The expected output is...:
+```
+....
+```
+
+# Installation
+Clone a copy of the SEMpl repository and submodules:
+
+```
+git clone --recurse-submodules git@github.com:Boyle-Lab/SEM_CPP.git
+```
+
+Build external libraries (this should be shored up)
+```
+cd SEM_CPP/SEM_CPP/lib/libBigWig-master
+make
+cd ../TFM-Pvalue
+make SEMCPPobj
+cd ../bowtie-1.0.0
+make
+cd ..
+mv */*.so ../
+cd ..
+```
+
+Build SEMpl
+```
+make
+```
+ 
+# Usage information
+SEMpl runs as an iterative process and requires specific input files (need more details). The following example will build the SEM for HNF4a in HepG2 cells given the example data
+```
+./iterativeSEM -PWM examples/MA0114.1.pwm -merge_file examples/wgEncodeOpenChromDnaseHepg2Pk.narrowPeak -big_wig examples/wgEncodeHaibTfbsHepg2Hnf4asc8987V0416101RawRep1.bigWig -TF_name HNF4A -output results/HNF4A
+```
 
 # Testing
-Run "make test" to compile and run on example input, assuming .so libraries are in the correct directory.
+Run "make test" to compile and run this input example.
 
 # Tasks
 
