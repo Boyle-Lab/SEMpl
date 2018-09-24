@@ -23,7 +23,7 @@ LIBLOC=-Llib
 STATICLIB=libTFMpvalue.a
 
 CSOURCES=bw{Read,Stats,Values,Write}.c
-
+BUILDDIR    := obj
 
 TFMHEADER=$(wildcard lib/TFM-Pvalue/*.cpp)
 TFMOBJ=$(subst lib/TFM-Pvalue/,obj/,$(TFMHEADER))
@@ -33,12 +33,16 @@ SQLITESOURCE=lib/sqlite3/sqlite3.c
 SQLITEOBJ=obj/sqlite3.o
 
 
-
 EXECUTABLE=iterativeSEM
 
-all: $(EXECUTABLE)
+all: directories $(EXECUTABLE)
+
+#Make the Directories
+directories:
+	@mkdir -p $(BUILDDIR)
 
 test: $(EXECUTABLE)
+	@mkdir -p results/HNF4A/
 	export LD_LIBRARY_PATH="/lib/x86_64-linux-gnu:$(prefix)/lib"
 	./iterativeSEM -PWM examples/MA0114.1.pwm \
 			-merge_file examples/wgEncodeOpenChromDnaseHepg2Pk.narrowPeak.gz \
