@@ -20,8 +20,16 @@ Packages: libcurl4-dev
 
 ## Demo
 
-We include a small of generation of the SEM for HNF4A in HepG2 cells. Execution time of this demo is approximately XX seconds. The expected output is...:
+We include a small of generation of the SEM for HNF4A in HepG2 cells. Execution time of this demo is approximately XX seconds on 20 threads. The expected output is:
 ```
+Running Iterative SEM building..
+        PWM: examples/MA0114.1.pwm
+        merge_file: examples/wgEncodeOpenChromDnaseHepg2Pk.narrowPeak.gz
+        bigwig: examples/wgEncodeHaibTfbsHepg2Hnf4asc8987V0416101RawRep1.bigWig
+        TF_name: HNF4A
+         output: results/HNF4A/
+        cachefile flag: results/HNF4A/HNF4A.cache.db
+        verbose
 ....
 ```
 
