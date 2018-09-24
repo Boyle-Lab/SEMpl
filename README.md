@@ -1,6 +1,10 @@
 # SEM_CPP
 C++ implementation of the SEM algorithm
 
+# Requirements
+1. libcurl4-dev
+
+
 # Expectations
 1. bowtie binary in ./bin
 2. bedtools binary in ./bin
@@ -8,14 +12,12 @@ C++ implementation of the SEM algorithm
 
 # Compilation
 1. Clone to computer, then cd into lib/libBigWig-master and run "make".
-2. cd into lib/TFM-Pvalue and run "make".
+2. cd into lib/TFM-Pvalue and run "make SEMCPPobj".
 3. cd into lib/bowtie-1.0.0 and run "make".
-4. mv all .so files into lib/
-5. There should be three .so files.
-6. mkdir obj for object files.
-7. mkdir bin and place expected binaries.
-8. run "export LD_LIBRARY_PATH="/lib/x86_64-linux-gnu:/home/cmorteru/SEM_CPP/SEM_CPP/lib"" without the outermost quotes so that dynamic libraries can be found.
-9. Run "make" without quotes to compile everything.
+4. mv all .so files into lib/ (there should be 3 .so files)
+5. mkdir obj in SEM_CPP folder for object files.
+6. mkdir bin in SEM_CPP folder and place expected binaries.
+7. Run "make" without quotes to compile everything.
 
 # Running
 	./iterativeSEM -PWM examples/MA0114.1.pwm -merge_file examples/wgEncodeOpenChromDnaseHepg2Pk.narrowPeak -big_wig examples/wgEncodeHaibTfbsHepg2Hnf4asc8987V0416101RawRep1.bigWig -TF_name HNF4A -output results/HNF4A
