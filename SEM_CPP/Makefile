@@ -15,11 +15,8 @@ C++OBJ=$(subst src/,obj/,$(C++SOURCES))
 C++OBJ:=$(C++OBJ:.cpp=.o)
 
 BIGWIGLIB=-lBigWig
-
 TFMLIB=-lTFMpvalue
-
 LIBLOC=-Llib
-
 STATICLIB=libTFMpvalue.a
 
 CSOURCES=bw{Read,Stats,Values,Write}.c
@@ -43,7 +40,7 @@ directories:
 
 test: $(EXECUTABLE)
 	@mkdir -p results/HNF4A/
-	export LD_LIBRARY_PATH="/lib/x86_64-linux-gnu:$(prefix)/lib"
+	export LD_LIBRARY_PATH="/lib/x86_64-linux-gnu:$(prefix)/lib"; \
 	./iterativeSEM -PWM examples/MA0114.1.pwm \
 			-merge_file examples/wgEncodeOpenChromDnaseHepg2Pk.narrowPeak.gz \
 			-big_wig examples/wgEncodeHaibTfbsHepg2Hnf4asc8987V0416101RawRep1.bigWig \
@@ -51,7 +48,7 @@ test: $(EXECUTABLE)
 			-readcache results/HNF4A/HNF4A.cache.db -verbose > results/HNF4A/1test.out 2> results/HNF4A/1err.out &
 
 ctcf: $(EXECUTABLE)
-	export LD_LIBRARY_PATH="/lib/x86_64-linux-gnu:$(prefix)/lib"
+	export LD_LIBRARY_PATH="/lib/x86_64-linux-gnu:$(prefix)/lib"; \
 	./iterativeSEM -PWM /data/data_repo/PWMs/MA0139.1.pwm \
 			-merge_file /data/data_repo/ENCODE/H1hESC/stem.narrowPeak.gz \
 			-big_wig /data/data_repo/ENCODE/H1hESC/ENCFF000RSD.bigWig \
