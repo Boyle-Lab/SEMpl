@@ -7,7 +7,6 @@
 obj/
 *.clang_complete
 *.so
-bin/
 iterativeSEM
 results
 old_results
