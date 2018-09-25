@@ -4,3 +4,6 @@
 [submodule "SEM_CPP/lib/libBigWig"]
 	path = SEM_CPP/lib/libBigWig
 	url = git@github.com:jayhesselberth/libBigWig.git
+[submodule "SEM_CPP/lib/bowtie"]
+	path = SEM_CPP/lib/bowtie
+	url = git@github.com:BenLangmead/bowtie.git
