@@ -40,7 +40,7 @@ Clone a copy of the SEMpl repository and submodules:
 git clone --recurse-submodules git@github.com:Boyle-Lab/SEM_CPP.git
 ```
 
-Build external libraries (this should be shored up)
+Build external libraries:
 ```
 cd SEM_CPP/lib/libBigWig
 make
@@ -50,7 +50,7 @@ mv */*.so .
 cd ..
 ```
 
-Symlink to bowtie index location
+Symlink to bowtie index location (use your own index location):
 ```
 ln -s /data/genomes/hg19/bowtie_index/ data
 ```
