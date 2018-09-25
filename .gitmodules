@@ -1,3 +1,6 @@
 [submodule "SEM_CPP/lib/TFMPvalue"]
 	path = SEM_CPP/lib/TFMPvalue
 	url = git@github.com:ge11232002/TFMPvalue.git
+[submodule "SEM_CPP/lib/libBigWig"]
+	path = SEM_CPP/lib/libBigWig
+	url = git@github.com:jayhesselberth/libBigWig.git
