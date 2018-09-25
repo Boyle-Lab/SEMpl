@@ -1,6 +1,5 @@
 #include "src/iterativeSEM.hpp"
-#include "lib/TFM-Pvalue/Matrix.h"
-// #include "lib/TFM-Pvalue/TFMpvalue.cpp"
+#include "lib/TFMPvalue/src/Matrix.h"
 using namespace std;
 
 class Matrix;

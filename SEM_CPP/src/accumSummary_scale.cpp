@@ -1,5 +1,5 @@
 extern "C" {
-    #include "./lib/libBigWig-master/bigWig.h"
+    #include "./lib/libBigWig/bigWig.h"
 }
 #include "iterativeSEM.hpp"
 #include "common.hpp"
