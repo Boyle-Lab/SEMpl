@@ -9,7 +9,7 @@ Generation of a SEM requires variable RAM and disk storage based on the size of 
 RAM: 64+ GB  
 CPU: 8+ cores, 3.4+ GHz/core
 
-The runtime on this minimal system is approximately XX CPU hours. Compile time is approximately 35 seconds.
+The runtime on this minimal system is approximately 38 CPU hours. Compile time is approximately 35 seconds.
 
 ## Software Requirements
 
@@ -20,7 +20,7 @@ Packages: libcurl4-dev
 
 ## Demo
 
-We include a small of generation of the SEM for HNF4A in HepG2 cells. Execution time of this demo is approximately XX seconds on 20 threads. The expected output is:
+We include a small of generation of the SEM for HNF4A in HepG2 cells. Execution time of this demo is approximately 6791 seconds on 20 threads. The expected output is:
 ```
 Running Iterative SEM building..
         PWM: examples/MA0114.1.pwm
