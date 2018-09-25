@@ -22,8 +22,8 @@ STATICLIB=libTFMpvalue.a
 CSOURCES=bw{Read,Stats,Values,Write}.c
 BUILDDIR    := obj
 
-TFMHEADER=$(wildcard lib/TFM-Pvalue/*.cpp)
-TFMOBJ=$(subst lib/TFM-Pvalue/,obj/,$(TFMHEADER))
+TFMHEADER=$(wildcard lib/TFMPvalue/src/*.cpp)
+TFMOBJ=$(subst lib/TFMPvalue/src/,obj/,$(TFMHEADER))
 TFMOBJ:=$(TFMOBJ:.cpp=.o)
 
 SQLITESOURCE=lib/sqlite3/sqlite3.c

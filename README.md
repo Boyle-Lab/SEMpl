@@ -42,14 +42,11 @@ git clone --recurse-submodules git@github.com:Boyle-Lab/SEM_CPP.git
 
 Build external libraries (this should be shored up)
 ```
-cd SEM_CPP/SEM_CPP/lib/libBigWig-master
-make
-cd ../TFM-Pvalue
-make SEMCPPobj
-cd ../bowtie-1.0.0
+cd SEM_CPP/lib/libBigWig
 make
 cd ..
-mv */*.so ../
+make
+mv */*.so .
 cd ..
 ```
 
