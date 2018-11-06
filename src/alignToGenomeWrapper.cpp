@@ -225,6 +225,21 @@ cout << "cache: " << data.signal_cache[ {position, bp} ].size() << " align: " <<
         exit(1);
     }
 
+    // Output signal file for methylation processing
+    #ifdef DEBUG
+        ofstream debug(name + ".signal");
+        for(auto val : data.signal_enumerate_output){
+            debug << val << endl;
+        }
+        debug.close();
+    #endif
+
+    // remove fa and bed files
+    string cmd = "rm " + name + ".bed";
+    system(cmd.c_str());
+    string cmd = "rm " + name + ".fa";
+    system(cmd.c_str());
+
     // Now summarize the scores from all alignments (including those from cache)
     // into a single maximum, counter, stdev, and sterr
 //NOTE: this will have an error if there were no kmers for the SNP - need to check for that
