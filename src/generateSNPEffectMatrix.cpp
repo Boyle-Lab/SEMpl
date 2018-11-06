@@ -275,9 +275,9 @@ void create_baselines(Dataset &data, int length){
     debug.close();
 
     // remove fa and bed files
-    string cmd = "rm " + data.output_dir + "/BASELINE/*.bed";
+    cmd = "rm " + data.output_dir + "/BASELINE/*.bed";
     system(cmd.c_str());
-    string cmd = "rm " + data.output_dir + "/BASELINE/*.fa";
+    cmd = "rm " + data.output_dir + "/BASELINE/*.fa";
     system(cmd.c_str());
 
     if(!data.settings.fastrun){
