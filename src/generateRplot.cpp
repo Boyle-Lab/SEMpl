@@ -48,6 +48,6 @@ static void run_R(const Dataset &data){
     string s = "R --vanilla < " + data.output_dir + "/generateRinput.input";
     system(s.c_str());
     s = "rm " + data.output_dir + "/generateRinput.input";
-    system(s.c_str());
+//    system(s.c_str());
 
 }

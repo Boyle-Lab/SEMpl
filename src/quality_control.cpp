@@ -15,7 +15,9 @@
 using namespace std;
 
 static int count_kmer(const Dataset &data);
-//int findMaximumPerRow(Dataset &data, const string dest);
+double ttest(const Dataset &data);
+static void generate_input(const Dataset &data);
+static void run_R(const Dataset &data);
 
 // REQUIRES: data.signal_scramble_output is filled
 //           along with data.signal_enumerate_output
@@ -31,8 +33,8 @@ void quality_control(const Dataset &data){
     quality_output << "Total k-mer count: " << total_kmers <<"\n";
 
     //Step 2: T-test on signal to background
-//    double p_val = ttest(data);
-//    quality_output << "Signal to background T-test: " << p_val << '\n';
+    double p_val = ttest(data);
+    quality_output << "Signal to background T-test: " << p_val << '\n';
 }
 
 int count_kmer(const Dataset &data){
@@ -51,3 +53,32 @@ int count_kmer(const Dataset &data){
 
 }
 
+double ttest(const Dataset &data){
+
+    generate_input(data);
+    return run_R(data);
+}
+
+static void generate_input(const Dataset &data){
+
+    stringstream Rout;
+    Rout << data.output_dir  << "/ttest.R";
+    ofstream Rfile;
+    Rfile.open(Rout.str());
+
+    Rfile << "signal <- read.table(\"" << data.output_dir << "/BASELINE/Enumerated_kmer.signal\")\n"
+          << "baseline <- read.table(\"" << data.output_dir << "/BASELINE/Scrambled_kmer.signal\")\n"
+          << "res <- t.test(signal$V6[which(signal$V6>-255)], baseline$V6[which(baseline$V6>-255)])\n"
+          << "pval <- -log10(res$p.value)\n"
+          << "cat(pval, sep=\"\\n\")";
+    Rfile.close();
+}
+
+double run_R(const Dataset &data){
+    double result;
+    string s = "R --vanilla < " + data.output_dir + "/ttest.R";
+    result = system(s.c_str());
+    s = "rm " + data.output_dir + "/ttest.R";
+//    system(s.c_str());
+    return result;
+}
