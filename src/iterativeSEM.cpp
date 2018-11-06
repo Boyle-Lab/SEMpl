@@ -254,7 +254,6 @@ int main(int argc, char **argv){
             data.output_dir = data.base_dir + "/" + "it" + std::to_string(iteration) + "/";
 
             if (converge == 9){
-                data.settings.fastrun = true;
                 // the folder containing the final iteration data
                 final_run = "it" + std::to_string(iteration);
             }
