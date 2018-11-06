@@ -17,7 +17,7 @@ using namespace std;
 static int count_kmer(const Dataset &data);
 double ttest(const Dataset &data);
 static void generate_input(const Dataset &data);
-static void run_R(const Dataset &data);
+double run_R(const Dataset &data);
 
 // REQUIRES: data.signal_scramble_output is filled
 //           along with data.signal_enumerate_output
