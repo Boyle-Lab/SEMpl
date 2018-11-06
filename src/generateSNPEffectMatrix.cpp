@@ -143,7 +143,7 @@ void create_baselines(Dataset &data, int length){
             ++it){
             random_shuffle(it->begin(), it->end());
         }
-        // scramble_kmers IS NOW SCRAMBLED!!!!
+        // scramble_kmers is now scrambled
 
         checkCache(data, scramble_kmers, scramble_cache_to_align, data.cacheDB,
                     Dataset::accumSummary_type::accumSummary_dest::scrambled);
@@ -153,13 +153,6 @@ void create_baselines(Dataset &data, int length){
                           data.output_dir + "/BASELINE/Scrambled_kmer.fa",
                           data.output_dir + "/BASELINE/Scrambled_kmer.bed",
                           data.DNase_file, data.settings.threads, data.settings.verbose);
-
-        // NEED TO CHECK THAT THIS IS THE RIGHT RELATIVE DIRECTORY
-        //cmd = "./bin/bedtools intersect -a " + data.output_dir
-        //        + "BASELINE/Scrambled_kmer.bed -b "
-        //        + data.DNase_file + " -wa -u > " + data.output_dir
-        //        + "BASELINE/Scrambled_kmer_filtered.bed";
-        //system(cmd.c_str());
 
         if(data.settings.verbose){
             cout << "\tRunning accumSummary_scale(args)..." << flush;
@@ -194,8 +187,7 @@ void create_baselines(Dataset &data, int length){
                 cout << "FINISH" << endl;
             }
         }
-        // SHOULD THERE BE AN ERROR CHECK IF signal_cache_enumerate IS EMPTY????
-        // SIGNAL CACHE SCRAMBLE DOES NOT EXIST OMG
+
 
         data.signal_scramble_output.clear();
 
@@ -210,35 +202,27 @@ void create_baselines(Dataset &data, int length){
                              data.accumSummary_data.scramble_accum_lines.end(),
                              data.signal_scramble_output.begin());
         }
-        //  FILLS data.signal_scramble_output !!!!!!!!!!!!
+
+        //  FILLS data.signal_scramble_output
         // iter is the next position to have a value inserted at of
         // data.signal_scramble_output
         auto end_iter2 = unique_copy(data.signal_cache_scramble.begin(),
                     data.signal_cache_scramble.end(),
                     iter);
         data.signal_scramble_output.resize(end_iter2 - data.signal_scramble_output.begin());
-        #ifdef DEBUG
-            ofstream debug1(data.output_dir + "/BASELINE/Scrambled_kmer.signal");
-            for(auto val : data.signal_scramble_output){
-                debug1 << val << endl;
-            }
-            debug1.close();
-        #endif
+
+        ofstream debug1(data.output_dir + "/BASELINE/Scrambled_kmer.signal");
+        for(auto val : data.signal_scramble_output){
+            debug1 << val << endl;
+        }
+        debug1.close();
 
     } // !data.settings.fastrun
 
 
-    // checkCache(Dataset &data, const std::vector<std::string> &in_file,
-    //            std::vector<std::string> &out_cache, const std::string &cachefile,
-    //            Dataset::accumSummary_type::accumSummary_dest dest)
-
     // PWM kmer hits from enumerate kmers
     checkCache(data, enumerate_kmers, enumerate_cache_to_align, data.cacheDB,
                Dataset::accumSummary_type::accumSummary_dest::enumerated);
-
-//    if(data.settings.verbose){
-//        cout << "Aligned (cache): " << data.signal_cache[ {position, bp} ].size() << endl;
-//    }
 
     if(!enumerate_cache_to_align.empty()){
         seq_col_to_fa(enumerate_cache_to_align,
@@ -267,6 +251,7 @@ void create_baselines(Dataset &data, int length){
          data.signal_cache_enumerate.end());
     data.signal_enumerate_output.resize(data.signal_cache_enumerate.size()
                                       + data.accumSummary_data.enum_accum_lines.size());
+
     // returns iterator to one past the location of the last copy
     auto iter = data.signal_enumerate_output.begin();
     if( data.accumSummary_data.enum_accum_lines.size() != 0 ){
@@ -281,13 +266,13 @@ void create_baselines(Dataset &data, int length){
                 iter);
     data.signal_enumerate_output.resize(end_iter1 - data.signal_enumerate_output.begin());
 
-    #ifdef DEBUG
-        ofstream debug(data.output_dir + "/BASELINE/Enumerated_kmer.signal");
-        for(auto val : data.signal_enumerate_output){
-            debug << val << endl;
-        }
-        debug.close();
-    #endif
+    // we now need this for the t-tests at the end so lets keep them
+    // we could just keep these on last iteration to save space
+    ofstream debug(data.output_dir + "/BASELINE/Enumerated_kmer.signal");
+    for(auto val : data.signal_enumerate_output){
+        debug << val << endl;
+    }
+    debug.close();
 
 
 
