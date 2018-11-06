@@ -70,15 +70,16 @@ static void generate_input(const Dataset &data){
           << "baseline <- read.table(\"" << data.output_dir << "/BASELINE/Scrambled_kmer.signal\")\n"
           << "res <- t.test(signal$V6[which(signal$V6>-255)], baseline$V6[which(baseline$V6>-255)])\n"
           << "pval <- -log10(res$p.value)\n"
+          << "if(is.infinite(pval)) { pval<-310 }\n"
           << "cat(pval, sep=\"\\n\")";
     Rfile.close();
 }
 
 double run_R(const Dataset &data){
     double result;
-    string s = "R --vanilla < " + data.output_dir + "/ttest.R";
+    string s = "R --vanilla --slave < " + data.output_dir + "/ttest.R";
     result = system(s.c_str());
     s = "rm " + data.output_dir + "/ttest.R";
-//    system(s.c_str());
+    system(s.c_str());
     return result;
 }
