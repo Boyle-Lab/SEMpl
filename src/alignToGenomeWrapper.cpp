@@ -235,9 +235,9 @@ cout << "cache: " << data.signal_cache[ {position, bp} ].size() << " align: " <<
     #endif
 
     // remove fa and bed files
-    string cmd = "rm " + name + ".bed";
+    string cmd = "rm -f " + name + ".bed";
     system(cmd.c_str());
-    cmd = "rm " + name + ".fa";
+    cmd = "rm -f " + name + ".fa";
     system(cmd.c_str());
 
     // Now summarize the scores from all alignments (including those from cache)
