@@ -228,7 +228,7 @@ cout << "cache: " << data.signal_cache[ {position, bp} ].size() << " align: " <<
     // Output signal file for methylation processing
     #ifdef DEBUG
         ofstream debug(name + ".signal");
-        for(auto val : data.signal_enumerate_output){
+        for(auto val : data.signal_output){
             debug << val << endl;
         }
         debug.close();
