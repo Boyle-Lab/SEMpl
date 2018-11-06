@@ -15,7 +15,7 @@ void bowtie_genome_map(int length, const string& genome, const string& file,
 
 
     string cmd = "./bin/bowtie --threads " + std::to_string(threads) + " --quiet -a -v 0 " + genome + " -r " + file 
-       + " | awk '{print $3\"\\t\"$4\"\\t\"$4+" + std::to_string(length) + "\"\\t\"$5\"\\t\"$2}' | " 
+       + " | awk '{print $3\"\\t\"$4\"\\t\"$4+" + std::to_string(length) + "\"\\t\"$5\"\\t\"$2}' | grep -vE chr'Y|X|M' | " 
        + "./bin/bedtools intersect -a stdin -b " + dnase_file + " -wa -u | sort | uniq";
 
     if(verbose){

@@ -1,5 +1,5 @@
 extern "C" {
-    #include "./lib/libBigWig/bigWig.h"
+    #include "./lib/libBigWig-master/bigWig.h"
 }
 #include "iterativeSEM.hpp"
 #include "common.hpp"
@@ -137,7 +137,7 @@ void accumSummary_scale(Dataset &data, const string &hfile,
                                         static_cast<uint32_t>(upend),
                                         1);
         if(!ptr){
-            cerr << "problem with bwGetValues!!!" << endl 
+            cerr << "problem with bwGetValues!!! " << chrom << " " << upstart << " " << upend << endl 
                  << "\tEXITING" << endl;
             exit(1);
         }
