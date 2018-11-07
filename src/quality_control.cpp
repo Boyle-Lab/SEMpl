@@ -81,7 +81,7 @@ string run_R(const Dataset &data){
     string result = "";
     std::getline(IN, result, '\n');
 
-    string s = "rm " + data.output_dir + "/ttest.R";
+    s = "rm " + data.output_dir + "/ttest.R";
     system(s.c_str());
 
     return result;
