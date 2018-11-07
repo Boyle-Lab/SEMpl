@@ -34,7 +34,7 @@ void quality_control(const Dataset &data){
 
     //Step 2: T-test on signal to background
     string p_val = ttest(data);
-    quality_output << "Signal to background T-test: " << p_val << '\n';
+    quality_output << "Signal to background T-test [-log10(p-value)]: " << p_val << '\n';
 }
 
 int count_kmer(const Dataset &data){
