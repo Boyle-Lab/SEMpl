@@ -199,7 +199,6 @@ int main(int argc, char **argv){
     int total_diff = 0;
     string final_run = "";
     string line = "";
-//    int iterID = 0;
 
 
 //Note: combine above and this in a do{}while statement
@@ -279,27 +278,29 @@ int main(int argc, char **argv){
         else{
             //stop iterations post-convergence
 
-            //link last iteration
-            ostringstream newOutput;
-            newOutput << data.base_dir << "/final";
-            string cmd = "ln -s " + final_run + " " + newOutput.str();
-            if(system(cmd.c_str()) != 0){
-                cerr << "problem running " << cmd << endl;
-//                exit(1);
-            }
-            double diff_t;
-            time_t endTime;
-            time(&endTime);
-            diff_t = difftime(endTime, timer);
-            cout << "**************************" << '\n';
-            printf( "Job took %f seconds", diff_t );
-            cout << "**************************\n" << '\n';
             break;
         }
     }
 
+    // Everything is done now, so clean up
     closeCache(data.cachefile, data.cacheDB);
     outFile.close();
+
+    //link last iteration
+    ostringstream newOutput;
+    newOutput << data.base_dir << "/final";
+    string cmd = "ln -s " + final_run + " " + newOutput.str();
+    if(system(cmd.c_str()) != 0){
+        cerr << "problem running " << cmd << endl;
+    }
+    double diff_t;
+    time_t endTime;
+    time(&endTime);
+    diff_t = difftime(endTime, timer);
+    cout << "**************************" << '\n';
+    printf( "Job took %f seconds", diff_t );
+    cout << "**************************\n" << '\n';
+
     return 0;
 }
 
