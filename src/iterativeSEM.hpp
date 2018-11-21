@@ -155,9 +155,8 @@ struct Dataset {
 void generateSNPEffectMatrix(Dataset &data);
 
 //src files
-void accumSummary_scale(Dataset &data, const std::string &hfile,
-                        const std::string &cfile, int scale,
-                        Dataset::accumSummary_type::accumSummary_dest dest);
+std::vector<std::string> accumSummary_scale(const Dataset &data, const std::string &hfile,
+                        const std::string &cfile, int scale);
 void alignToGenomeWrapper(Dataset &data, std::string genome);
 void bowtie_genome_map(int length, const std::string& genome,
                         const std::string& file, const std::string& final_output,

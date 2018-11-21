@@ -19,34 +19,13 @@ using namespace std;
 //MODIFIES: data, specifically accumsummary data
 //EFFECTS: fills appropriate accumSummary_data vectors
 
-void accumSummary_scale(Dataset &data, const string &hfile,
-                        const string &cfile, int scale,
-                        Dataset::accumSummary_type::accumSummary_dest dest){
+vector<string> accumSummary_scale(const Dataset &data, const string &hfile,
+                        const string &cfile, int scale){
 
     // clear accum data of corresponding type
-    switch (dest) {
-            case Dataset::accumSummary_type::accumSummary_dest::enumerated:
-                // data.accumSummary_data.enum_accum_max.clear();
-                data.accumSummary_data.enum_accum_lines.clear();
-            break;
-            case Dataset::accumSummary_type::accumSummary_dest::scrambled:
-                // data.accumSummary_data.scramble_accum_max.clear();
-                data.accumSummary_data.scramble_accum_lines.clear();
-            break;
-            case Dataset::accumSummary_type::accumSummary_dest::alignment:
-                // data.accumSummary_data.align_accum_max.clear();
-                data.accumSummary_data.align_accum_lines.clear();
-            break;
-            case Dataset::accumSummary_type::accumSummary_dest::none:
-                cerr << "dest shouldn't be none!!!!" << endl;;
-                exit(1);
-            break;
-            default:
-                cerr << "there is no default for dest's switch statement!!!" << endl;
-                exit(1);
-            break;
-    }
 
+
+    vector<string> accum_lines;
 
     // open file using library, below code is necessary
     // because of C++ type system regarding const
@@ -97,15 +76,11 @@ void accumSummary_scale(Dataset &data, const string &hfile,
        	upstart = 0, upend = 0;
 
         // if lines begins with chr
-        if(temp[0][0] == 'c'){
-            if(temp[0][1] == 'h'){
-                if(temp[0][2] == 'r'){
-                    seqid = temp[0];
+        if(temp[0][0] == 'c' && temp[0][1] == 'h' && temp[0][2] == 'r'){
+            seqid = temp[0];
 #ifdef DEBUG
                     // cout << "temp[0] begins with chr: " << temp[0] << '\n';
 #endif
-                }
-            }
         }
         // if line doesn't begin with chr
         else{
@@ -116,9 +91,9 @@ void accumSummary_scale(Dataset &data, const string &hfile,
 #ifdef DEBUG
         // cerr << "temp[1]: #" << temp[1] << "# stoi: #" << start + 1 << '#' << endl;
 #endif
-	if(scale != end-start) {
-//		cerr << "Incorrect size region!" << endl;
-	}
+        if(scale != end-start) {
+            // cerr << "Incorrect size region!" << endl;
+        }
 
         end = stoi(temp[2]);
         direction = temp[4];
@@ -184,30 +159,11 @@ void accumSummary_scale(Dataset &data, const string &hfile,
 #ifdef DEBUG
         //sFile << line << endl;
 #endif
+            accum_lines.push_back(line);
 
-        switch (dest) {
-            case Dataset::accumSummary_type::accumSummary_dest::none:
-                cerr << "dest shouldn't be none!!!!" << endl;
-                exit(1);
-            break;
-            case Dataset::accumSummary_type::accumSummary_dest::enumerated:
-                data.accumSummary_data.enum_accum_lines.push_back(line);
-                // data.accumSummary_data.enum_accum_max.push_back(max);
-            break;
-            case Dataset::accumSummary_type::accumSummary_dest::scrambled:
-                data.accumSummary_data.scramble_accum_lines.push_back(line);
-                // data.accumSummary_data.scramble_accum_max.push_back(max);
-            break;
-            case Dataset::accumSummary_type::accumSummary_dest::alignment:
-                data.accumSummary_data.align_accum_lines.push_back(line);
-                // data.accumSummary_data.align_accum_max.push_back(max);
-            break;
-            default:
-                cerr << "there is no default for dest's switch statement!!!" << endl;
-                exit(1);
-            break;
-        }
-	}
+	    }
         bwClose(bwFile);
         delete [] fname;
+
+        return accum_lines;
 }
