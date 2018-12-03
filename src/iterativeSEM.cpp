@@ -124,7 +124,7 @@ int main(int argc, char **argv){
     }
 
     // if no database given, assume default location
-	if(data.cachefile.empty())  {
+    if(data.cachefile.empty())  {
         data.cachefile = data.base_dir + "/CACHE.db";
     }
 
@@ -132,15 +132,18 @@ int main(int argc, char **argv){
     pvals.reserve(total_iterations + 1);
     pvals.push_back(pow(4, -5));
 
-    for(int iteration =  1; iteration <= total_iterations; ++iteration){
+    for(int iteration =  1; iteration < total_iterations; ++iteration){
         pvals.push_back(pow(4, -5.5));
     }
+
+    //needed to prepare cache
+    read_pwm(data, data.PWM_file);
 
     data.settings.useCache = true;
     connectCache(data, data.cachefile, data.cacheDB);
 
-    data.settings.iteration = 0; //not used
     data.settings.threads = 20;
+
 
     int converge = 0;
     vector<string> line_2;
@@ -151,15 +154,11 @@ int main(int argc, char **argv){
     string final_run = "";
     string line = "";
     string newPwm = "";
-    double pVal;
-
     map <string, double> kmers;
-    // kmers_2 is new k-mers or data.kmerHash
-    // kmers is old k-mer or previous data.kmerHash
-    data.settings.fastrun = false;
+
     ofstream outFile(data.base_dir + "/kmer_similarity.out");
 
-    for (int iteration = 0; iteration < total_iterations; ++iteration){
+    for (int iteration = 0; iteration < total_iterations; iteration++){
 
         // output the results from comparing kmers
         if(iteration > 1 && converge < 10){
@@ -208,15 +207,17 @@ int main(int argc, char **argv){
             }
 
             //get pvalues
-            pVal = pvals.front();
-            pvals.erase(pvals.begin());
             newPwm = data.output_dir + "/" + data.TF_name + ".pwm";
+            if(iteration == 0) {
+                newPwm = data.PWM_file;
+            }
             read_pwm(data, newPwm);
 
-            data.settings.threshold = get_threshold(data, pVal);
+            data.settings.threshold = get_threshold(data, pvals.front());
             if(data.settings.threshold < 0.0){
                 data.settings.threshold = 0.0;
             }
+            pvals.erase(pvals.begin());
 
             // generate SEM
             try{

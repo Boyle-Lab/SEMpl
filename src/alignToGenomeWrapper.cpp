@@ -58,6 +58,7 @@ void alignToGenomeWrapper(Dataset &data, const string genome) {
                 cerr << "exception thrown from changeBase" << endl;
                 exit(1);
             }
+
             // Align to the genome
             align_SNPs(data, name, new_kmer, length, position, nucleotideStack[j], genome);
 
