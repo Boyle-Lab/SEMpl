@@ -136,60 +136,11 @@ int main(int argc, char **argv){
         pvals.push_back(pow(4, -5.5));
     }
 
-    double pVal = pvals.front();
-    pvals.erase(pvals.begin());
-
-    read_pwm(data, data.PWM_file);
-
-    data.settings.threshold = get_threshold(data, pVal);
-    if (data.settings.threshold < 0.0){
-        data.settings.threshold = 0.0;
-    }
-
     data.settings.useCache = true;
     connectCache(data, data.cachefile, data.cacheDB);
 
-    //track data.output_dir for iterations
-    data.output_dir = data.base_dir + "it0/";
-
-    cout << "--- Iteration 0 ---" << endl;
-
-    data.settings.iteration = 0;
+    data.settings.iteration = 0; //not used
     data.settings.threads = 20;
-
-    try{
-#ifdef DEBUG
-        cout << "Generating SNPEffectMatrix" << endl;
-#endif
-        generateSNPEffectMatrix(data);
-    }
-    catch(...){
-        cerr << "Problem with generateSNPEffectMatrix!!!\n\tEXITING\n";
-        exit(1);
-    }
-    try{
-        generatePWMfromSEM(data,
-                           data.output_dir + "/" + data.TF_name + ".sem",
-                           data.output_dir + "/" + data.TF_name + ".pwm");
-    }
-    catch(...){
-        cerr << "Problem with generatePWMfromSEM!!!\n\tEXITING\n";
-        exit(1);
-    }
-
-    string newPwm = data.output_dir + "/" + data.TF_name + ".pwm";
-    read_pwm(data, newPwm);
-
-    pvals.erase(pvals.begin());
-
-    // get first p-value
-    data.settings.threshold = get_threshold(data, pvals.front());
-
-    pvals.erase(pvals.begin());
-    if (data.settings.threshold < 0){
-        data.settings.threshold = 0;
-    }
-
 
     int converge = 0;
     vector<string> line_2;
@@ -199,9 +150,8 @@ int main(int argc, char **argv){
     int total_diff = 0;
     string final_run = "";
     string line = "";
-
-
-//Note: combine above and this in a do{}while statement
+    string newPwm = "";
+    double pVal;
 
     map <string, double> kmers;
     // kmers_2 is new k-mers or data.kmerHash
@@ -209,7 +159,7 @@ int main(int argc, char **argv){
     data.settings.fastrun = false;
     ofstream outFile(data.base_dir + "/kmer_similarity.out");
 
-    for (int iteration = 1; iteration < total_iterations; ++iteration){
+    for (int iteration = 0; iteration < total_iterations; ++iteration){
 
         // output the results from comparing kmers
         if(iteration > 1 && converge < 10){
@@ -256,23 +206,39 @@ int main(int argc, char **argv){
                 // the folder containing the final iteration data
                 final_run = "it" + std::to_string(iteration);
             }
-            generateSNPEffectMatrix(data);
-            // kmerHash should be filled in after the above line, within data!!!!
 
-            // generate final PWM from final SEM
-            generatePWMfromSEM(data,
-                               data.output_dir + "/" + data.TF_name + ".sem",
-                               data.output_dir + "/" + data.TF_name + ".pwm");
-
+            //get pvalues
             pVal = pvals.front();
             pvals.erase(pvals.begin());
             newPwm = data.output_dir + "/" + data.TF_name + ".pwm";
             read_pwm(data, newPwm);
 
             data.settings.threshold = get_threshold(data, pVal);
-            if(data.settings.threshold < 0){
-                data.settings.threshold = 0;
+            if(data.settings.threshold < 0.0){
+                data.settings.threshold = 0.0;
             }
+
+            // generate SEM
+            try{
+                generateSNPEffectMatrix(data);
+            }
+            catch(...){
+                cerr << "Problem with generateSNPEffectMatrix!!!\n\tEXITING\n";
+                exit(1);
+            }
+
+            // generate final PWM from final SEM
+            try{
+                generatePWMfromSEM(data,
+                           data.output_dir + "/" + data.TF_name + ".sem",
+                           data.output_dir + "/" + data.TF_name + ".pwm");
+            }
+            catch(...){
+                cerr << "Problem with generatePWMfromSEM!!!\n\tEXITING\n";
+                exit(1);
+            }
+
+
             cout << "\n";
         }
         else{
