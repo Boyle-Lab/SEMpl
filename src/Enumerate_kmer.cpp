@@ -21,7 +21,6 @@ using namespace std;
 // };
 
 static double findMax(const map<int, double> &v);
-static double get_cutoff(const Dataset &data);
 static void create_kmer(const Dataset &data,
                         const map<pair<int, char>, double> &pwmHash,
                         const vector<char> &nucleotideStack,
@@ -71,7 +70,7 @@ void Enumerate_kmer(Dataset &data){
         if(data.settings.verbose){
             cout << "\tNo cutoff defined, so searching for pre-calculated cutoff." << endl;
         }
-        cutoff = get_cutoff(data);
+        cutoff = 0.0;
         #ifdef DEBUG
             cout << "\t\tusing cutoff: " << cutoff << endl;
         #endif
@@ -159,9 +158,7 @@ static void parse_pwm(const Dataset &data,
 #ifdef DEBUG
         size_t sz = modifiedFields.size();
 #endif
-        // TEST ME!!!
-        // TEST ME!!!
-        // TEST ME!!!
+
         bestCase.push_back(findMax(modifiedFields));
         try{
             for(int column = 0; column < (int)data.PWM_data.matrix_arr.size(); ++column){
@@ -273,40 +270,6 @@ static void create_kmer(const Dataset &data,
             }
         } // for retHash loop
     } // for bestCase loop
-}
-
-static double get_cutoff(const Dataset &data){
-    if(data.settings.verbose){
-        cout << "\tSearching for pre-calculated cutoff" << '\n';
-    }
-
-      string curr_line = "";
-      // will need to change below line eventually to be specified
-      ifstream IN_HANDLE("src/PWM_SCORES_FINAL.txt");
-
-    if(!IN_HANDLE){
-        cerr << "Failure to open src/PWM_SCORES_FINAL.txt\n\tEXITING" << endl;
-        exit(1);
-    }
-
-    while(getline(IN_HANDLE, curr_line)){
-        if(curr_line.find(data.TF_name) != string::npos){
-          // assumes that there is whitespace between the name and the value
-            stringstream parse; // seems good
-            parse << curr_line;
-            parse >> curr_line;
-            double a = 0.0;
-            parse >> a;
-            if(data.settings.verbose){
-                cout << "\tPre-calculated threshold identified as " << a << '\n';
-            }
-          IN_HANDLE.close();
-          return a;
-        }
-    }
-    cerr << "Unable to find pre-calculated cutoff in file\n\tEXITING" << endl;
-    exit(1);
-    return 0.0;
 }
 
 // EFFECTS: finds maximum mapped value
