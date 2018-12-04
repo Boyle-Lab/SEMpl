@@ -207,7 +207,7 @@ int main(int argc, char **argv){
             }
 
             //get pvalues
-            newPwm = data.output_dir + "/" + data.TF_name + ".pwm";
+            newPwm = data.base_dir + "/" + "it" + std::to_string(iteration-1) + "/" + data.TF_name + ".pwm";
             if(iteration == 0) {
                 newPwm = data.PWM_file;
             }
