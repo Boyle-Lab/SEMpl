@@ -84,6 +84,8 @@ struct Dataset {
             int threads = 1;
             int length = 0;
             double threshold = -1.0;
+            size_t minKmers = 1;
+            size_t maxKmers = 1000000000;
             // negative threshold value indicates not defined
         };
 

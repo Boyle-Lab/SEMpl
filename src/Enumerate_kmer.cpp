@@ -42,6 +42,7 @@ void Enumerate_kmer(Dataset &data){
     //                      for nucleotide ordering (columns) within pwm
     vector<char> nucleotideStack {'A', 'C', 'G', 'T'};
     vector<double> bestCase;
+    bool cutoffValid = 0;
     double cutoff = 0.0;
 
     // clear data.kmerHash
@@ -63,10 +64,7 @@ void Enumerate_kmer(Dataset &data){
 
     // pwmHash is now filled in, along with bestCase
     if(data.settings.threshold < 0.0){
-        // indicated in iterativeSEM.hpp that if
-        // data.settings.threshold < 0.0, then the value
-        // should be treated as not defined, for purposes of
-        // replicating the perl version
+        //this is no longer reachable
         if(data.settings.verbose){
             cout << "\tNo cutoff defined, so searching for pre-calculated cutoff." << endl;
         }
@@ -85,20 +83,29 @@ void Enumerate_kmer(Dataset &data){
         #endif
     }
 
-    try{
-        create_kmer(data, pwmHash, nucleotideStack, bestCase, data.kmerHash, cutoff);
-    }
-    catch(...){
-        cerr << "Problem with create_kmer!\n\tEXITING" << endl;
-        exit(1);
-    }
-
-    for(auto iter = data.kmerHash.begin(); iter != data.kmerHash.end(); ){
-        if(iter->second <= cutoff){
-            data.kmerHash.erase(iter++);
+    // here we can adjust the cutoff for count thresholds as well
+    while(!cutoffValid) {
+        try{
+            create_kmer(data, pwmHash, nucleotideStack, bestCase, data.kmerHash, cutoff);
         }
-        else{
-            ++iter;
+        catch(...){
+            cerr << "Problem with create_kmer!\n\tEXITING" << endl;
+            exit(1);
+        }
+
+        // trim here for last base added to kmer
+        for(auto iter = data.kmerHash.begin(); iter != data.kmerHash.end(); ){
+            if(iter->second <= cutoff){
+                data.kmerHash.erase(iter++);
+            }
+            else{
+                ++iter;
+            }
+        }
+        cerr << "Kmer count is " << data.kmerHash.size() << endl;
+        if(data.kmerHash.size() > data.settings.maxKmers) {
+        }
+        if(data.kmerHash.size() > data.settings.minKmers) {
         }
     }
     // data.kmerHash is now ready for use
@@ -148,11 +155,10 @@ static void parse_pwm(const Dataset &data,
         for(int column = 0; column < (int)data.PWM_data.matrix_arr.size(); ++column){
             // sums each row
             sum += data.PWM_data.matrix_arr[column][row];
-
         }
-        // cout << "sum: " << sum << endl;
+
         for(int column = 0; column < (int)data.PWM_data.matrix_arr.size(); ++column){
-            modifiedFields[column+1] = log2((static_cast<double>(data.PWM_data.matrix_arr[column][row]) + 0.25)
+            modifiedFields[column] = log2((static_cast<double>(data.PWM_data.matrix_arr[column][row]) + 0.25)
                                      / (static_cast<double>(sum) + 1.0)) - log2(0.25);
         }
 #ifdef DEBUG
@@ -162,7 +168,7 @@ static void parse_pwm(const Dataset &data,
         bestCase.push_back(findMax(modifiedFields));
         try{
             for(int column = 0; column < (int)data.PWM_data.matrix_arr.size(); ++column){
-                pwmHash[ { row + 1, nucleotideStack[column] } ] = modifiedFields.at(column + 1);
+                pwmHash[ { row + 1, nucleotideStack[column] } ] = modifiedFields.at(column);
             }
         }
         catch(...){
