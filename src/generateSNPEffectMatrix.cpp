@@ -58,15 +58,12 @@ void generateSNPEffectMatrix(Dataset &data) {
 //data.kmerHash.clear();
 //cin.get();
 
-    cout << "\tstep two" << endl;
     align_to_genome(data);
 
     //Step 4: Generate baselines
-    cout << "\tstep four" << endl;
     create_baselines(data, length);
 
     //Step 5: Create R plot(s) and a SEM output
-    cout << "\tstep five" << endl;
     generate_output(data);
 
     if(data.settings.verbose){
