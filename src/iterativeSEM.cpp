@@ -143,15 +143,14 @@ int main(int argc, char **argv){
     connectCache(data, data.cachefile, data.cacheDB);
 
     data.settings.threads = 20;
-    data.settings.maxKmers = 1000000;
-    data.settings.minKmers = 32;
+    data.settings.maxKmers = 100000;
+    data.settings.minKmers = 16;
 
     int converge = 0;
     vector<string> line_2;
     int diff = 0;
     int same = 0;
-    int total_1 = 0;
-    int total_diff = 0;
+    vector<int> diffs;
     string final_run = "";
     string line = "";
     string newPwm = "";
@@ -162,9 +161,9 @@ int main(int argc, char **argv){
     for (int iteration = 0; iteration < total_iterations; iteration++){
 
         // output the results from comparing kmers
-        if(iteration > 1 && converge < 10){
+        if(iteration > 1 && converge < 3){
             // compare new and old kmers
-            total_1 = same = diff = total_diff = 0;
+            same = diff = 0;
             // for every key-value pair, find if the kmer is found was found in
             // the other kmer key-value map
             for(const auto &kmer_val_pair : kmers){
@@ -178,13 +177,21 @@ int main(int argc, char **argv){
                     // kmer doesn't exist
                     ++diff;
                 }
-                ++total_1;
             }
+
+            diffs.push_back(diff);
 
             if(diff == 0){
                 // all kmers are the same
                 // converge increases
                 ++converge;
+            }
+            else if((diffs.size() > 10) &&
+                diffs[diffs.size()-1] == diffs[diffs.size()-3] &&
+                diffs[diffs.size()-2] == diffs[diffs.size()-4] &&
+                diffs[diffs.size()-3] == diffs[diffs.size()-5]) {
+                //oscillating
+                converge = 10;
             }
             else{
                 // reset converge
@@ -196,7 +203,7 @@ int main(int argc, char **argv){
 
         }
 
-        if(converge < 10 && iteration < total_iterations){
+        if(converge < 3 && iteration < total_iterations){
             outFile << iteration << "\t" << converge << "\t" << same << "\t" << diff << "\n" << flush;
             cout << "---Iteration " << iteration << "---"<< '\n';
 
