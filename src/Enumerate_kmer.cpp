@@ -6,6 +6,7 @@
 #include <iostream>
 #include <exception>
 #include <stdlib.h>
+#include <algorithm>
 using namespace std;
 
 // custom comparator necessary for map
@@ -70,7 +71,7 @@ void Enumerate_kmer(Dataset &data){
         }
         cutoff = 0.0;
         #ifdef DEBUG
-            cout << "\t\tusing cutoff: " << cutoff << endl;
+            cout << "\tusing cutoff: " << cutoff << endl;
         #endif
     }
     else{
@@ -84,6 +85,7 @@ void Enumerate_kmer(Dataset &data){
     }
 
     // here we can adjust the cutoff for count thresholds as well
+    // now enforcing min and max Kmer counts
     while(!cutoffValid) {
         try{
             create_kmer(data, pwmHash, nucleotideStack, bestCase, data.kmerHash, cutoff);
@@ -102,10 +104,40 @@ void Enumerate_kmer(Dataset &data){
                 ++iter;
             }
         }
-        cerr << "Kmer count is " << data.kmerHash.size() << endl;
         if(data.kmerHash.size() > data.settings.maxKmers) {
+            // above max we can just trim the kmers to meet our threshold
+            cout << "\tKmer count is " << data.kmerHash.size() << ", which is above maximum threshold. Trimming kmer list." << endl;
+
+            std::vector<double> kmer_scores;
+            for(auto val : data.kmerHash){
+                kmer_scores.push_back(val.second);
+            }
+            std::sort(kmer_scores.begin(), kmer_scores.end());
+
+            cutoff = *(kmer_scores.end()-data.settings.maxKmers);
+            cout << "\tEffective cutoff: " << cutoff << endl;
+            for(auto iter = data.kmerHash.begin(); iter != data.kmerHash.end(); ){
+                if(iter->second <= cutoff){
+                    data.kmerHash.erase(iter++);
+                }
+                else{
+                    ++iter;
+                }
+            }
+
+            cutoffValid = 1;
         }
-        if(data.kmerHash.size() > data.settings.minKmers) {
+        else if(data.kmerHash.size() < data.settings.minKmers) {
+            // below min, we need to enumerate more
+            cutoff = cutoff-1;
+            cout << "\tKmer count is " << data.kmerHash.size() << ", which is below minimum threshold. Expanding kmer list." << endl;
+            cout << "\tEffective cutoff: " << cutoff << endl;
+            // clear data.kmerHash
+            data.kmerHash.clear();
+        }
+        else {
+            cerr << "Kmer count is " << data.kmerHash.size() << endl;
+            cutoffValid = 1; // All good
         }
     }
     // data.kmerHash is now ready for use

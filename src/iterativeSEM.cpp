@@ -143,7 +143,8 @@ int main(int argc, char **argv){
     connectCache(data, data.cachefile, data.cacheDB);
 
     data.settings.threads = 20;
-
+    data.settings.maxKmers = 1000000;
+    data.settings.minKmers = 32;
 
     int converge = 0;
     vector<string> line_2;
