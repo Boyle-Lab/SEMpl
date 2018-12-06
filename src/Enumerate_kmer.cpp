@@ -114,7 +114,7 @@ void Enumerate_kmer(Dataset &data){
             }
             std::sort(kmer_scores.begin(), kmer_scores.end());
 
-            cutoff = *(kmer_scores.end()-data.settings.maxKmers);
+            cutoff = *(kmer_scores.end()-data.settings.maxKmers-1);
             cout << "\tEffective cutoff: " << cutoff << endl;
             for(auto iter = data.kmerHash.begin(); iter != data.kmerHash.end(); ){
                 if(iter->second <= cutoff){
