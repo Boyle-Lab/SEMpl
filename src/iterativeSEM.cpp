@@ -144,7 +144,7 @@ int main(int argc, char **argv){
 
     data.settings.threads = 20;
     data.settings.maxKmers = 100000;
-    data.settings.minKmers = 16;
+    data.settings.minKmers = 512;
 
     int converge = 0;
     vector<string> line_2;
@@ -209,10 +209,8 @@ int main(int argc, char **argv){
 
             data.output_dir = data.base_dir + "/" + "it" + std::to_string(iteration) + "/";
 
-            if (converge == 9){
-                // the folder containing the final iteration data
-                final_run = "it" + std::to_string(iteration);
-            }
+            // the folder containing the final iteration data
+            final_run = "it" + std::to_string(iteration-1);
 
             //get pvalues
             newPwm = data.base_dir + "/" + "it" + std::to_string(iteration-1) + "/" + data.TF_name + ".pwm";
