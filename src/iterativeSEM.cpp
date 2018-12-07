@@ -143,7 +143,7 @@ int main(int argc, char **argv){
     connectCache(data, data.cachefile, data.cacheDB);
 
     data.settings.threads = 20;
-    data.settings.maxKmers = 100000;
+    data.settings.maxKmers = 1000000;
     data.settings.minKmers = 512;
 
     int converge = 0;
@@ -218,7 +218,6 @@ int main(int argc, char **argv){
                 newPwm = data.PWM_file;
             }
             read_pwm(data, newPwm);
-
             data.settings.threshold = get_threshold(data, pvals.front());
             if(data.settings.threshold < 0.0){
                 data.settings.threshold = 0.0;
