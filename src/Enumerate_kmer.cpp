@@ -104,6 +104,7 @@ void Enumerate_kmer(Dataset &data){
                 ++iter;
             }
         }
+
         if(data.kmerHash.size() > data.settings.maxKmers) {
             // above max we can just trim the kmers to meet our threshold
             cout << "\tKmer count is " << data.kmerHash.size() << ", which is above maximum threshold. Trimming kmer list." << endl;
