@@ -86,6 +86,7 @@ struct Dataset {
             double threshold = -1.0;
             size_t minKmers = 1;
             size_t maxKmers = 1000000000;
+            size_t idealKmers;
             // negative threshold value indicates not defined
         };
 
