@@ -115,7 +115,7 @@ static void align_SNPs(Dataset &data, string name, vector<string> &new_kmer,
     bowtie_output = name + ".bed";
 
     non_zero_file_size = seq_col_to_fa(cache_to_align, fa_file);
-    if(non_zero_file_size > 500){
+    if(non_zero_file_size > 50){
         bowtie_genome_map(length, genome, fa_file, bowtie_output,
                           data.DNase_file, data.settings.threads, data.settings.verbose);
     } else if (non_zero_file_size > 0) {
