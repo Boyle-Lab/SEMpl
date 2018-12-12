@@ -19,9 +19,9 @@ void alignToGenomeWrapper(Dataset &data, const string genome) {
     }
 
     // Build ALIGNMENT directory if it doesn't exist
-    const string CWD =  "./" + data.output_dir + "ALIGNMENT/";
+    const string CWD =  "./" + data.output_dir + "ALIGNMENT";
     string name = "";
-    system( string("mkdir -p " + CWD).c_str() );
+    system( string("mkdir -p " + CWD.c_str() );
 //    if(system( string("mkdir -p " + CWD).c_str() ) != 0){
 //        cerr << "problem running mkdir -p " << CWD << endl;
 //        exit(1);
