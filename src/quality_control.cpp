@@ -68,10 +68,16 @@ static void generate_input(const Dataset &data){
 
     Rfile << "signal <- read.table(\"" << data.output_dir << "/BASELINE/Enumerated_kmer.signal\")\n"
           << "baseline <- read.table(\"" << data.output_dir << "/BASELINE/Scrambled_kmer.signal\")\n"
-          << "res <- t.test(signal$V6[which(signal$V6>-255)], baseline$V6[which(baseline$V6>-255)])\n"
+          << "pvals = NULL\n"
+          << "for(i in 1:100) {\n"
+          << "signal.sample <- signal[sample(nrow(signal), 1000),]\n"
+          << "baseline.sample <- baseline[sample(nrow(baseline), 1000),]\n"
+          << "res <- t.test(signal.sample$V6[which(signal.sample$V6>-255)], baseline.sample$V6[which(baseline.sample$V6>-255)])\n"
           << "pval <- -log10(res$p.value)\n"
-//          << "if(is.infinite(pval)) { pval<-310 }\n"
-          << "cat(pval, sep=\"\\n\")";
+          << "pvals <- c(pvals, pval)\n"
+          << "}\n"
+          << "pval_mean <- mean(pvals)\n"
+          << "cat(pval_mean, sep=\"\\n\")";
     Rfile.close();
 }
 
