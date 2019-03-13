@@ -69,21 +69,3 @@ SEMpl runs as an iterative process and requires specific input files (need more 
 # Testing
 Run "make test" to compile and run this input example.
 
-# Tasks
-
-1. Continue C++ implementation of algorithm.
-2. Use descriptive variable names
-3. ALWAYS INITIALIZE VARIABLES
-   * can be quite difficult to debug uninitialized variables
-4. Use assert(bool) to check REQUIRES clauses and for error checking
-
-# Resources
-
-1. http://search.cpan.org/~lds/Bio-BigFile/lib/Bio/DB/BigWig.pm
-2. https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2922891/
-3. For tfmpvalue binary source code, use below
-   * tfmpvalue.cpp Bonsai
-4. https://github.com/deltadev/bbi
-5. github.com/jayhesselberth/libBigWig
-5. https://github.com/BenLangmead/bowtie/tree/85fad1d77775e773611c3d16f3d1fb527c32f4b7
-6. sqlite.org
