@@ -150,9 +150,9 @@ int main(int argc, char **argv){
     // estimated from random kmer hits of 500000 mapped locations, 3049315783 genome
     //  size, 3% DHS coverage
     data.settings.idealKmers = 500000/(3049315783.0 * 0.03 * pow(0.25, data.settings.length));
-    if(data.settings.idealKmers > data.settings.minKmers) {
-        data.settings.minKmers = data.settings.idealKmers;
-    }
+//    if(data.settings.idealKmers > data.settings.minKmers) {
+//        data.settings.minKmers = data.settings.idealKmers;
+//    }
     cerr << "Estimated ideal kmer count (500k hits): " << data.settings.idealKmers << endl;
 
     int converge = 0;
