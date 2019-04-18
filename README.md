@@ -37,7 +37,7 @@ Running Iterative SEM building..
 Clone a copy of the SEMpl repository and submodules:
 
 ```
-git clone --recurse-submodules git@github.com:Boyle-Lab/SEM_CPP.git
+git clone --recurse-submodules https://github.com/Boyle-Lab/SEM_CPP.git
 ```
 
 Build external libraries:
