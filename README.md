@@ -63,7 +63,7 @@ make
 # Usage information
 SEMpl runs as an iterative process and requires specific input files (need more details). The following example will build the SEM for HNF4a in HepG2 cells given the example data
 ```
-./iterativeSEM -PWM examples/MA0114.1.pwm -merge_file examples/wgEncodeOpenChromDnaseHepg2Pk.narrowPeak -big_wig examples/wgEncodeHaibTfbsHepg2Hnf4asc8987V0416101RawRep1.bigWig -TF_name HNF4A -output results/HNF4A
+./iterativeSEM -PWM examples/MA0114.1.pwm -merge_file examples/wgEncodeOpenChromDnaseHepg2Pk.narrowPeak -big_wig examples/wgEncodeHaibTfbsHepg2Hnf4asc8987V0416101RawRep1.bigWig -TF_name HNF4A -genome data/hg19 -output results/HNF4A
 ```
 
 # Testing
