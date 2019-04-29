@@ -84,6 +84,7 @@ struct Dataset {
             int threads = 1;
             int length = 0;
             double threshold = -1.0;
+
             size_t minKmers = 1;
             size_t maxKmers = 1000000000;
             size_t idealKmers;
@@ -128,6 +129,7 @@ struct Dataset {
         std::string TF_name = "";
 
         // name of various files and directories
+	std::string genome_file = "";
         std::string PWM_file = "";
         std::string bigwig_file = "";
         std::string DNase_file = "";

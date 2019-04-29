@@ -45,6 +45,7 @@ int main(int argc, char **argv){
         {"merge_file", required_argument, NULL, 'm'},
         {"big_wig", required_argument, NULL, 'b'},
         {"TF_name", required_argument, NULL, 't'},
+        {"genome", required_argument, NULL, 'g'},
         {"output", required_argument, NULL, 'o'},
         {"readcache", required_argument, NULL,  'c'},
         {"verbose", no_argument, NULL, 'v'},
@@ -64,6 +65,12 @@ int main(int argc, char **argv){
                 data.DNase_file = optarg;
 #ifdef DEBUG
                 cout << "\tmerge_file: " << optarg << '\n';
+#endif
+                break;
+            case 'g':
+                data.genome_file = optarg;
+#ifdef DEBUG
+                cout << "\tgenom_file: " << optarg << '\n';
 #endif
                 break;
             case 'b':
