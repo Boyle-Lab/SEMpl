@@ -44,7 +44,7 @@ test: $(EXECUTABLE)
 	./iterativeSEM -PWM examples/MA0114.1.pwm \
 			-merge_file examples/wgEncodeOpenChromDnaseHepg2Pk.narrowPeak.gz \
 			-big_wig examples/wgEncodeHaibTfbsHepg2Hnf4asc8987V0416101RawRep1.bigWig \
-			-TF_name HNF4A -output results/HNF4A/ \
+			-TF_name HNF4A -output results/HNF4A/ -genome data/hg19 \
 			-readcache results/HNF4A/HNF4A.cache.db -verbose > results/HNF4A/1test.out 2> results/HNF4A/1err.out &
 
 ctcf: $(EXECUTABLE)
@@ -53,7 +53,7 @@ ctcf: $(EXECUTABLE)
 	./iterativeSEM -PWM /data/data_repo/PWMs/MA0139.1.pwm \
 			-merge_file /data/data_repo/ENCODE/H1hESC/stem.narrowPeak.gz \
 			-big_wig /data/data_repo/ENCODE/H1hESC/ENCFF000RSD.bigWig \
-			-TF_name CTCF -output results/CTCF/ \
+			-TF_name CTCF -output results/CTCF/ -genome data/hg19 \
 			-readcache results/CTCF/CTCF.cache.db -verbose > results/CTCF/1test.out 2> results/CTCF/1err.out
 
 

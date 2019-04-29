@@ -70,7 +70,7 @@ int main(int argc, char **argv){
             case 'g':
                 data.genome_file = optarg;
 #ifdef DEBUG
-                cout << "\tgenom_file: " << optarg << '\n';
+                cout << "\tgenome_file: " << optarg << '\n';
 #endif
                 break;
             case 'b':
