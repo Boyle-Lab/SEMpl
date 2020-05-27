@@ -1,4 +1,4 @@
-# SEM_CPP
+# SEMpl
 C++ implementation of the SEM algorithm
 
 # System Requirements
@@ -37,12 +37,12 @@ Running Iterative SEM building..
 Clone a copy of the SEMpl repository and submodules:
 
 ```
-git clone --recurse-submodules https://github.com/Boyle-Lab/SEM_CPP.git
+git clone --recurse-submodules https://github.com/Boyle-Lab/SEMpl.git
 ```
 
 Build external libraries:
 ```
-cd SEM_CPP/lib/libBigWig
+cd SEMpl/lib/libBigWig
 make
 cd ..
 make
