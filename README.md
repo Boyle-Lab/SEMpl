@@ -3,6 +3,8 @@ C++ implementation of the SEM algorithm
 
 Sierra S Nishizaki, Natalie Ng, Shengcheng Dong, Robert S Porter, Cody Morterud, Colten Williams, Courtney Asman, Jessica A Switzenberg, Alan P Boyle, Predicting the effects of SNPs on transcription factor binding affinity, Bioinformatics, Volume 36, Issue 2, 15 January 2020, Pages 364–372, https://doi.org/10.1093/bioinformatics/btz612
 
+We have made all of the SEMs generated as part of this work available [here](SEMs/).
+
 # System Requirements
 
 ## Hardware Requirements
