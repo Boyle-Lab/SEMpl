@@ -1,0 +1,2 @@
+SEMs_baseline.tar.gz contains all baseline.maximums files under the final iteration from SEMpl.
+SEMs_baseline_norm.txt contains the value of log2 normalized baseline for each SEM (i.e. the dashed line in SEMpl plot).
